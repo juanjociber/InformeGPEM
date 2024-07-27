@@ -12,8 +12,9 @@
 	$res=false;
 	$msg='Error general.';
 
-    include($_SERVER['DOCUMENT_ROOT'].'/gesman/connection/ConnGpemDb.php');
+    include($_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php");
     require_once '../datos/InformesData.php';
+
 
     try {
         $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

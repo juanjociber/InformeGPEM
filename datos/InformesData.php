@@ -74,6 +74,29 @@
         }
     }
 
+    // Buscar actividad por Id
+    function FnBuscarActividad($conmy, $id) {
+        try {
+            $stmt = $conmy->prepare("select id,infid, ownid, tipo, actividad, diagnostico, trabajos, observaciones,estado from tbldetalleinforme where id=:Id;");
+            $stmt->execute(array(':Id'=>$id));
+            $actividad = new stdClass();
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $actividad->id = $row['id'];
+                $actividad->infid = $row['infid'];
+                $actividad->ownid = $row['ownid'];
+                $actividad->tipo = $row['tipo'];
+                $actividad->actividad = $row['actividad'];
+                $actividad->diagnostico = $row['diagnostico'];
+                $actividad->trabajos = $row['trabajos'];
+                $actividad->observaciones = $row['observaciones'];
+                $actividad->estado = $row['estado'];
+            }
+            return $actividad;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+
     function FnBuscarOrden($conmy, $id) {
         try {
             $stmt = $conmy->prepare("select idot, idactivo, idcliente, ot, km, hm, supervisor, contacto, estado from man_ots where idot=:Id;");

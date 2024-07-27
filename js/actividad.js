@@ -192,16 +192,36 @@
 // // });
 
 
-const fnAgregarActividad = (element) => {
-  if (element.classList.contains('agregarActividad')) {
-      console.log('AGREGAR');
-  } 
+const fnAgregarActividad = () => {
+  const modal = new bootstrap.Modal(document.getElementById('modalNuevaActividad'),{keyboard:false});
+  modal.show(); 
 }
 
-const fnEditarActividad = (element) => {
-  if (element.classList.contains('editarActividad')) {
-    console.log('EDITAR');
+const fnEditarActividad = async (id) => {
+  const modal = new bootstrap.Modal(document.getElementById('modalEditarActividad'),{keyboard:false});
+  modal.show();
+  console.log(id);
+
+  const formData = new FormData();
+  formData.append('id', id);
+
+  console.log('Datos a enviar: ', {id });
+  console.log(formData);
+
+
+  const response = await fetch(``, {
+    method: 'POST',
+    body: formData
+  });
+  if (!response.ok) {
+    throw new Error(response.status + ' ' + response.statusText);
   }
+  const datos = await response.json();
+  if (!datos.res) {
+    throw new Error(datos.msg);
+  }
+  console.log(datos);
+
 }
 
 const fnEliminarActividad = (element) => {
@@ -216,28 +236,42 @@ const fnAgregarImagen = (element) => {
   }
 }
 
-const fnCargaContenidoActividad = () =>{
-  const formData = new FormData();
-  const actividad = document.querySelector('#actividadId').textContent;
-  const diagnostico = document.querySelector('#diagnosticoId').textContent;
-  const trabajo     = document.querySelector('#trabajoId').textContent;
-  const observacion = document.querySelector('#observacionId').textContent;
-  const titulo1 = document.querySelector('#titulo1Id').textContent;
-  const descripcion1 = document.querySelector('#descripcion1Id').textContent; 
-  const titulo2 = document.querySelector('#titulo2Id').textContent;
-  const descripcion2 = document.querySelector('#descripcion2Id').textContent; 
+const fnEliminarImagen = (element) => {
 
-  formData.append('actividad', actividad);
-  formData.append('diagnostico', diagnostico);
-  formData.append('trabajo', trabajo);
-  formData.append('observacion', observacion); 
-  formData.append('titulo1', titulo1);
-  formData.append('descripcion1', descripcion1);
-  formData.append('titulo2', titulo2);
-  formData.append('descripcion2', descripcion2);
+  console.log(element);
+  // OBTENGO ELEMENTO PADRE DE ICONO
+  var parentDiv = element.parentElement;
+  // OBTENGO ELEMENTO img DENTRO DE PADRE 'div'
+  var img = parentDiv.querySelector('img');
+  // ELIMINO ELEMENTO 'img'
+  if (img) {
+      parentDiv.removeChild(img);
+  }
+}
 
-  console.log('Datos a enviar: ', {actividad, diagnostico, trabajo, observacion,titulo1,descripcion1,titulo2,descripcion2 });
-  console.log(formData);
+const fnGuardarActividad = (elemento) =>{
+  // console.log(elemento.target);
+  // const formData = new FormData();
+  // const actividad = document.querySelector('#actividadId').textContent;
+  // const diagnostico = document.querySelector('#diagnosticoId').textContent;
+  // const trabajo     = document.querySelector('#trabajoId').textContent;
+  // const observacion = document.querySelector('#observacionId').textContent;
+  // const titulo1 = document.querySelector('#titulo1Id').textContent;
+  // const descripcion1 = document.querySelector('#descripcion1Id').textContent; 
+  // const titulo2 = document.querySelector('#titulo2Id').textContent;
+  // const descripcion2 = document.querySelector('#descripcion2Id').textContent; 
+
+  // formData.append('actividad', actividad);
+  // formData.append('diagnostico', diagnostico);
+  // formData.append('trabajo', trabajo);
+  // formData.append('observacion', observacion); 
+  // formData.append('titulo1', titulo1);
+  // formData.append('descripcion1', descripcion1);
+  // formData.append('titulo2', titulo2);
+  // formData.append('descripcion2', descripcion2);
+
+  // console.log('Datos a enviar: ', {actividad, diagnostico, trabajo, observacion,titulo1,descripcion1,titulo2,descripcion2 });
+  // console.log(formData);
 
 
   // const response = await fetch(``, {

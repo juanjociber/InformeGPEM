@@ -94,33 +94,33 @@
 
       <!--DATOS EQUIPOS-->
       <div class="row g-3">
-        <div class="col-6 col-lg-4 mt-2">
+        <div class="col-6 col-lg-4 col-xl-3 mt-2">
             <label for="nombreEquipoInput" class="form-label mb-0">Nombre</label>
             <p class="mb-0" style="font-size:15px">Nombre 1</p>
         </div>
-        <div class="custom-select-container col-6 col-lg-4 mt-2">
+        <div class="custom-select-container col-6 col-lg-4 col-xl-3 mt-2">
           <label for="modeloInput" class="form-label mb-0">Modelo</label>
           <p class="mb-0" style="font-size:15px">Modelo 1</p>
         </div>
-        <div class="col-6 col-lg-4 mt-2">
+        <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label for="serieEquipoInput" class="form-label mb-0">Serie</label>
           <p class="mb-0" style="font-size:15px">Serie 1</p>
         </div>
 
-        <div class="custom-select-container col-6 col-lg-4 mt-2">
+        <div class="custom-select-container col-6 col-lg-4 col-xl-3 mt-2">
           <label for="marcaInput" class="form-label mb-0">Marca</label>
           <p class="mb-0" style="font-size:15px">Marca 1</p>
         </div>
-        <div class="col-6 col-lg-4 mt-2">
+        <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label for="kmEquipoInput" class="form-label mb-0">Kilometraje</label>
           <p class="mb-0" style="font-size:15px">860</p>
         </div>
-        <div class="col-6 col-lg-4 mt-2">
+        <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label for="horaMotorInput" class="form-label mb-0">Horas de motor</label>
           <p class="mb-0" style="font-size:15px">123</p>
         </div>
 
-        <div class="col-md-12 col-lg-12 mt-2">
+        <div class="col-md-12 col-lg-12 col-xl-6 mt-2">
           <label for="descripcionEquipoInput" class="form-label mb-0">Descripción</label>
           <p class="mb-0" style="font-size:15px">Descripción nro.01</p>        
         </div>
