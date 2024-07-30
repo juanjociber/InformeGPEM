@@ -77,8 +77,8 @@
     // Buscar actividad por Id
     function FnBuscarActividad($conmy, $id) {
         try {
-            $stmt = $conmy->prepare("select id,infid, ownid, tipo, actividad, diagnostico, trabajos, observaciones,estado from tbldetalleinforme where id=:Id;");
-            $stmt->execute(array(':Id'=>$id));
+            $stmt = $conmy->prepare("SELECT id, infid, ownid, tipo, actividad, diagnostico, trabajos, observaciones, estado FROM tbldetalleinforme WHERE id = :Id;");
+            $stmt->execute([':Id' => $id]);
             $actividad = new stdClass();
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $actividad->id = $row['id'];
@@ -139,18 +139,18 @@
 
     function FnRegistrarActividad($conmy, $actividad) {
         try {
-            $res=false;
-            $stmt = $conmy->prepare("insert into tbldetalleinforme(infid, ownid, actividad, diagnostico, trabajos, observaciones, creacion, actualizacion) values(:InfId, :OwnId, :Actividad, :Diagnostico, :Trabajos, :Observaciones, :Creacion, :Actualizacion);");
-            $params = array(':InfId'=>$actividad->infid, ':OwnId'=>$actividad->ownid, ':Actividad'=>$actividad->actividad, ':Diagnostico'=>$actividad->diagnostico, ':Trabajos'=>$actividad->trabajos, ':Observaciones'=>$actividad->observaciones, ':Creacion'=>$actividad->usuario, ':Actualizacion'=>$actividad->usuario);
-            if($stmt->execute($params)){
-                $res=true;
+            $res = false;
+            $stmt = $conmy->prepare("INSERT INTO tbldetalleinforme (infid, ownid, actividad, diagnostico, trabajos, observaciones, tipo, creacion, actualizacion) VALUES (:InfId, :OwnId, :Actividad, :Diagnostico, :Trabajos, :Observaciones, :Tipo,:Creacion, :Actualizacion);");
+            $params = array(':InfId' => $actividad->infid,':OwnId' => $actividad->ownid,':Actividad' => $actividad->actividad,':Diagnostico' => $actividad->diagnostico,':Trabajos' => $actividad->trabajos,':Observaciones' => $actividad->observaciones,':Tipo' => $actividad->tipo, ':Creacion' => $actividad->usuario,':Actualizacion' => $actividad->usuario);
+            if ($stmt->execute($params)) {
+                $res = true;
             }
             return $res;
         } catch (PDOException $e) {
             throw new Exception($e->getMessage());
         }
     }
-
+    
     function FnModificarActividad($conmy, $actividad) {
         try {
             $res=false;
@@ -164,21 +164,22 @@
             throw new Exception($e->getMessage());
         }
     }
-
+    
     function FnEliminarActividad($conmy, $id) {
         try {
-            $res=false;
-            $stmt = $conmy->prepare("delete from tbldetalleinforme where id=:Id);");
-            $params = array(':Id'=>$id);
-            if($stmt->execute($params)){
-                $res=true;
+            $res = false;
+            // Corregir la consulta SQL eliminando el paréntesis extra
+            $stmt = $conmy->prepare("DELETE FROM tbldetalleinforme WHERE id = :Id");
+            $params = array(':Id' => $id);
+            if ($stmt->execute($params)) {
+                $res = true;
             }
             return $res;
         } catch (PDOException $e) {
             throw new Exception($e->getMessage());
         }
     }
-
+    
     function FnRegistrarImagen($conmy, $imagen) {
         try {
             $res=false;
@@ -192,20 +193,21 @@
             throw new Exception($e->getMessage());
         }
     }
-
+    
     function FnEliminarArchivo($conmy, $id) {
         try {
-            $res=false;
-            $stmt = $conmy->prepare("delete from tblarchivos where id=:Id);");
-            $params = array(':Id'=>$id);
-            if($stmt->execute($params)){
-                $res=true;
+            $res = false;
+            $stmt = $conmy->prepare("DELETE FROM tblarchivos WHERE id = :Id");
+            $params = array(':Id' => $id);
+            if ($stmt->execute($params)) {
+                $res = true;
             }
             return $res;
         } catch (PDOException $e) {
             throw new Exception($e->getMessage());
         }
     }
+    
 
     function FnBuscarInformes($conmy, $informe) {
         try {

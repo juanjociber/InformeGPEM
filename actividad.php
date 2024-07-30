@@ -7,11 +7,6 @@
 	$clsHide=' d-none';
 	$tablaHTML ='';
 
-  $titulo ='Crear actividad';
-  // echo '<pre>';  
-  //   print_r($Id);
-  // echo '</pre>';
-  
 	function construirArbol($registros, $padreId = 0) {
 		$arbol = array();
 		foreach ($registros as $registro) {
@@ -27,11 +22,11 @@
 	}
 
 	function FnGenerarInformeHtmlAcordeon($arbol, $imagenes, $clsHide, $nivel = 0, $indice ='1') {
-		//$html='<div class="accordion-item">';
 		$html='';
 		$contador=1;		
 
 		foreach ($arbol as $key=>$nodo) {
+      //ASIGNANDO VALOR A NODOGLOBAL
 			$indiceActual = $nivel==0?$contador++:$indice.'.'.($key+1);
 			$html.='<div class="accordion-item" id="'.$nodo['id'].'">';
 			$html.='
@@ -41,10 +36,10 @@
 						'.$indiceActual.' - '.$nodo['actividad'].'
             </button>
             <div class="accordion-botones">
-              <i class="bi bi-plus-lg icono agregarActividad" onclick="fnAgregarActividad('.$nodo['id'].')"></i>
-              <i class="bi bi-pencil-square icono editarActividad" onclick="fnEditarActividad('.$nodo['id'].')"></i>
-              <i class="bi bi-paperclip icono agregarImagen" onclick="fnAgregarImagen('.$nodo['id'].')"></i>
-              <i class="bi bi-trash3 icono eliminarActividad" onclick="fnEliminarActividad('.$nodo['id'].')"></i>
+              <i class="bi bi-plus-lg icono" onclick="fnCrearSubActividad('.$nodo['id'].')"></i>
+              <i class="bi bi-pencil-square icono" onclick="fnEditarActividad('.$nodo['id'].')"></i>
+              <i class="bi bi-paperclip icono" onclick="fnAbriModalRegistrarImagen('.$nodo['id'].')"></i>
+              <i class="bi bi-trash3 icono" onclick="fnEliminarActividad('.$nodo['id'].')"></i>
             </div>
           </div>
 				</h2>
@@ -53,49 +48,39 @@
 						<div class="row">
 							<div class="col-6">
                 <label class="form-label mb-0">Diagnóstico</label>
-                <p class="mb-1" style="font-size=15px" id="diagnostico-'.$nodo['id'].'">Diagnostico Nro.1</p>
+                <p class="mb-1" style="font-size=15px" id="diagnostico-'.$nodo['id'].'">'.$nodo['diagnostico'].'</p>
               </div>
 							<div class="col-6">
                 <label class="form-label mb-0">Trabajos</label>
-                <p class="mb-1" style="font-size=15px" id="trabajo-'.$nodo['id'].'">Trabajo Nro.1</p>
+                <p class="mb-1" style="font-size=15px" id="trabajo-'.$nodo['id'].'">'.$nodo['trabajos'].'</p>
               </div>
 							<div class="col-12">
                 <label class="form-label mb-0">Observaciones</label>
-                <p class="mb-1" style="font-size=15px" id="observacion-'.$nodo['id'].'">Observación Nro.1</p>
+                <p class="mb-1" style="font-size=15px" id="observacion-'.$nodo['id'].'">'.$nodo['observaciones'].'</p>
               </div>
 						</div>
-						<div class="row">';
+						<div class="caja-imagen" id="'.$nodo['id'].'">';
 							if(isset($imagenes[$nodo['id']])){
 								foreach($imagenes[$nodo['id']] as $elemento){
 									$html.='
-                    <div class="col-6 col-lg-3 contenedor-imagen">
-                      <p class="text-center">Título 1</p>
-                        <i class="bi bi-x-circle icono-remover" style="position: absolute; font-size: 25px;color: tomato;top: 40px;left: 15px;" onclick="fnEliminarImagen(this)"></i>
+                    <div class="contenedor-imagen" id="archivo-'.$elemento['id'].'">
+                      <p class="text-center mt-4 mb-1">Título 1</p>
+                        <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen('.$elemento['id'].')"></i>
                         <img src="/mycloud/gesman/files/'.$elemento['nombre'].'" class="img-fluid" alt="">
                       <p class="text-center">Descripción 1</p>
                     </div>';
 								}
 							}
 						$html.='</div>';
-
 			if (!empty($nodo['hijos'])) {
-				//$html.='<div class="accordion-item" id="accordionId-3">';
-				//$html.='<tr><td colspan="2" style="border: blue 1px solid">';
-				//$html.='<table width="100%" style="border: #b2b2b2 1px solid">';
-        // echo '<pre>';
-        //   print_r($nodo);
-        // echo '</pre>';
 				$html.='<div class="accordion" id="accordion-container-'.$nodo['id'].'">';
 				$html.=FnGenerarInformeHtmlAcordeon($nodo['hijos'], $imagenes, $nivel+1, $indiceActual, $clsHide);
-				//$html.='</table>';
-				//$html.='</td></tr>';
 				$html.='</div>';
 			}
 			$html.='</div>';
 			$html.='</div>';
 			$html.='</div>';
 		}
-		//$html.='</div>';
 		return $html;
 	}
 
@@ -125,9 +110,7 @@
 			}			
 			if (!empty($nodo['hijos'])) {
 				$html.='<tr><td colspan="2" style="border: blue 1px solid">';
-				//$html.='<table width="100%" style="border: #b2b2b2 1px solid">';
 				$html.=FnGenerarInformeHtml($nodo['hijos'], $imagenes, $nivel+1, $indiceActual);
-				//$html.='</table>';
 				$html.='</td></tr>';
 			}
 		}
@@ -171,10 +154,6 @@
 				'descripcion'=>$row3['descripcion']
 			);
 		}
-
-		echo '<pre>';
-		print_r($actividades);
-		echo '</pre>';
 		$tablaHTML.='<div class="accordion" id="accordion-container-'.$nodo['id'].'">';
 			$tabla=FnGenerarInformeHtmlAcordeon($arbol, $imagenes, $clsHide);
 			$tablaHTML .=$tabla;
@@ -202,6 +181,9 @@
   <!-- <link rel="stylesheet" href="css/main.css"> -->
 	<title>Document</title>
   <style>
+      html{
+        box-sizing: border-box;
+      }
       img{
         width: 100%;
       }
@@ -238,6 +220,20 @@
       }
       .contenedor-imagen{
         position: relative;
+        border: 1px solid #67646442;
+        border-radius: 4px;
+        padding: 5px; 
+      }
+      .caja-imagen{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 5px;
+        margin-bottom: 5px;
+      }
+      @media(min-width:992px){
+        .caja-imagen{
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
       }
     </style>
 </head>
@@ -265,8 +261,8 @@
     </div>
 
     <div class="row mb-1 border-bottom">
-      <div class="col-4 col-md-3  mb-2">
-          <button type="button" class="btn btn-outline-primary form-control text-uppercase" data-bs-toggle="modal" data-bs-target="#agregarActividadModal" id="agregarActividad"><i class="bi bi-plus-lg"></i> Agregar</button>
+      <div class="col-5 mb-2">
+          <button type="button" class="btn btn-outline-primary form-control text-uppercase" data-bs-toggle="modal" data-bs-target="#modalNuevaActividad"><i class="bi bi-plus-lg"></i> Agregar</button>
       </div>
     </div>    
 
@@ -283,117 +279,141 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fs-5 text-uppercase" id="modalNuevaActividadLabel">Actividad</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id='modal-body'>
-            <div class="row">
-              <div id="campoactividad">
-                <label for="nombreActividadInput" class="form-label mb-0">Nombre de la Actividad</label>
-                <textarea type="text" name="actividad" class="form-control" id="nombreActividadInput" row=3 placeholder="Ingrese el nombre de la actividad."></textarea>
-              </div>
-              <div id="campoDiagnostico" class="col-md-12 mt-2">
-                <label for="diagnosticoInput" class="form-label mb-0">Diagnóstico</label>
-                <textarea type="text" name="diagnostico" class="form-control" ro=3 id="diagnosticoInput" placeholder="Ingrese el diagnositico."></textarea>
-              </div>
-
-              <div id="campoTrabajo" class="col-md-12 mt-2">
-                <label for="trabajosInput" class="form-label mb-0">Trabajos</label>
-                <textarea type="text" name="trabajo" class="form-control" id="trabajosInput" row=3 placeholder="Ingrese el diagnositico."></textarea>
-              </div>
-
-              <div id="campoObservacion" class ="col-md-12 mt-2">
-                <label for="observacionesInput" class="form-label mb-0">Observación</label>
-                <textarea type="text" name="observacion" class="form-control" id="observacionesInput" row=3 placeholder="Ingrese el diagnositico."></textarea>
-              </div>
-              <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnGuardarActividad(this)" >Guardar <i class="bi bi-floppy"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- START EDITAR ACTIVIDAD - M O D A L -->
-    <div class="modal fade" id="modalEditarActividad" tabindex="-1" aria-labelledby="editarActividadModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fs-5 text-uppercase" id="editarActividadModalLabel">Editar Actividad</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id='modal-body'>
-            <div class="row">
-              <div id="campoactividad">
-                <label for="nombreActividadInput" class="form-label mb-0">Nombre de la Actividad</label>
-                <textarea type="text" name="actividad" class="form-control" id="nombreActividadInput" row=3 placeholder="Ingrese el nombre de la actividad."></textarea>
-              </div>
-              <div id="campoDiagnostico" class="col-md-12 mt-2">
-                <label for="diagnosticoInput" class="form-label mb-0">Diagnóstico</label>
-                <textarea type="text" name="diagnostico" class="form-control" ro=3 id="diagnosticoInput" placeholder="Ingrese el diagnositico."></textarea>
-              </div>
-
-              <div id="campoTrabajo" class="col-md-12 mt-2">
-                <label for="trabajosInput" class="form-label mb-0">Trabajos</label>
-                <textarea type="text" name="trabajo" class="form-control" id="trabajosInput" row=3 placeholder="Ingrese el diagnositico."></textarea>
-              </div>
-
-              <div id="campoObservacion" class ="col-md-12 mt-2">
-                <label for="observacionesInput" class="form-label mb-0">Observación</label>
-                <textarea type="text" name="observacion" class="form-control" id="observacionesInput" row=3 placeholder="Ingrese el diagnositico."></textarea>
-              </div>
-              <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnGuardarActividad(this)" >Guardar <i class="bi bi-floppy"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- START IMAGENES - M O D A L -->
-    <div class="modal fade" id="agregarImagenModal" tabindex="-1" aria-labelledby="imagenModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fs-5 text-uppercase" id="imagenModalLabel">Editar </h5>
+            <h5 class="modal-title fs-5 text-uppercase" id="modalNuevaActividadLabel">Crear Actividad</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <input type="hidden" id="guardarActividadInput" value="<?php echo $Id ?>">
             <div class="row">
-              <div id="campoTitulo1" class ="col-md-12 mt-2">
-                <label for="titulo1Input" class="form-label mb-0">Título 1</label>
-                <input name="titulo1" type="text" class="form-control" id="titulo1Input" placeholder="Ingresar título.">
+              <div class="col-12">
+                <label for="guardarNombreActividadInput" class="form-label mb-0">Nombre de la Actividad</label>
+                <textarea type="text" name="actividad" class="form-control" id="guardarNombreActividadInput" row=3 placeholder="Ingresar nombre de actividad."></textarea>
               </div>
-              <div id="campoImagen1" class="col-md-12 mt-2">
-                <label for="imagen1Input" class="form-label mb-0">Imagen 1</label>
-                <input name="imagen1" class="form-control" type="file" id="imagen1Input">
+              <div class="col-12 mt-2">
+                <label for="guardarDiagnosticoInput" class="form-label mb-0">Diagnóstico</label>
+                <textarea type="text" name="diagnostico" class="form-control" ro=3 id="guardarDiagnosticoInput" placeholder="Ingresar diagnositico."></textarea>
               </div>
-              <div id="campoDescripcion1" class ="col-md-12 mt-2">
-                <label for="descripcion1Input" class="form-label mb-0">Descripción 1</label>
-                <textarea type="descripcion1"  name="titulo1" class="form-control" row=3 id="descripcion1Input" placeholder="Ingresar título."></textarea>
+              <div class="col-12 mt-2">
+                <label for="guardarTrabajoInput" class="form-label mb-0">Trabajos</label>
+                <textarea type="text" name="trabajo" class="form-control" id="guardarTrabajoInput" row=3 placeholder="Ingresar diagnositico."></textarea>
               </div>
-              <div id="campoTitulo2" class ="col-md-12 mt-2">
-                <label for="titulo2Input" class="form-label mb-0">Título 2</label>
-                <input type="text" name="titulo2" class="form-control" id="titulo2Input" placeholder="Ingresar título.">
+              <div class="col-12 mt-2">
+                <label for="guardarObservacionInput" class="form-label mb-0">Observación</label>
+                <textarea type="text" name="observacion" class="form-control" id="guardarObservacionInput" row=3 placeholder="Ingresar observación."></textarea>
               </div>
-              <div id="campoImagen2" class="col-md-12 mt-2">
-                <label for="imagen2Input" class="form-label mb-0">Imagen 2</label>
-                <input name="imagen2" class="form-control" type="file" id="imagen2Input">
-              </div>
-              <div id="campoDescripcion2" class ="col-md-12 mt-2">
-                <label for="descripcion2Input" class="form-label mb-0">Descripcion 2</label>
-                <textarea type="text" name="descripcion2" class="form-control" row=3 id="descripcion2Input" placeholder="Ingresar título."></textarea>
-              </div>
-              <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnGuardarDetallesActividad()">Guardar <i class="bi bi-floppy"></i></button>
+              <div class="col-6 mt-2">
+                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnCrearActividad()" >Guardar <i class="bi bi-floppy"></i></button>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </div><!-- END GUARDAR ACTIVIDAD - M O D A L -->
+
+    <!-- START AGREGAR SUBACTIVIDAD - M O D A L -->
+    <div class="modal fade" id="modalNuevaSubActividad" tabindex="-1" aria-labelledby="modalNuevaSubActividadLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fs-5 text-uppercase" id="modalNuevaSubActividadLabel">Crear SubActividad</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="guardarSubActividadInput" value="<?php echo $Id ?>">
+            <input type="hidden" id="cabeceraIdInput">
+            <div class="row">
+              <div class="col-12">
+                <label for="guardarNombreSubActividadInput" class="form-label mb-0">Nombre de la Actividad</label>
+                <textarea type="text" name="actividad" class="form-control" id="guardarNombreSubActividadInput" row=3 placeholder="Ingresar nombre de subactividad."></textarea>
+              </div>
+              <div class="col-12 mt-2">
+                <label for="guardarDiagnosticoSubActividad" class="form-label mb-0">Diagnóstico</label>
+                <textarea type="text" name="diagnostico" class="form-control" ro=3 id="guardarDiagnosticoSubActividadInput" placeholder="Ingresar diagnositico."></textarea>
+              </div>
+              <div class="col-12 mt-2">
+                <label for="guardarTrabajoSubActividadInput" class="form-label mb-0">Trabajos</label>
+                <textarea type="text" name="trabajo" class="form-control" id="guardarTrabajoSubActividadInput" row=3 placeholder="Ingresar diagnositico."></textarea>
+              </div>
+              <div class="col-12 mt-2">
+                <label for="guardarObservacionSubActividadInput" class="form-label mb-0">Observación</label>
+                <textarea type="text" name="observacion" class="form-control" id="guardarObservacionSubActividadInput" row=3 placeholder="Ingresar observación."></textarea>
+              </div>
+              <div class="col-6 mt-2">
+                <button id="guardarSubActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnGuardarSubActividad()" >Guardar <i class="bi bi-floppy"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- END GUARDAR ACTIVIDAD - M O D A L -->
+
+    <!-- START EDITAR ACTIVIDAD - M O D A L -->
+    <div class="modal fade" id="modalEditarActividad" tabindex="-1" aria-labelledby="modalEditarActividadLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fs-5 text-uppercase" id="modalEditarActividadLabel">Editar Actividad</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" id="editarActividadInput">
+            <div class="row">
+              <div class="col-12">
+                <label for="editarNombreActividadInput" class="form-label mb-0">Nombre de la Actividad</label>
+                <textarea type="text" name="actividad" class="form-control" id="editarNombreActividadInput" row=3></textarea>
+              </div>
+              <div class="col-12 mt-2">
+                <label for="editarDiagnosticoInput" class="form-label mb-0">Diagnóstico</label>
+                <textarea type="text" name="diagnostico" class="form-control" ro=3 id="editarDiagnosticoInput"></textarea>
+              </div>
+              <div class="col-12 mt-2">
+                <label for="editarTrabajoInput" class="form-label mb-0">Trabajos</label>
+                <textarea type="text" name="trabajo" class="form-control" id="editarTrabajoInput" row=3></textarea>
+              </div>
+              <div class="col-12 mt-2">
+                <label for="editarObservacionInput" class="form-label mb-0">Observación</label>
+                <textarea type="text" name="observacion" class="form-control" id="editarObservacionInput" row=3></textarea>
+              </div>
+              <div class="col-6 mt-2">
+                <button id="editarActividadBtn" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="FnModificarActividad()" >Editar <i class="bi bi-pencil-square"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- END EDITAR ACTIVIDAD - M O D A L -->
+
+    <!-- START IMAGENES - M O D A L -->
+    <div class="modal fade" id="modalAgregarImagen" tabindex="-1" aria-labelledby="modalAgregarImagenLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title fs-5 text-uppercase" id="modalAgregarImagenLabel">Registrar Imagen </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+          <input type="hidden" id="cabeceraIdInput">
+            <div class="row">
+              <div class ="col-md-12 mt-2">
+                <label for="registrarTituloInput" class="form-label mb-0">Título</label>
+                <input name="titulo" type="text" class="form-control" id="registrarTituloInput" placeholder="Ingresar título.">
+              </div>
+              <div class="col-md-12 mt-2">
+                <label for="adjuntarImagenInput" class="form-label mb-0">Imagen</label>
+                <input name="archivo" class="form-control" type="file" id="adjuntarImagenInput">
+              </div>
+              <div class ="col-md-12 mt-2">
+                <label for="registarDescripcionInput" class="form-label mb-0">Descripción</label>
+                <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="registarDescripcionInput" placeholder="Ingresar título."></textarea>
+              </div>
+              <div id="contenedorGuardarActividad" class="col-6 mt-4">
+                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()">Guardar <i class="bi bi-floppy"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- END IMAGENES - M O D A L -->
 	</div>
 
 </body>

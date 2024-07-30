@@ -1,30 +1,44 @@
 <?php 
-    include($_SERVER['DOCUMENT_ROOT'].'/gesman/connection/ConnGesmanDb.php');
-    require_once '../Datos/InformesData.php';
+include($_SERVER['DOCUMENT_ROOT'].'/informes/gesman/connection/ConnGesmanDb.php');
+require_once '../Datos/InformesData.php';
 
-    $data['data'] = array();
-	$data['res'] = false;
-	$data['msg'] = 'Error general.';
+// $data['data'] = array();
+// $data['res'] = false;
+// $data['msg'] = 'Error general.';
 
-    try {
-        // $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$data = [
+    'data' => [],
+    'res' => false,
+    'msg' => 'Error general.'
+];
 
-        if(empty($_GET['id'])){throw new Exception("La informacion esta incompleta.");}
+try {
+    $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $actividad=FnBuscarOrden($conmy,$_GET['id']);
-        
-        $data['data'] = $actividad;
-        $data['res'] = true;
-	    $data['msg'] = 'Ok.';
-        echo $_GET['id'];
-
-    } catch(PDOException $ex){
-        $data['msg'] = $ex->getMessage();
-    } catch (Exception $ex) {
-        $data['msg'] = $ex->getMessage();
-    }finally{
-        $conmy=null;
+    if(empty($_POST['id'])){
+        throw new Exception("La informacion esta incompleta.");
     }
 
-    echo json_encode($data);
+    $actividad = FnBuscarActividad($conmy, $_POST['id']);
+    
+    if ($actividad) {
+        $data['data'] = $actividad;
+        $data['res'] = true;
+        $data['msg'] = 'Ok.';
+    } else {
+        $data['msg'] = 'No se encontró la actividad.';
+    }
+
+} catch(PDOException $ex){
+    $data['msg'] = $ex->getMessage();
+} catch (Exception $ex) {
+    $data['msg'] = $ex->getMessage();
+} finally {
+    $conmy = null;
+}
+
+header('Content-Type: application/json');
+echo json_encode($data);
 ?>
+
+

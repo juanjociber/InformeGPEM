@@ -1,47 +1,59 @@
-<?php 
-    header("Access-Control-Allow-Origin: *");
-	header("Access-Control-Allow-Headers: Origin, X-Requested-With, Authorization, Content-Type, Accept");
-    header("Access-Control-Allow-Methods: POST");
-	header("Content-Type: application/json");
+<?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-    if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {    
-		http_response_code(200);
-		exit();
-	}
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: Origin, X-Requested-With, Authorization, Content-Type, Accept");
+header("Access-Control-Allow-Methods: POST");
+header("Content-Type: application/json");
 
-	$res=false;
-	$msg='Error general.';
+if ($_SERVER["REQUEST_METHOD"] === "OPTIONS") {    
+    http_response_code(200);
+    exit();
+}
 
-    include($_SERVER['DOCUMENT_ROOT'].'/gesman/connection/ConnGpemDb.php');
-    require_once '../datos/InformesData.php';
+$data = ['res' => false, 'msg' => 'Error general.'];
 
-    try {
-        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+include($_SERVER['DOCUMENT_ROOT'].'/informes/gesman/connection/ConnGesmanDb.php');
+require_once '../datos/InformesData.php';
 
-        if(empty($_POST['id']) || empty($_POST['actividad'])){throw new Exception("La información esta incompleta.");}
-        $USUARIO=date('Ymd-His (').'msarabia'.')';
+try {
+    $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $actividad = new stdClass();
-        $actividad->id=$_POST['id'];
-        $actividad->actividad=$_POST['actividad'];
-        $actividad->diagnostico=empty($_POST['diagnostico'])? null : $_POST['diagnostico'];
-        $actividad->trabajos=empty($_POST['trabajos'])? null : $_POST['trabajos'];
-        $actividad->observaciones=empty($_POST['observaciones'])? null : $_POST['observaciones'];
-        $actividad->usuario=$USUARIO;
-
-        if(FnRegistrarActividad($conmy, $actividad)){
-            $msg="Se modificó la Actividad.";
-            $res=true;
-        }else{
-            $msg="Error modificando la Actividad.";
-        }
-    } catch(PDOException $ex){
-        $msg=$ex->getMessage();
-    } catch (Exception $ex) {
-        $msg=$ex->getMessage();
-    }finally{
-        $conmy=null;
+    if (empty($_POST['id']) || empty($_POST['actividad'])) {
+        throw new Exception("La información está incompleta.");
     }
+    
+    $USUARIO = date('Ymd-His (').'msarabia'.')';
 
-    echo json_encode(array('res'=>$res, 'msg'=>$msg));
+    $actividad = new stdClass();
+    $actividad->id = $_POST['id'];
+    $actividad->actividad = $_POST['actividad'];
+    $actividad->diagnostico = empty($_POST['diagnostico']) ? null : $_POST['diagnostico'];
+    $actividad->trabajos = empty($_POST['trabajos']) ? null : $_POST['trabajos'];
+    $actividad->observaciones = empty($_POST['observaciones']) ? null : $_POST['observaciones'];
+    $actividad->usuario = $USUARIO;
+
+    // LOG DATOS RECIBIDOS
+    error_log("Datos recibidos: " . json_encode($actividad));
+
+    if (FnModificarActividad($conmy, $actividad)) {
+        $data['msg'] = "Se modificó la Actividad.";
+        $data['res'] = true;
+    } else {
+        $data['msg'] = "Error modificando la Actividad.";
+    }
+} catch (PDOException $ex) {
+    $data['msg'] = $ex->getMessage();
+    error_log("PDOException: " . $data['msg']);
+} catch (Exception $ex) {
+    $data['msg'] = $ex->getMessage();
+    error_log("Exception: " . $data['msg']);
+} finally {
+    $conmy = null;
+}
+// header('Content-Type: application/json');
+ob_end_clean();
+echo json_encode($data);
 ?>
