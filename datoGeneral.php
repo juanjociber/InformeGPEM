@@ -1,3 +1,39 @@
+<?php 
+    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+    $Id = $_GET['informe'];
+
+    // INICIALIZANDO VARIABLES
+    $Nombre = $Fecha = $Orden_Nombre = $Cli_Nombre = $Cli_Contacto = $Ubicacion = $Supervisor = $Estado = '';
+    $Id_Supervisor = $Id_Cliente = $Supervisor = '';
+
+    try {
+        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // CONSULTA 1
+        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, nombre, fecha, ord_nombre, cli_nombre, cli_contacto, ubicacion, supervisor, estado FROM tblInforme WHERE id=:Id;");
+        $stmt->execute(array(':Id' => $Id));
+        $row = $stmt->fetch();
+        if ($row) {
+            $Nombre = $row['nombre'];
+            $Fecha = $row['fecha'];
+            $Orden_Nombre = $row['ord_nombre'];
+            $Cli_Nombre = $row['cli_nombre'];
+            $Cli_Contacto = $row['cli_contacto'];
+            $Ubicacion = $row['ubicacion'];
+            $Supervisor = $row['supervisor'];
+            $Estado = $row['estado'];
+        }
+
+        // CONSULTA 2
+        $stmt2 = $conmy->prepare("SELECT idsupervisor, idcliente, supervisor FROM cli_supervisores");
+        $stmt2->execute();
+        $supervisores = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+    } catch (PDOException $ex) {
+        $conmy = null;
+        echo $ex;
+    }
+?>
 <!doctype html>
 <html lang="es">
   <head>
@@ -10,9 +46,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/main.css">
     <title>Sistema GPEM S.A.C</title>
@@ -22,7 +56,6 @@
       color: #cecccc !important;
       font-weight: 300;
       font-size: 15px;
-      /* text-transform: uppercase; */
     }
     .form-label{
       color:#212529;
@@ -45,20 +78,21 @@
     }
     .form-control{
       border-radius:.25rem;
+      font-size: 15px;
     }
     .btn-control{
       padding:.375rem .75rem;
     }
-    </style>
+  </style>
   <body>
 
     <div class="container">
 
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-            <p class="m-0 p-0">CLIENTE</p>
-            <input type="text" class="d-none" id="txtIdOt" value="" readonly/>
-            <p class="m-0 p-0 text-center text-secondary">GP-INF-1</p>
+            <p class="m-0 p-0"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
+            <input type="text" class="d-none" id="txtIdOt" value="<?php echo htmlspecialchars($Id); ?>" readonly/>
+            <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
         </div>
       </div>
       <!-- ENLACES -->
@@ -78,28 +112,29 @@
       <!--DATOS GENERALES-->
       <div class="row g-3">
         <div class="col-6 col-md-4 col-lg-4">
-          <label for="nroInforme" class="form-label mb-0">Nro. Informe</label>
-          <input type="text" class="form-control" id="nroInforme" value="INFORME GP-INF-1" disabled>
+          <label for="nombreInformeInput" class="form-label mb-0">Nro. Informe</label>
+          <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($Nombre); ?>" disabled>
         </div>
         <div class="col-6 col-md-4 col-lg-4">
-          <label for="fechaInforme" class="form-label mb-0">Fecha</label>
-          <input type="date" class="form-control" id="fechaInforme">
+          <label for="fechaInformeInput" class="form-label mb-0">Fecha</label>
+          <input type="date" class="form-control" id="fechaInformeInput" value="<?php echo htmlspecialchars($Fecha); ?>">
         </div>
         <div class="col-6 col-md-4 col-lg-4 mt-2 mt--mod">
-          <label for="nroOrdenTrabajo" class="form-label mb-0">Orden de trabajo</label>
-          <input type="text" class="form-control" id="nroOrdenTrabajo" disabled>
+          <label for="OrdenTrabajoInput" class="form-label mb-0">Orden de trabajo</label>
+          <input type="text" class="form-control" id="OrdenTrabajoInput" value="<?php echo htmlspecialchars($Orden_Nombre); ?>" disabled>
         </div>
         <div class="col-6 col-md-6 col-lg-6 mt-2">
-          <label for="nombreCliente" class="form-label mb-0">Cliente</label>
-          <input type="text" class="form-control" id="nombreCliente" disabled>
+          <label for="nombreClienteInput" class="form-label mb-0">Cliente</label>
+          <input type="text" class="form-control" id="nombreClienteInput" value="<?php echo htmlspecialchars($Cli_Nombre); ?>" disabled>
         </div>
         
         <div class="custom-select-container col-md-6 col-lg-6 mt-2">
-          <label for="contactoId" class="form-label mb-0">Contacto</label>
+          <label for="contactoInput" class="form-label mb-0">Contacto</label>
           <div class="custom-select-wrapper">
-            <input type="text" id="contactoInput" class="custom-select-input" placeholder="Seleccionar contacto" />
+            <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($Cli_Contacto); ?>" placeholder="Seleccionar contacto" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="contactoList" class="custom-select-list">
+              <!-- Opciones de contactos pueden ser generadas dinámicamente si es necesario -->
               <div class="custom-select-item" data-value="contacto1">Contacto1</div>
               <div class="custom-select-item" data-value="contacto2">Contacto2</div>
               <div class="custom-select-item" data-value="contacto3">Contacto3</div>
@@ -108,30 +143,37 @@
         </div>
         
         <div class="col-md-6 col-lg-6 mt-2">
-          <label for="ubicacion" class="form-label mb-0">Lugar</label>
-          <input type="text" class="form-control" id="ubicacion" placeholder="Ingresar lugar">
+          <label for="ubicacionInput" class="form-label mb-0">Lugar</label>
+          <input type="text" class="form-control" id="ubicacionInput" value="<?php echo htmlspecialchars($Ubicacion); ?>" placeholder="Ingresar lugar">
         </div>      
         
         <div class="custom-select-container col-md-6 col-lg-6 mt-2">
-          <label for="supervisorId" class="form-label mb-0">Supervisor</label>
+          <label for="supervisorInput" class="form-label mb-0">Supervisor</label>
           <div class="custom-select-wrapper">
-            <input type="text" id="supervisorInput" class="custom-select-input" placeholder="Seleccionar supervisor" />
+            <input type="text" id="supervisorInput" class="custom-select-input" value="<?php echo htmlspecialchars($Supervisor); ?>" placeholder="Seleccionar supervisor" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="supervisorList" class="custom-select-list">
-              <div class="custom-select-item" data-value="supervisor1">Supervisor1</div>
-              <div class="custom-select-item" data-value="colaborador1">Colaborador1</div>
-              <div class="custom-select-item" data-value="tecnico1">Tecnico1</div>
+              <!-- SUPERVISORES -->
+              <?php foreach ($supervisores as $supervisor): ?>
+                <div class="custom-select-item" data-value="<?php echo htmlspecialchars($supervisor['supervisor']); ?>">
+                  <?php echo htmlspecialchars($supervisor['supervisor']); ?>
+                </div>
+              <?php endforeach; ?>
             </div>
           </div>
         </div>
+        
+      </div>  
 
-        <div class="col-6 btn-control mt-2">
-          <button id="guardarDatosGenerales" type="button" class="btn btn-primary text-uppercase fw-light" onclick="fnDatosGenerales()">Guardar <i class="bi bi-floppy"></i></button>
+      <div class="row mt-4">
+        <div class="col-6 col-md-3 col-lg-2 mt-2">
+          <button id="guardarDataEquipo" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnDatosGenerales()" >Guardar <i class="bi bi-floppy"></i></button>
         </div>
-      </div>
-    </div>
+      </div> 
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    </div>
     <script src="js/datoGeneral.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBogGzW7S6U7h6C7Ll5/oqb5yiFTRHlFxB4OlF9AMMXNR9hl" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cu6U7+UzTQpS3/6TLAJ+8HXTFM3zUddWkaSbYfR6wv4l/5EXp7XKVI1LG6J9D2Bg" crossorigin="anonymous"></script>
   </body>
 </html>

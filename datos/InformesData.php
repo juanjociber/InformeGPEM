@@ -74,6 +74,19 @@
         }
     }
 
+    function FnListarEquipos($conmy, $search, $CliId) {
+        $query = '';
+        if(!empty($query)){
+            $query = $search;
+        }
+        $stmt = $conmy->prepare("SELECT idactivo, activo FROM man_activos WHERE activo LIKE ".$query." AND idcliente=:CliId");
+        //$stmt->bindParam(':search', $search_param);
+        $stmt->execute(array('CliId'=> $CliId));
+    
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
     // Buscar actividad por Id
     function FnBuscarActividad($conmy, $id) {
         try {

@@ -29,7 +29,7 @@ try {
 
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
-    $FileName = 'ORD'.'_'.$_POST['refid'].'_'.uniqid().'.jpeg';
+    $FileName = 'INFD'.'_'.$_POST['refid'].'_'.uniqid().'.jpeg';
     $FileType = 'IMG';
     $FileEncoded = str_replace("data:image/jpeg;base64,", "", $_POST['archivo']);
     $FileDecoded = base64_decode($FileEncoded);
@@ -37,7 +37,7 @@ try {
 
     $imagen = new stdClass();
     $imagen->refid = $_POST['refid'];
-    $imagen->tabla = 'ORD';
+    $imagen->tabla = 'INFD';
     $imagen->nombre = $FileName;
     $imagen->titulo = empty($_POST['titulo']) ? $FileName : $_POST['titulo'];
     $imagen->descripcion = empty($_POST['descripcion']) ? null : $_POST['descripcion'];

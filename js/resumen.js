@@ -108,7 +108,7 @@ const fnResumen = async () => {
   const actividad     = document.querySelector(`#actividadId`).textContent.trim();
   // const actividad     = document.querySelector(`#actividad-${nuevoId}`).textContent.trim();
   const antecedente   = document.querySelector('#antecedenteId').textContent.trim();
-  const diagnostico   = document.querySelector('#analisisId').textContent.trim();
+  const diagnostico   = document.querySelector('#DiagnosticoId').textContent.trim();
   const conclusion    = document.querySelector('#conclusionId').textContent.trim();
   const recomendacion = document.querySelector('#recomendacionId').textContent.trim();
 

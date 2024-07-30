@@ -173,7 +173,7 @@ const FnModificarActividad = async () => {
 
 
 // ABRIR MODAL REGISTRAR IMAGEN
-const fnAbriModalRegistrarImagen = (id) => {
+const fnAbrirModalRegistrarImagen = (id) => {
   const modal = new bootstrap.Modal(document.getElementById('modalAgregarImagen'), { keyboard: false });
   modal.show();
   document.getElementById('cabeceraIdInput').value = id;

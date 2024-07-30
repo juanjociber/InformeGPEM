@@ -1,3 +1,36 @@
+<?php 
+    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+    $Id = $_GET['informe'];
+
+    // INICIALIZANDO VARIABLES
+    $Ordid = $Equid = $Cliid = $Nombre = $Ord_Nombre = $Cli_Nombre = $Actividad = $Antecedentes = $Conclusiones = $Diagnostico = $Recomendaciones = $Estado ='';
+
+    try {
+        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // CONSULTA 1
+        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, nombre, ord_nombre, cli_nombre, actividad, antecedentes, conclusiones, dianostico, recomendaciones, estado FROM tblinforme WHERE id=:Id;");
+        $stmt->execute(array(':Id' => $Id));
+        $row = $stmt->fetch();
+        if ($row) {
+            $Nombre = $row['nombre'];
+            $Fecha = $row['fecha'];
+            $Orden_Nombre = $row['ord_nombre'];
+            $Cli_Nombre = $row['cli_nombre'];
+            $Cli_Contacto = $row['cli_contacto'];
+            $Actividad = $row['actividad'];
+            $Antecedentes = $row['antecedentes'];
+            $Conclusiones = $row['conclusiones'];
+            $Diagnostico = $row['dianostico'];
+            $Recomendaciones = $row['recomendaciones'];
+            $Estado = $row['estado'];
+        }
+
+    } catch (PDOException $ex) {
+        $conmy = null;
+        echo $ex;
+    }
+?>
 <!doctype html>
 <html lang="es">
   <head>
@@ -67,8 +100,6 @@
         display: grid;
         grid-template-columns: 80% 20%;
         align-items: center;
-        border: 0.5px solid #0000005e;
-        padding: 1px 8px;
         border-radius: 4px;
       }
       .input-group p{
@@ -90,9 +121,9 @@
     <div class="container">
         <div class="row border-bottom mb-3 fs-5">
             <div class="col-12 fw-bold d-flex justify-content-between">
-                <p class="m-0 p-0">CLIENTE</p>
+                <p class="m-0 p-0"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
                 <input type="text" class="d-none" id="txtIdOt" value="" readonly/>
-                <p class="m-0 p-0 text-center text-secondary">GP-INF-1</p>
+                <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
             </div>
         </div>
         <div class="row">
@@ -111,10 +142,10 @@
         <!--RESUMEN-->
         <div class="row">
             <div class="col-12 mt-2" id="containerActividad" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Actividades <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalActividad"></i></label>
+              <label class="form-label">Actividades</i></label>
               <!-- ITEM ACTIVIDADES -->
-              <div class="input-group mt-2" data-id="actividadId">
-                <p class="mb-0" id="actividadId" style="text-align: justify;">Cambio de motor</p>
+              <div class="input-group mt-1" data-id="actividadId">
+                <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo htmlspecialchars($Actividad); ?></p>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('actividad', 'actividadId')"></i></span>
                   <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('actividadId')"></i></span>
@@ -124,10 +155,10 @@
             <!-- ITEM ANTECEDENTES -->
             <div class="col-12 mt-2" id="containerAntecedente" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
               <label class="form-label">Antecedentes <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalAntecedente"></i></label>
-              <div class="input-group mt-2" data-id="antecedenteId">
+              <div class="input-group mt-1" data-id="antecedenteId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="antecedenteId" style="text-align: justify;">El año 2023 se realizó cambio en cigueñal</p>
+                  <p class="mb-0" id="antecedenteId" style="text-align: justify;"><?php echo htmlspecialchars($Antecedentes); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('antecedente', 'antecedenteId')"></i></span>
@@ -135,13 +166,13 @@
                 </div>
               </div>
             </div>
-            <!-- ITEM ANÁLISIS -->
+            <!-- ITEM DIAGNÍSTICOS -->
             <div class="col-12 mt-2" id="containerAnalisis" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Análisis <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalAnalisis"></i></label>
-              <div class="input-group mt-2" data-id="analisisId">
+              <label class="form-label">Diagnósticos <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalAnalisis"></i></label>
+              <div class="input-group mt-1" data-id="analisisId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="analisisId" style="text-align: justify;">Se deben cambiar las fajas</p>
+                  <p class="mb-0" id="analisisId" style="text-align: justify;"><?php echo htmlspecialchars($Diagnostico); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('analisis', 'analisisId')"></i></span>
@@ -152,10 +183,10 @@
             <!-- ITEM CONCLUSION -->
             <div class="col-12 mt-2" id="containerConclusion" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
               <label class="form-label">Conclusiones <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalConclusion"></i></label>
-              <div class="input-group mt-2" data-id="conclusionId">
+              <div class="input-group mt-1" data-id="conclusionId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="conclusionId" style="text-align: justify;">Conclusión Nro.01</p>
+                  <p class="mb-0" id="conclusionId" style="text-align: justify;"><?php echo htmlspecialchars($Conclusiones); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('conclusion', 'conclusionId')"></i></span>
@@ -166,19 +197,16 @@
              <!-- ITEM RECOMENDACIÓN -->
             <div class="col-12 mt-2" id="containerRecomendacion" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
               <label class="form-label">Recomendaciones <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalRecomendacion"></i></label>
-              <div class="input-group mt-2" data-id="recomendacionId">
+              <div class="input-group mt-1" data-id="recomendacionId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="recomendacionId" style="text-align: justify;">Recomendación Nro.01</p>
+                  <p class="mb-0" id="recomendacionId" style="text-align: justify;"><?php echo htmlspecialchars($Recomendaciones); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('recomendacion', 'recomendacionId')"></i></span>
                   <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('recomendacionId')"></i></span>
                 </div>
               </div>
-            </div>
-            <div class="col-6 btn-control mt-2">
-              <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="fnResumen()">Guardar <i class="bi bi-floppy"></i></button>
             </div>
         </div>
     </div>

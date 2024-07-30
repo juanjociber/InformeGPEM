@@ -34,16 +34,35 @@ const fnDatosEquipos = async () => {
 };
 
 
-function fnEliminarImagen(element) {
-  // OBTENGO ELEMENTO PADRE DE ICONO
-  var parentDiv = element.parentElement;
-  // OBTENGO ELEMENTO img DENTRO DE PADRE 'div'
-  var img = parentDiv.querySelector('img');
-  // ELIMINO ELEMENTO 'img'
-  if (img) {
-      parentDiv.removeChild(img);
+//ELIMINAR ARCHIVO
+const fnEliminarImagen = async (id) => {
+  const formData = new FormData();
+  formData.append('id', id);
+  console.log(id);
+  try {
+      const response = await fetch('http://localhost/informes/delete/EliminarArchivo.php', {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'Accept': 'application/json'
+          }
+      });
+
+      const result = await response.json();
+      if (result.res) {
+          const elemento = document.getElementById(id);
+          if (elemento) {
+              elemento.remove();
+          }
+          alert('Imagen eliminada correctamente.');
+      } else {
+          alert('Error eliminando la imagen: ' + result.msg);
+      }
+  } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un problema al eliminar la imagen.');
   }
-}
+ };
 
  
 

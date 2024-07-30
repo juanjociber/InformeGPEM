@@ -38,7 +38,7 @@
             <div class="accordion-botones">
               <i class="bi bi-plus-lg icono" onclick="fnCrearSubActividad('.$nodo['id'].')"></i>
               <i class="bi bi-pencil-square icono" onclick="fnEditarActividad('.$nodo['id'].')"></i>
-              <i class="bi bi-paperclip icono" onclick="fnAbriModalRegistrarImagen('.$nodo['id'].')"></i>
+              <i class="bi bi-paperclip icono" onclick="fnAbrirModalRegistrarImagen('.$nodo['id'].')"></i>
               <i class="bi bi-trash3 icono" onclick="fnEliminarActividad('.$nodo['id'].')"></i>
             </div>
           </div>
@@ -64,10 +64,10 @@
 								foreach($imagenes[$nodo['id']] as $elemento){
 									$html.='
                     <div class="contenedor-imagen" id="archivo-'.$elemento['id'].'">
-                      <p class="text-center mt-4 mb-1">Título 1</p>
+                      <p class="text-center mt-4 mb-1">'.$elemento['titulo'].'</p>
                         <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen('.$elemento['id'].')"></i>
                         <img src="/mycloud/gesman/files/'.$elemento['nombre'].'" class="img-fluid" alt="">
-                      <p class="text-center">Descripción 1</p>
+                      <p class="text-center">'.$elemento['descripcion'].'</p>
                     </div>';
 								}
 							}
@@ -145,13 +145,14 @@
 		$cadenaIds = implode(',', $ids);
 		$imagenes=array();
 
-		$stmt3 = $conmy->prepare("select id, refid, nombre, descripcion from tblarchivos where refid IN(".$cadenaIds.") and tabla=:Tabla and tipo=:Tipo;");				
-		$stmt3->execute(array(':Tabla'=>'INF', ':Tipo'=>'IMG'));
+		$stmt3 = $conmy->prepare("select id, refid, nombre, descripcion, titulo from tblarchivos where refid IN(".$cadenaIds.") and tabla=:Tabla and tipo=:Tipo;");				
+		$stmt3->execute(array(':Tabla'=>'INFD', ':Tipo'=>'IMG'));
 		while($row3=$stmt3->fetch(PDO::FETCH_ASSOC)){
 			$imagenes[$row3['refid']][]=array(
 				'id'=>(int)$row3['id'],
 				'nombre'=>$row3['nombre'],
-				'descripcion'=>$row3['descripcion']
+				'descripcion'=>$row3['descripcion'],
+        'titulo'=>$row3['titulo'],
 			);
 		}
 		$tablaHTML.='<div class="accordion" id="accordion-container-'.$nodo['id'].'">';
@@ -178,7 +179,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-  <!-- <link rel="stylesheet" href="css/main.css"> -->
+  <link rel="stylesheet" href="css/main.css">
 	<title>Document</title>
   <style>
       html{
@@ -242,9 +243,9 @@
 	<div class="container">
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-          <p class="m-0 p-0"><?php echo $ClienteNombre ?></p>
+          <p class="m-0 p-0"><?php echo htmlspecialchars($ClienteNombre); ?></p>
             <input type="text" class="d-none" value="" readonly/>
-          <p class="m-0 p-0 text-center text-secondary"><?php echo $Nombre ?></p>
+          <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
         </div>
       </div>
     <div class="row">
@@ -301,8 +302,8 @@
                 <label for="guardarObservacionInput" class="form-label mb-0">Observación</label>
                 <textarea type="text" name="observacion" class="form-control" id="guardarObservacionInput" row=3 placeholder="Ingresar observación."></textarea>
               </div>
-              <div class="col-6 mt-2">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnCrearActividad()" >Guardar <i class="bi bi-floppy"></i></button>
+              <div class="col-6 col-lg-3 mt-2">
+                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-3 pb-3 col-12" style="font-weight:200;" onclick="fnCrearActividad()" >Guardar <i class="bi bi-floppy"></i></button>
               </div>
             </div>
           </div>

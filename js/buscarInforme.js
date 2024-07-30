@@ -3,19 +3,63 @@ const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
   const listaSelect = document.getElementById(idLista);
   const spinner = document.getElementById(idSpinner);
 
-  // MOSTRAR/OCULTAR LA LISTA AL HACER CLIC EN EL INPUT
+  // Mostrar/ocultar la lista al hacer clic en el input
   inputSelect.addEventListener('click', function() {
-      listaSelect.style.display = listaSelect.style.display === 'block' ? 'none' : 'block';
+    listaSelect.style.display = listaSelect.style.display === 'block' ? 'none' : 'block';
   });
 
-  // OCULTAR LA LISTA SI SE HACE CLIC FUERA DEL SELECT
+  // Ocultar la lista y limpiarla si se hace clic fuera del select
   document.addEventListener('click', function(evento) {
-      if (!evento.target.closest('.custom-select-wrapper')) {
-        listaSelect.style.display = 'none';
-      }
+    if (!evento.target.closest('.custom-select-wrapper')) {
+      listaSelect.style.display = 'none';
+      listaSelect.innerHTML = ''; // Limpiar la lista
+    }
   });
 
-  // FUNCIÓN DEBOUNCE
+  const fetchEquipos = async () => {
+    const query = inputSelect.value;
+
+    if (query.length < 1) {
+      listaSelect.style.display = 'none';
+      return;
+    }
+
+    spinner.style.display = 'flex';
+
+    const url = `http://localhost/informes/search/BuscarEquipos.php?search=${query}`;
+    try {
+      const response = await fetch(url);
+      const result = await response.json();
+
+      if (result.res) {
+        const equipos = result.data;
+        listaSelect.innerHTML = '';
+
+        equipos.forEach(equipo => {
+          const item = document.createElement('div');
+          item.className = 'custom-select-item';
+          item.textContent = equipo.activo;
+          item.onclick = () => {
+            inputSelect.value = equipo.activo;
+            listaSelect.style.display = 'none';
+            listaSelect.innerHTML = ''; // Limpiar la lista al seleccionar un elemento
+          };
+          listaSelect.appendChild(item);
+        });
+
+        listaSelect.style.display = 'block';
+      } else {
+        listaSelect.innerHTML = '<div class="custom-select-item">No se encontraron resultados</div>';
+        listaSelect.style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error fetching equipos:', error);
+    } finally {
+      spinner.style.display = 'none';
+    }
+  };
+
+  // Función debounce
   const debounce = (func, delay) => {
     let debounceTimer;
     return function() {
@@ -26,63 +70,14 @@ const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
     }
   };
 
-  // FUNCIÓN DE BÚSQUEDA
-  const buscarDatos = async () => {
-    const filtro = inputSelect.value.toLowerCase();
-    console.log(filtro);
-    if (filtro.length === 0) {
-      // LIMPIAR LA LISTA SI EL INPUT ESTÁ VACÍO
-      listaSelect.innerHTML = '';
-      // OCULTAR LA LISTA SI NO HAY TEXTO
-      listaSelect.style.display = 'none';
-      // OCULTAR EL SPINNER
-      spinner.style.display = 'none';
-      return; // SALIR SI EL INPUT ESTÁ VACÍO
-    }
-    // MOSTRAR EL SPINNER
-    spinner.style.display = 'block';
-    try {
-      const respuesta = await fetch(`servidor.php?search=${filtro}`);
-      if (!respuesta.ok) {
-        throw new Error('La respuesta de la red falló');
-      }
-      const datos = await respuesta.json();
+  inputSelect.addEventListener('input', debounce(fetchEquipos, 1000));
+};
 
-      if (datos.length === 0) {
-        // MOSTRAR MENSAJE DE NO HABER RESULTADOS
-        listaSelect.innerHTML = `<div class="custom-select-item" style="font-size:15px; font-weight:300">No se encontraron resultados</div>`;
-        listaSelect.style.display = 'block';
-      } else {
-        // LIMPIAR LISTA ACTUAL
-        listaSelect.innerHTML = ''; 
-        datos.forEach(elemento => {
-          const itemLista = document.createElement('div');
-          itemLista.className = 'custom-select-item';
-          // ESTRUCTURA DE RESPUESTA JSON
-          itemLista.textContent = elemento.nombre;             
-          itemLista.addEventListener('click', function() {
-            inputSelect.value = this.textContent;
-            // LIMPIANDO LISTA ACTUAL PARA MOSTRAR LA SELECCIONADA
-            listaSelect.innerHTML = '';
-            // OCULTANDO LISTA DESPUES DE SELECCIÓN
-            listaSelect.style.display = 'none'; 
-          });
-          listaSelect.appendChild(itemLista);
-        });
-        listaSelect.style.display = 'block';
-      }
-    } catch (error) {
-        console.error('Error al cargar los datos:', error);
-    } finally {
-      // OCULTAR EL SPINNER 
-      setTimeout(() => {
-          spinner.style.display = 'none';
-      }, 500); 
-    }
-  };
-  // ASIGNAR LA FUNCIÓN DEBUNCED AL EVENTO INPUT
-  inputSelect.addEventListener('input', debounce(buscarDatos, 1000));
-}
+document.addEventListener('DOMContentLoaded', function() {
+  inicializarSelectPersonalizado('equipoInput', 'equipoList', 'spinner');
+});
+
+
 
 
 // CARGANDO FECHA ACTUAL
@@ -99,7 +94,6 @@ const cargaFechaActual = () =>{
 // PETICIÓN A SERVIDOR
 const fnBuscarInforme = async () => {
     const formData = new FormData();
-  
     const informe    = document.querySelector('#informeInput').value.trim();
     const equipo     = document.querySelector('#equipoInput').value.trim();
     const fecInicial = document.querySelector('#fechaInicialInput').value;

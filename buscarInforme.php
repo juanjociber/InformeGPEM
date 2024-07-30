@@ -1,6 +1,28 @@
-<?php
-  
+<?php 
+    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+    $Id = $_GET['informe'];
 
+    // INICIALIZANDO VARIABLES
+    $Nombre = $Fecha = $Equ_Codigo = $Actividad = $Estado ='';
+
+    try {
+        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        // CONSULTA 1
+        $stmt = $conmy->prepare("SELECT id, nombre, fecha, equ_codigo, actividad, estado FROM tblinforme WHERE id=:Id;");
+        $stmt->execute(array(':Id' => $Id));
+        $row = $stmt->fetch();
+        if ($row) {
+          $Nombre = $row['nombre'];
+          $Fecha = $row['fecha'];
+          $Equ_Codigo = $row['equ_codigo'];
+          $Actividad = $row['actividad'];
+          $Estado = $row['estado'];
+        }
+    } catch (PDOException $ex) {
+        $conmy = null;
+        echo $ex;
+    }
 ?>
 
 <!doctype html>
@@ -15,36 +37,24 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/main.css">
-    <title>Sistema GPEM S.A.C</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <title>Buscador</title>
+
     <style>
       ::placeholder {
         color: #cecccc !important;
         font-weight: 300;
-        /* text-transform: uppercase; */
         font-size: 15px;
-
       }
-      .form-label {
-        color: #212529;
-        font-weight: 300; 
+      .form-label{
+        color:#212529;
+        font-weight:300; 
       }
-      @media (max-width: 767px) {
-        .form-label {
-          font-size: 13px;
-        }
-      }
-      @media (min-width: 768px) {
-        .mt--mod {
-          margin-top: 17px !important;
-        }
-      }
-      @media (min-width: 992px) {
-        .form-label {
-          font-size: 15px;
+      @media(max-width:767px){
+        .form-label{
+          font-size: 13px !important;
         }
       }
       .form-control {
@@ -53,12 +63,25 @@
       .btn-control {
         padding: .375rem .75rem;
       }
-      .custom-select-arrow{
+      .custom-select-arrow {
         top: 75%;
         right: 20px;
       }
-
-      /* SPINNER */
+      .custom-select-list {
+        display: none;
+        position: absolute;
+        width: 100%;
+        background: #fff;
+        border: 1px solid #ced4da;
+        z-index: 1000;
+      }
+      .custom-select-item {
+        padding: .375rem .75rem;
+        cursor: pointer;
+      }
+      .custom-select-item:hover {
+        background-color: #e9ecef;
+      }
       .fullscreen-spinner {
         position: fixed;
         top: 0;
@@ -71,7 +94,6 @@
         align-items: center;
         z-index: 9999; 
       }
-
       .spinner {
         border: 8px solid #f3f3f3; 
         border-top: 8px solid #3498db; 
@@ -83,12 +105,10 @@
         left: 45%;
         top: 50%;
       }
-
       @keyframes spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-
     </style>
   </head>
   <body>
@@ -113,6 +133,9 @@
           <input type="text" id="equipoInput" class="form-control" autocomplete="off" placeholder="Ingrese 1 o más caracteres">
           <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
           <div id="equipoList" class="custom-select-list"></div>
+          <div class="fullscreen-spinner" id="spinner" style="display: none;">
+            <div class="spinner"></div>
+          </div>
         </div>
 
         <div class="col-6 col-lg-6 col-xl-3">
@@ -130,38 +153,18 @@
       </div>
 
       <!-- LISTA -->
-      <a class="link-colecciones" href="/sisgein/gesman/vistaPreliminar.php" style="text-decoration:none;color: #212529;font-weight: 300;">
+      <a class="link-colecciones" href="/informes/vistaPreliminar.php" style="text-decoration:none;color: #212529;font-weight: 300;">
         <div class="row">
-          <div class="col-8"><span class="fw-bold">00003</span> <span style="font-size: 12px; font-style: italic;">2024-07-17</span></div>
-          <div class="col-4 text-end"><span class="badge bg-primary">Proceso</span></div>
-          <div class="col-12">ACTIVIDAD 1</div>
+          <div class="col-8"><span class="fw-bold"><?php echo htmlspecialchars($Nombre); ?></span> <span style="font-size: 12px; font-style: italic;"><?php echo htmlspecialchars($Fecha); ?></span></div>
+          <div class="col-4 text-end"><span class="badge bg-primary"><?php echo htmlspecialchars($Estado); ?></span></div>
+          <div class="col-12"><?php echo htmlspecialchars($Equ_Codigo); ?> <?php echo htmlspecialchars($Actividad); ?></div>
         </div>
       </a>
       <hr>
-      <!-- <a class="link-colecciones" href="/sisgein/gesman/vistaPreliminar.php" style="text-decoration:none;color: #212529;font-weight: 300;">
-        <div class="row">
-          <div class="col-8"><span class="fw-bold">00002</span> <span style="font-size: 12px; font-style: italic;">2024-04-17</span></div>
-          <div class="col-4 text-end"><span class="badge bg-secondary">Abierto</span></div>
-          <div class="col-12">21FLOTA PREVENTIVA DRENADO DE SISTEMA NEUMATICO ARTICULADO - L,M,V</div>
-        </div>
-      </a>
-      <hr>
-      <a class="link-colecciones" href="/sisgein/gesman/vistaPreliminar.php" style="text-decoration:none;color: #212529;font-weight: 300;">
-        <div class="row">
-          <div class="col-8"><span class="fw-bold">00001</span> <span style="font-size: 12px; font-style: italic;">2024-01-02</span></div>
-          <div class="col-4 text-end"><span class="badge bg-success">Cerrado</span></div>
-          <div class="col-12">21064 CORRECTIVA REVISAR PALANCA DE LUCES</div>
-        </div>
-      </a> -->
     </div>
 
-    <!-- SPINNER -->
-    <div class="fullscreen-spinner" id="spinner" style="display: none;">
-      <div class="spinner"></div>
-    </div>
     <script src="js/buscarInforme.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-    
   </body>
 </html>
