@@ -120,6 +120,13 @@
       font-weight:300;
       font-size: 16px;
     }
+    .textura-contenido-mod{
+      width: 15%;
+      text-align: center;
+      color: #FFFFFF;
+      border-radius: 4px;
+      padding: 4px 8px !important
+    }
     .vineta::before {
       content: '\2713'; /* Unicode para el check mark */
       font-size: 13px;
@@ -267,9 +274,14 @@
               <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($Recomendaciones); ?></p>
             </div>
           </div>
+          <?php
+            $Estado = 1; 
+            $EstadoClass = ($Estado == 1) ? 'bg-primary' : ($Estado == 2 ? 'bg-success' : 'bg-danger');
+            $EstadoText = ($Estado == 1) ? 'Abierto' : ($Estado == 2 ? 'Cerrado' : 'Anulado');
+          ?>
           <div class="col-12 col-lg-6 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Estado</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Estado); ?></p>
+            <p class="m-0 p-0 textura-contenido textura-contenido-mod <?php echo $EstadoClass; ?>"><?php echo htmlspecialchars($EstadoText); ?></p>
           </div>            
         </div>
 

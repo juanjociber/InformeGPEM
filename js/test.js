@@ -1,86 +1,143 @@
-const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
-    const inputSelect = document.getElementById(idInput);
-    const listaSelect = document.getElementById(idLista);
-    const spinner = document.getElementById(idSpinner);
-  
-    // MOSTRAR/OCULTAR LA LISTA AL HACER CLIC EN EL INPUT
-    inputSelect.addEventListener('click', function() {
-        listaSelect.style.display = listaSelect.style.display === 'block' ? 'none' : 'block';
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('#equipoInput').addEventListener('input', function() {
+        buscarEquipos();
     });
-  
-    // OCULTAR LA LISTA SI SE HACE CLIC FUERA DEL SELECT
-    document.addEventListener('click', function(evento) {
-        if (!evento.target.closest('.custom-select-wrapper')) {
-          listaSelect.style.display = 'none';
-        }
+});
+
+async function fnBuscarInforme() {
+  const informeInput = document.querySelector('#informeInput').value;
+  const equipoInput = document.querySelector('#equipoInput').value;
+  const fechaInicialInput = document.querySelector('#fechaInicialInput').value;
+  const fechaFinalInput = document.querySelector('#fechaFinalInput').value;
+  const cliIdInput = document.querySelector('#cliIdInput').value;
+
+  if (!fechaInicialInput || !fechaFinalInput) {
+      alert('Por favor, completa las fechas.');
+      return;
+  }
+
+  const formData = new FormData();
+  formData.append('nombre', informeInput);
+  formData.append('equid', equipoInput);
+  formData.append('fechainicial', fechaInicialInput);
+  formData.append('fechafinal', fechaFinalInput);
+  formData.append('cliid', cliIdInput);
+
+  try {
+    const response = await fetch('http://localhost/informes/search/BuscarInformes.php', {
+        method: 'POST',
+        body: formData
     });
-  
-    // FUNCIÓN DEBOUNCE
-    const debounce = (func, delay) => {
-      let debounceTimer;
-      return function() {
-        const context = this;
-        const args = arguments;
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => func.apply(context, args), delay);
+
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (data.res) {
+        mostrarInformes(data.data);
+    } else {
+        alert(data.msg);
+    }
+  } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un error al buscar los informes.');
+  }
+}
+
+function mostrarInformes(informes) {
+    const resultadoDiv = document.querySelector('#resultado');
+    resultadoDiv.innerHTML = '';
+
+    informes.forEach(informe => {
+      const informeDiv = document.createElement('div');
+      informeDiv.classList.add('row', 'mb-3');
+      informeDiv.innerHTML = `
+        <div class="col-8">
+          <span class="fw-bold">${informe.nombre}</span>
+          <span style="font-size: 12px; font-style: italic;">${informe.fecha}</span>
+        </div>
+        <div class="col-4 text-end">
+          <span class="badge ${informe.estado == 1 ? 'bg-primary' : (informe.estado == 2 ? 'bg-success' : 'bg-danger')}">
+              ${informe.estado == 1 ? 'Abierto' : (informe.estado == 2 ? 'Cerrado' : informe.estado)}
+          </span>
+        </div>
+        <div class="col-12">${informe.clinombre} ${informe.actividad}</div>
+      `;
+      resultadoDiv.appendChild(informeDiv);
+    });
+}
+
+async function buscarEquipos() {
+  const equipoInput = document.querySelector('#equipoInput').value;
+  const equipoList = document.querySelector('#equipoList');
+  const spinner = document.querySelector('#spinner');
+  const CliId = '2'; // Reemplaza este valor con el ID del cliente real.
+
+  if (equipoInput.length < 1) {
+      equipoList.style.display = 'none';
+      return;
+  }
+
+  const url = new URL('http://localhost/informes/search/BuscarEquipos.php');
+  url.searchParams.append('search', equipoInput);
+  url.searchParams.append('CliId', CliId);
+
+  try {
+      spinner.style.display = 'flex';
+      const response = await fetch(url.toString(), {
+          method: 'GET'
+      });
+
+      if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-  
-    // FUNCIÓN DE BÚSQUEDA
-    const buscarDatos = async () => {
-      const filtro = inputSelect.value.toLowerCase();
-      console.log(filtro);
-      if (filtro.length === 0) {
-        // LIMPIAR LA LISTA SI EL INPUT ESTÁ VACÍO
-        listaSelect.innerHTML = '';
-        // OCULTAR LA LISTA SI NO HAY TEXTO
-        listaSelect.style.display = 'none';
-        // OCULTAR EL SPINNER
-        spinner.style.display = 'none';
-        return; // SALIR SI EL INPUT ESTÁ VACÍO
-      }
-      // MOSTRAR EL SPINNER
-      spinner.style.display = 'block';
+
+      const responseText = await response.text();
+
       try {
-        const respuesta = await fetch(`search/BuscarEquipos.php?search=${filtro}`);
-        if (!respuesta.ok) {
-          throw new Error('La respuesta de la red falló');
-        }
-        const datos = await respuesta.json();
-  
-        if (datos.data.length === 0) {
-          // MOSTRAR MENSAJE DE NO HABER RESULTADOS
-          listaSelect.innerHTML = `<div class="custom-select-item" style="font-size:15px; font-weight:300">No se encontraron resultados</div>`;
-          listaSelect.style.display = 'block';
-        } else {
-          // LIMPIAR LISTA ACTUAL
-          listaSelect.innerHTML = ''; 
-          datos.data.forEach(elemento => {
-            const itemLista = document.createElement('div');
-            itemLista.className = 'custom-select-item';
-            // ESTRUCTURA DE RESPUESTA JSON
-            itemLista.textContent = elemento.nombre;             
-            itemLista.addEventListener('click', function() {
-              inputSelect.value = this.textContent;
-              // LIMPIANDO LISTA ACTUAL PARA MOSTRAR LA SELECCIONADA
-              listaSelect.innerHTML = '';
-              // OCULTANDO LISTA DESPUES DE SELECCIÓN
-              listaSelect.style.display = 'none'; 
-            });
-            listaSelect.appendChild(itemLista);
-          });
-          listaSelect.style.display = 'block';
-        }
-      } catch (error) {
-          console.error('Error al cargar los datos:', error);
-      } finally {
-        // OCULTAR EL SPINNER 
-        setTimeout(() => {
-            spinner.style.display = 'none';
-        }, 500); 
+          const data = JSON.parse(responseText);
+          equipoList.innerHTML = '';
+
+          if (data.res) {
+              data.data.forEach(equipo => {
+                  const equipoItem = document.createElement('div');
+                  equipoItem.classList.add('custom-select-item');
+                  equipoItem.textContent = equipo.activo;
+                  equipoItem.addEventListener('click', function() {
+                      document.querySelector('#equipoInput').value = equipo.activo;
+                      equipoList.style.display = 'none';
+                  });
+                  equipoList.appendChild(equipoItem);
+              });
+              equipoList.style.display = 'block';
+          } else {
+              equipoList.style.display = 'none';
+          }
+      } catch (jsonError) {
+          console.error('Error parsing JSON:', jsonError);
+          console.error('Response text was:', responseText);
+          alert('Hubo un error al procesar la respuesta del servidor.');
       }
-    };
-    // ASIGNAR LA FUNCIÓN DEBUNCED AL EVENTO INPUT
-    inputSelect.addEventListener('input', debounce(buscarDatos, 1000));
+  } catch (error) {
+      console.error('Error:', error);
+      alert('Hubo un error al buscar los equipos.');
+  } finally {
+      spinner.style.display = 'none';
+  }
+}
+
+
+
+// CARGANDO FECHA ACTUAL
+const cargaFechaActual = () =>{
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');const day = String(today.getDate()).padStart(2, '0');
+  
+    const formattedDate = `${year}-${month}-${day}`;
+    document.getElementById('fechaInicialInput').value = formattedDate;
+    document.getElementById('fechaFinalInput').value = formattedDate;
   }
   

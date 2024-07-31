@@ -40,11 +40,12 @@ const fnCrearActividad = async () => {
 
     const result = await response.json();
     if (result.res) {
-      console.log('Actividad registrada exitosamente:', result.msg);
+      console.log('Respuesta de servidor :', result.msg);
       const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaActividad'));
       if (modal) {
         modal.hide();
       }
+      location.reload();      
     } else {
       console.error('Error al registrar la actividad:', result.msg);
     }
@@ -98,6 +99,7 @@ const fnGuardarSubActividad = async () =>{
       if (modalInstance) {
         modalInstance.hide();
       }
+      location.reload();
     } else {
       console.error('Error al registrar la subactividad:', result.msg);
     }
@@ -220,6 +222,7 @@ const fnRegistrarImagen = async () => {
         if (modalInstance) {
           modalInstance.hide();
         }
+        location.reload();
       } else {
         console.log('Error al registrar el archivo: ' + result.msg);
       }
@@ -253,13 +256,13 @@ const fnEliminarImagen = async (id) => {
           if (elemento) {
               elemento.remove();
           }
-          alert('Imagen eliminada correctamente.');
+          location.reload();
+          console.log('Imagen eliminada correctamente.');
       } else {
-          alert('Error eliminando la imagen: ' + result.msg);
+          console.log('Error eliminando la imagen: ' + result.msg);
       }
   } catch (error) {
       console.error('Error:', error);
-      alert('Hubo un problema al eliminar la imagen.');
   }
  };
 

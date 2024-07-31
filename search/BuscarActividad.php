@@ -2,10 +2,6 @@
 include($_SERVER['DOCUMENT_ROOT'].'/informes/gesman/connection/ConnGesmanDb.php');
 require_once '../Datos/InformesData.php';
 
-// $data['data'] = array();
-// $data['res'] = false;
-// $data['msg'] = 'Error general.';
-
 $data = [
     'data' => [],
     'res' => false,

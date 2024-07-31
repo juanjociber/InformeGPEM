@@ -48,6 +48,58 @@
         }
     }
 
+    // BUSCAR INFORME MATRIZ
+    function FnBuscarInformeMatriz($conmy, $id){
+      try {
+        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, numero, nombre, fecha, ord_nombre, cli_nombre, cli_contacto, ubicacion, supervisor, equ_codigo, equ_nombre, equ_marca, equ_modelo, equ_serie, equ_datos, equ_km, equ_hm, actividad, antecedentes, dianostico, conclusiones, recomendaciones, estado FROM tblinforme WHERE id=:Id;");
+        $stmt->execute(array(':Id' => $id));
+        $informe = new stdClass();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+          $informe->id = $row['id'];
+          $informe->ordid = $row['ordid'];
+          $informe->equid = $row['equid'];
+          $informe->cliid = $row['cliid'];
+          $informe->numero = $row['numero'];
+          $informe->nombre = $row['nombre'];
+          $informe->fecha = $row['fecha'];
+          $informe->ordnombre = $row['ord_nombre'];
+          $informe->clinombre = $row['cli_nombre'];
+          $informe->clicontacto = $row['cli_contacto'];
+          $informe->ubicacion = $row['ubicacion'];
+          $informe->supervisor = $row['supervisor'];
+          $informe->equ_codigo = $row['equ_codigo'];
+          $informe->equ_nombre = $row['equ_nombre'];
+          $informe->equ_marca = $row['equ_marca'];
+          $informe->equ_modelo = $row['equ_modelo'];
+          $informe->equ_serie = $row['equ_serie'];
+          $informe->equ_datos = $row['equ_datos'];
+          $informe->equ_km = $row['equ_km'];
+          $informe->equ_hm = $row['equ_hm'];
+          $informe->actividad = $row['actividad'];
+          $informe->antecedentes = $row['antecedentes'];
+          $informe->diagnostico = $row['dianostico'];
+          $informe->conclusiones = $row['conclusiones'];
+          $informe->recomendaciones = $row['recomendaciones'];
+          $informe->estado = $row['estado'];
+        }
+        return $informe;
+      } catch (PDOException $ex) {
+        throw new Exception('Error al buscar Informe: ' .$e->getMessage());
+      }
+    }
+
+    // BUSCAR SUPERVISORES
+    function FnBuscarSupervisores($comy, $id) {
+      try {
+        $stmt = $comy->prepare("SELECT idsupervisor, idcliente, supervisor FROM cli_supervisores WHERE idcliente=:Id");
+        $stmt->execute(array(':Id'=>$id));
+        $supervisores = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $supervisores;
+      } catch (PDOException $e) {
+        throw new Exception('Error al buscar supervisores: ' . $e->getMessage());
+      }
+    }
+
     // Buscar la última programacion en proceso, estado:1
     function FnBuscarEquipo($conmy, $id) {
         try {
@@ -74,38 +126,22 @@
         }
     }
 
-    // function FnListarEquipos($conmy, $search, $CliId) {
-    //     $query = '';
-    //     if(!empty($query)){
-    //         $query = $search;
-    //     }
-    //     $stmt = $conmy->prepare("SELECT idactivo, activo FROM man_activos WHERE activo LIKE ".$query." AND idcliente=:CliId");
-    //     $stmt->execute(array('CliId'=> $CliId));   
-    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    // }
 
-    function FnListarEquipos($pdo, $search, $cliId) {
-        // Construir la consulta SQL con parámetros
-        $sql = "SELECT idactivo, activo, idcliente FROM man_activos WHERE activo LIKE :search";
-        $params = [':search' => "%$search%"];
-    
-        // Añadir la condición de idcliente si se proporciona
-        if (!empty($cliId)) {
-            $sql .= " AND idcliente = :cliId";
-            $params[':cliId'] = $cliId;
-        }
-    
-        // Preparar y ejecutar la consulta
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-    
-        // Obtener los resultados
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // LISTAR EQUIPOS
+    function FnListarEquipos($conmy, $nombre, $cliId) {
+      $sql = "SELECT idactivo, activo FROM man_activos WHERE idcliente = :cliId";
+      if (!empty($nombre)) {
+          $sql .= " AND activo LIKE :search";
+      }
+      $stmt = $conmy->prepare($sql);
+      $params = [':cliId' => $cliId];
+      if (!empty($nombre)) {
+          $params[':search'] = "%$nombre%";
+      }
+      $stmt->execute($params);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-   
-
-    
-    
+  
     // Buscar actividad por Id
     function FnBuscarActividad($conmy, $id) {
         try {
@@ -240,44 +276,65 @@
         }
     }
     
-
     function FnBuscarInformes($conmy, $informe) {
-        try {
-            $informes=array('data'=>array(), 'pag'=>0);
-            $query = "";
-            /*if(!empty($_POST['pagina'])){
-                $pagina = (int)$_POST['pagina'];
-            }*/
-            
-            if(!empty($informe->nombre)){
-                $query = " and nombre like='%".$informe->nombre."%'";
-            }else{
-                if(!empty($informe->equid)){$query .=" and equid=".$informe->equid;}
-                $query.=" and fecha between '".$informe->fechainicial."' and '".$informe->fechafinal."'";
-            }
-
-            $stmt = $conmy->prepare("select id, nombre, fecha, cli_nombre, actividad, estado from tblinforme where cliid=:CliId".$query." limit :Pagina, 20;");
-            $stmt->bindParam(':CliId', $informe->cliid, PDO::PARAM_INT);
-			$stmt->bindParam(':Pagina', $informe->pagina, PDO::PARAM_INT);
-            $stmt->execute();
-			$n=$stmt->rowCount();
-            if($n>0){
-                while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                    $informes['data'][]=array(
-                        'id'=>(int)$row['id'],
-                        'nombre'=>$row['nombre'],
-                        'fecha'=>$row['fecha'],
-                        'clinombre'=>$row['cli_nombre'],
-                        'actividad'=>$row['actividad'],
-                        'estado'=>(int)$row['estado']
-                    );
-                }
-                $informes['pag']=$n;
-            }            
-            return $informes;
-        } catch (PDOException $e) {
-            throw new Exception($e->getMessage());
-        }
+      try {
+          $informes = ['data' => [], 'pag' => 0];
+          $query = " WHERE cliid = :CliId";
+          $params = [':CliId' => $informe->cliid];
+          if (!empty($informe->nombre)) {
+              $query .= " AND nombre LIKE :Nombre";
+              $params[':Nombre'] = "%" . $informe->nombre . "%";
+          }
+  
+          if (!empty($informe->equid)) {
+              $query .= " AND equid = :Equid";
+              $params[':Equid'] = $informe->equid;
+          }
+          $query .= " AND fecha BETWEEN :FechaInicial AND :FechaFinal";
+          $params[':FechaInicial'] = $informe->fechainicial;
+          $params[':FechaFinal'] = $informe->fechafinal;
+  
+          // Calcular el desplazamiento para la paginación
+          $offset = $informe->pagina * 20;
+  
+          $stmt = $conmy->prepare("SELECT id, nombre, fecha, cli_nombre, equ_codigo, actividad, estado FROM tblinforme" . $query . " LIMIT :Offset, 20");
+  
+          // Bind de los parámetros
+          foreach ($params as $key => $value) {
+              $stmt->bindValue($key, $value);
+          }
+          $stmt->bindValue(':Offset', $offset, PDO::PARAM_INT);
+  
+          $stmt->execute();
+          $n = $stmt->rowCount();
+  
+          if ($n > 0) {
+              while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                  $informes['data'][] = [
+                      'id' => (int)$row['id'],
+                      'nombre' => $row['nombre'],
+                      'fecha' => $row['fecha'],
+                      'clinombre' => $row['cli_nombre'],
+                      'equcodigo' => $row['equ_codigo'],
+                      'actividad' => $row['actividad'],
+                      'estado' => (int)$row['estado']
+                  ];
+              }
+              // Calcular el número total de páginas
+              $totalQuery = "SELECT COUNT(*) FROM tblinforme" . $query;
+              $totalStmt = $conmy->prepare($totalQuery);
+              foreach ($params as $key => $value) {
+                  $totalStmt->bindValue($key, $value);
+              }
+              $totalStmt->execute();
+              $totalRows = $totalStmt->fetchColumn();
+              $informes['pag'] = ceil($totalRows / 20);
+          }
+  
+          return $informes;
+      } catch (PDOException $e) {
+          throw new Exception($e->getMessage());
+      }
     }
 
 

@@ -11,17 +11,15 @@ $data = [
 try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // VALIDANDO QUE LOS PARAMETROS NO ESTÉN VACIOS
-    if(empty($_GET['search']) || empty($_GET['CliId'])){
-        throw new Exception("La información está incompleta.");
+    if (!isset($_POST['nombre'])) {
+        throw new Exception("Los datos no están completos.");
     }
+    // $cliId = $_SESSION[''];
+    $cliId = 2; 
+    $nombre = $_POST['nombre'];
 
-    $search = $_GET['search'];
-    $CliId = $_GET['CliId'];
-
-    // LLAMAR FUNCION PARA OBTENER DATOS
-    $equipos = FnListarEquipos($conmy, $search, $CliId);
-    
+    // OBTENIENDO DATOS DEL EQUIPO
+    $equipos = FnListarEquipos($conmy, $nombre, $cliId);
     if ($equipos) {
         $data['data'] = $equipos;
         $data['res'] = true;
@@ -29,11 +27,10 @@ try {
     } else {
         $data['msg'] = 'No se encontraron equipos.';
     }
-
-} catch(PDOException $ex){
-    $data['msg'] = $ex->getMessage();
+} catch(PDOException $ex) {
+    $data['msg'] = 'Error de base de datos: ' . $ex->getMessage();
 } catch (Exception $ex) {
-    $data['msg'] = $ex->getMessage();
+    $data['msg'] = 'Error: ' . $ex->getMessage();
 } finally {
     $conmy = null;
 }
@@ -41,3 +38,4 @@ try {
 header('Content-Type: application/json');
 echo json_encode($data);
 ?>
+

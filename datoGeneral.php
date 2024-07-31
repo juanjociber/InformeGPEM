@@ -1,39 +1,26 @@
-<?php 
-    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
-    $Id = $_GET['informe'];
+<?php
+  require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+  require_once 'Datos/InformesData.php';
 
-    // INICIALIZANDO VARIABLES
-    $Nombre = $Fecha = $Orden_Nombre = $Cli_Nombre = $Cli_Contacto = $Ubicacion = $Supervisor = $Estado = '';
-    $Id_Supervisor = $Id_Cliente = $Supervisor = '';
+  try {
+    $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    try {
-        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    if (!empty($_GET['informe'])) {
+        $informe = FnBuscarInformeMatriz($conmy, $_GET['informe']);
+        $supervisores = FnBuscarSupervisores($conmy,$informe->cliid);
+    } 
+  } catch (PDOException $e) {
+      throw new Exception($e->getMessage());
+  } catch (Exception $e) {
+      throw new Exception($e->getMessage());
+  } finally {
+      $conmy = null;
+  }
 
-        // CONSULTA 1
-        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, nombre, fecha, ord_nombre, cli_nombre, cli_contacto, ubicacion, supervisor, estado FROM tblInforme WHERE id=:Id;");
-        $stmt->execute(array(':Id' => $Id));
-        $row = $stmt->fetch();
-        if ($row) {
-            $Nombre = $row['nombre'];
-            $Fecha = $row['fecha'];
-            $Orden_Nombre = $row['ord_nombre'];
-            $Cli_Nombre = $row['cli_nombre'];
-            $Cli_Contacto = $row['cli_contacto'];
-            $Ubicacion = $row['ubicacion'];
-            $Supervisor = $row['supervisor'];
-            $Estado = $row['estado'];
-        }
 
-        // CONSULTA 2
-        $stmt2 = $conmy->prepare("SELECT idsupervisor, idcliente, supervisor FROM cli_supervisores");
-        $stmt2->execute();
-        $supervisores = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
-    } catch (PDOException $ex) {
-        $conmy = null;
-        echo $ex;
-    }
 ?>
+
 <!doctype html>
 <html lang="es">
   <head>
@@ -90,9 +77,9 @@
 
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-            <p class="m-0 p-0"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
-            <input type="text" class="d-none" id="txtIdOt" value="<?php echo htmlspecialchars($Id); ?>" readonly/>
-            <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
+            <p class="m-0 p-0"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+            <input type="text" class="d-none" id="txtIdOt" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
+            <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
         </div>
       </div>
       <!-- ENLACES -->
@@ -113,25 +100,25 @@
       <div class="row g-3">
         <div class="col-6 col-md-4 col-lg-4">
           <label for="nombreInformeInput" class="form-label mb-0">Nro. Informe</label>
-          <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($Nombre); ?>" disabled>
+          <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($informe->nombre); ?>" disabled>
         </div>
         <div class="col-6 col-md-4 col-lg-4">
           <label for="fechaInformeInput" class="form-label mb-0">Fecha</label>
-          <input type="date" class="form-control" id="fechaInformeInput" value="<?php echo htmlspecialchars($Fecha); ?>">
+          <input type="date" class="form-control" id="fechaInformeInput" value="<?php echo htmlspecialchars($informe->fecha); ?>">
         </div>
         <div class="col-6 col-md-4 col-lg-4 mt-2 mt--mod">
           <label for="OrdenTrabajoInput" class="form-label mb-0">Orden de trabajo</label>
-          <input type="text" class="form-control" id="OrdenTrabajoInput" value="<?php echo htmlspecialchars($Orden_Nombre); ?>" disabled>
+          <input type="text" class="form-control" id="OrdenTrabajoInput" value="<?php echo htmlspecialchars($informe->ordnombre); ?>" disabled>
         </div>
         <div class="col-6 col-md-6 col-lg-6 mt-2">
           <label for="nombreClienteInput" class="form-label mb-0">Cliente</label>
-          <input type="text" class="form-control" id="nombreClienteInput" value="<?php echo htmlspecialchars($Cli_Nombre); ?>" disabled>
+          <input type="text" class="form-control" id="nombreClienteInput" value="<?php echo htmlspecialchars($informe->clinombre); ?>" disabled>
         </div>
         
         <div class="custom-select-container col-md-6 col-lg-6 mt-2">
           <label for="contactoInput" class="form-label mb-0">Contacto</label>
           <div class="custom-select-wrapper">
-            <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($Cli_Contacto); ?>" placeholder="Seleccionar contacto" />
+            <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->clicontacto); ?>" placeholder="Seleccionar contacto" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="contactoList" class="custom-select-list">
               <!-- Opciones de contactos pueden ser generadas dinámicamente si es necesario -->
@@ -144,13 +131,13 @@
         
         <div class="col-md-6 col-lg-6 mt-2">
           <label for="ubicacionInput" class="form-label mb-0">Lugar</label>
-          <input type="text" class="form-control" id="ubicacionInput" value="<?php echo htmlspecialchars($Ubicacion); ?>" placeholder="Ingresar lugar">
+          <input type="text" class="form-control" id="ubicacionInput" value="<?php echo htmlspecialchars($informe->ubicacion); ?>" placeholder="Ingresar lugar">
         </div>      
         
         <div class="custom-select-container col-md-6 col-lg-6 mt-2">
           <label for="supervisorInput" class="form-label mb-0">Supervisor</label>
           <div class="custom-select-wrapper">
-            <input type="text" id="supervisorInput" class="custom-select-input" value="<?php echo htmlspecialchars($Supervisor); ?>" placeholder="Seleccionar supervisor" />
+            <input type="text" id="supervisorInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->supervisor); ?>" placeholder="Seleccionar supervisor" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="supervisorList" class="custom-select-list">
               <!-- SUPERVISORES -->
