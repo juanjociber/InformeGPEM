@@ -1,7 +1,10 @@
-const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
+const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner, idCliId) => {
   const inputSelect = document.getElementById(idInput);
   const listaSelect = document.getElementById(idLista);
   const spinner = document.getElementById(idSpinner);
+  const cliIdInput = document.getElementById(idCliId);
+
+  if (!inputSelect || !listaSelect || !spinner || !cliIdInput) { return; }
 
   // Mostrar/ocultar la lista al hacer clic en el input
   inputSelect.addEventListener('click', function() {
@@ -12,23 +15,24 @@ const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
   document.addEventListener('click', function(evento) {
     if (!evento.target.closest('.custom-select-wrapper')) {
       listaSelect.style.display = 'none';
-      listaSelect.innerHTML = ''; // Limpiar la lista
+      listaSelect.innerHTML = ''; 
     }
   });
 
   const fetchEquipos = async () => {
-    const query = inputSelect.value;
+    const query = inputSelect.value.trim(); 
+    const cliId = cliIdInput.value.trim();
 
-    if (query.length < 1) {
-      listaSelect.style.display = 'none';
-      return;
-    }
+    if (query.length < 1 || cliId.length < 1) { listaSelect.style.display = 'none'; return; }
 
     spinner.style.display = 'flex';
 
-    const url = `http://localhost/informes/search/BuscarEquipos.php?search=${query}`;
+    const url = `http://localhost/informes/search/BuscarEquipos.php?search=${encodeURIComponent(query)}&CliId=${encodeURIComponent(cliId)}`;
     try {
       const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const result = await response.json();
 
       if (result.res) {
@@ -39,8 +43,14 @@ const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
           const item = document.createElement('div');
           item.className = 'custom-select-item';
           item.textContent = equipo.activo;
+          // Guardar idactivo en un atributo data
+          item.dataset.idactivo = equipo.idactivo;  
+          // Guardar idcleinte en atributo data
+          item.dataset.idcliente = equipo.idcliente; 
           item.onclick = () => {
             inputSelect.value = equipo.activo;
+            // Actualizando idActivoInput
+            document.getElementById('idActivoInput').value = equipo.idactivo;  
             listaSelect.style.display = 'none';
             listaSelect.innerHTML = ''; // Limpiar la lista al seleccionar un elemento
           };
@@ -69,14 +79,13 @@ const inicializarSelectPersonalizado = async (idInput, idLista, idSpinner) => {
       debounceTimer = setTimeout(() => func.apply(context, args), delay);
     }
   };
-
   inputSelect.addEventListener('input', debounce(fetchEquipos, 1000));
 };
 
 document.addEventListener('DOMContentLoaded', function() {
-  inicializarSelectPersonalizado('equipoInput', 'equipoList', 'spinner');
+  inicializarSelectPersonalizado('equipoInput', 'equipoList', 'spinner', 'cliIdInput');
+  cargaFechaActual();
 });
-
 
 
 
@@ -93,18 +102,20 @@ const cargaFechaActual = () =>{
 
 // PETICIÓN A SERVIDOR
 const fnBuscarInforme = async () => {
-    const formData = new FormData();
-    const informe    = document.querySelector('#informeInput').value.trim();
-    const equipo     = document.querySelector('#equipoInput').value.trim();
-    const fecInicial = document.querySelector('#fechaInicialInput').value;
-    const fecFinal   = document.querySelector('#fechaFinalInput').value;
+    const formData  = new FormData();
+    const nombre    = document.querySelector('#informeInput').value.trim();
+    const idactivo  = document.querySelector('#idActivoInput').value;
+    const activo    = document.querySelector('#equipoInput').value.trim();
+    const fecInicial= document.querySelector('#fechaInicialInput').value;
+    const fecFinal  = document.querySelector('#fechaFinalInput').value;
   
-    formData.append('informe', informe);
-    formData.append('equipo', equipo);
+    formData.append('nombre', nombre);
+    formData.append('idactivo', idactivo);
+    formData.append('activo', activo);
     formData.append('fecInicial', fecInicial);
     formData.append('fechFinal', fecFinal);
     
-    console.log('Datos a enviar: ', { informe, equipo, fecInicial, fecFinal });
+    console.log('Datos a enviar: ', { nombre, idactivo, activo, fecInicial, fecFinal });
     console.log(formData);
   
     // const response = await fetch(``, {
@@ -119,9 +130,3 @@ const fnBuscarInforme = async () => {
     //   throw new Error(datos.msg);
     // }
   };
-
-  document.addEventListener('DOMContentLoaded', () =>{
-    inicializarSelectPersonalizado('equipoInput', 'equipoList', 'spinner');
-    cargaFechaActual();
-    //cargaDatosGenerales();
-  });

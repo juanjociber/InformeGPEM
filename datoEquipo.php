@@ -28,29 +28,6 @@
           $Equ_Hm = $row['equ_hm'];
           $Estado = $row['estado'];
         }
-
-        // $stmt2 = $conmy->prepare("select id, ownid, tipo, actividad, diagnostico, trabajos, observaciones from tbldetalleinforme where infid=:InfId;");
-        // $stmt2->bindParam(':InfId', $Id, PDO::PARAM_INT);
-        // $stmt2->execute();
-        // $equipos = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-
-        // $ids = array_map(function($elemento) {
-        //   return $elemento['id'];
-        // }, $equipos);
-
-        // $cadenaIds = implode(',', $ids);
-        // $imagenes=array();
-      
-        // $stmt3 = $conmy->prepare("select id, refid, nombre, descripcion, titulo from tblarchivos where refid IN(".$cadenaIds.") and tabla=:Tabla and tipo=:Tipo;");				
-        // $stmt3->execute(array(':Tabla'=>'INFD', ':Tipo'=>'IMG'));
-        // while($row3=$stmt3->fetch(PDO::FETCH_ASSOC)){
-        //   $imagenes[$row3['refid']][]=array(
-        //     'id'=>(int)$row3['id'],
-				//     'nombre'=>$row3['nombre'],
-				//     'descripcion'=>$row3['descripcion'],
-        //     'titulo'=>$row3['titulo'],
-        //   );
-        // }
     } catch (PDOException $ex) {
         $conmy = null;
         echo $ex;

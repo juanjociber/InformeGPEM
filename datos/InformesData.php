@@ -74,19 +74,38 @@
         }
     }
 
-    function FnListarEquipos($conmy, $search, $CliId) {
-        $query = '';
-        if(!empty($query)){
-            $query = $search;
-        }
-        $stmt = $conmy->prepare("SELECT idactivo, activo FROM man_activos WHERE activo LIKE ".$query." AND idcliente=:CliId");
-        //$stmt->bindParam(':search', $search_param);
-        $stmt->execute(array('CliId'=> $CliId));
+    // function FnListarEquipos($conmy, $search, $CliId) {
+    //     $query = '';
+    //     if(!empty($query)){
+    //         $query = $search;
+    //     }
+    //     $stmt = $conmy->prepare("SELECT idactivo, activo FROM man_activos WHERE activo LIKE ".$query." AND idcliente=:CliId");
+    //     $stmt->execute(array('CliId'=> $CliId));   
+    //     return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    // }
+
+    function FnListarEquipos($pdo, $search, $cliId) {
+        // Construir la consulta SQL con parámetros
+        $sql = "SELECT idactivo, activo, idcliente FROM man_activos WHERE activo LIKE :search";
+        $params = [':search' => "%$search%"];
     
+        // Añadir la condición de idcliente si se proporciona
+        if (!empty($cliId)) {
+            $sql .= " AND idcliente = :cliId";
+            $params[':cliId'] = $cliId;
+        }
+    
+        // Preparar y ejecutar la consulta
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+    
+        // Obtener los resultados
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+   
 
+    
+    
     // Buscar actividad por Id
     function FnBuscarActividad($conmy, $id) {
         try {

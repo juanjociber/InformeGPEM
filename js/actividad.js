@@ -268,7 +268,6 @@ const fnEliminarActividad = async (id) => {
   const formData = new FormData();
   formData.append('id', id);
   console.log(`Eliminando actividad con ID: ${id}`);
-
   try {
     const response = await fetch('http://localhost/informes/delete/EliminarActividad.php', {
         method: 'POST',

@@ -9,12 +9,14 @@
         $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         // CONSULTA 1
-        $stmt = $conmy->prepare("SELECT id, nombre, fecha, equ_codigo, actividad, estado FROM tblinforme WHERE id=:Id;");
+        $stmt = $conmy->prepare("SELECT id, cliid, nombre, fecha, cli_nombre, equ_codigo, actividad, estado FROM tblinforme WHERE id=:Id;");
         $stmt->execute(array(':Id' => $Id));
         $row = $stmt->fetch();
         if ($row) {
+          $CliId = $row['cliid'];
           $Nombre = $row['nombre'];
           $Fecha = $row['fecha'];
+          $Cli_Nombre = $row['cli_nombre'];
           $Equ_Codigo = $row['equ_codigo'];
           $Actividad = $row['actividad'];
           $Estado = $row['estado'];
@@ -117,7 +119,7 @@
       <!-- CABECERA -->
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-          <p class="m-0 p-0">CLIENTE</p>
+          <p class="m-0 p-0"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
         </div>
       </div>
 
@@ -127,7 +129,7 @@
           <label for="informeInput" class="form-label mb-0">Informe</label>
           <input type="text" class="form-control" id="informeInput">
         </div>
-
+        
         <div class="col-6 col-lg-6 col-xl-3 custom-select-wrapper">
           <label for="equipoInput" class="form-label mb-0">Equipo</label>
           <input type="text" id="equipoInput" class="form-control" autocomplete="off" placeholder="Ingrese 1 o más caracteres">
@@ -137,14 +139,16 @@
             <div class="spinner"></div>
           </div>
         </div>
-
+        <input type="hidden" id="cliIdInput" value="<?php echo htmlspecialchars($CliId); ?>"> 
+        <input type="hidden" id="idActivoInput">
+        
         <div class="col-6 col-lg-6 col-xl-3">
           <label for="fechaInicialInput" class="form-label mb-0">Fecha inicial</label>
-          <input type="date" class="form-control" id="fechaInicialInput" value="2024-07-17"/>
+          <input type="date" class="form-control" id="fechaInicialInput" value=""/>
         </div>
         <div class="col-6 col-lg-6 col-xl-3">
           <label for="fechaFinalInput" class="form-label mb-0">Fecha final</label>
-          <input type="date" class="form-control" id="fechaFinalInput" value="2024-07-17"/>
+          <input type="date" class="form-control" id="fechaFinalInput" value=""/>
         </div>
         
         <div class="col-6 col-lg-3 mt-2 mb-2">
@@ -156,7 +160,11 @@
       <a class="link-colecciones" href="/informes/vistaPreliminar.php" style="text-decoration:none;color: #212529;font-weight: 300;">
         <div class="row">
           <div class="col-8"><span class="fw-bold"><?php echo htmlspecialchars($Nombre); ?></span> <span style="font-size: 12px; font-style: italic;"><?php echo htmlspecialchars($Fecha); ?></span></div>
-          <div class="col-4 text-end"><span class="badge bg-primary"><?php echo htmlspecialchars($Estado); ?></span></div>
+          <div class="col-4 text-end">
+            <span class="badge <?php echo $Estado == 1 ? 'bg-primary' : ($Estado == 2 ? 'bg-success' : 'bg-danger'); ?>"">
+              <?php echo $Estado == 1 ? 'Abierto' : ($Estado == 2 ? 'Cerrado' : htmlspecialchars($Estado)); ?>
+            </span>
+          </div>
           <div class="col-12"><?php echo htmlspecialchars($Equ_Codigo); ?> <?php echo htmlspecialchars($Actividad); ?></div>
         </div>
       </a>

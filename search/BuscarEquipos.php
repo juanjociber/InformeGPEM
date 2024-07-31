@@ -11,11 +11,16 @@ $data = [
 try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if(empty($_GET['search'])){
+    // VALIDANDO QUE LOS PARAMETROS NO ESTÉN VACIOS
+    if(empty($_GET['search']) || empty($_GET['CliId'])){
         throw new Exception("La información está incompleta.");
     }
 
-    $equipos = FnListarEquipos($conmy, $_GET['search']);
+    $search = $_GET['search'];
+    $CliId = $_GET['CliId'];
+
+    // LLAMAR FUNCION PARA OBTENER DATOS
+    $equipos = FnListarEquipos($conmy, $search, $CliId);
     
     if ($equipos) {
         $data['data'] = $equipos;

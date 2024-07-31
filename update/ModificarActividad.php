@@ -25,7 +25,7 @@ try {
         throw new Exception("La información está incompleta.");
     }
     
-    $USUARIO = date('Ymd-His (').'msarabia'.')';
+    $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
     $actividad = new stdClass();
     $actividad->id = $_POST['id'];
