@@ -2,11 +2,13 @@
   require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
   require_once 'Datos/InformesData.php';
 
+  $Id =  $_GET['informe'];
+
   try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if (!empty($_GET['informe'])) {
-        $informe = FnBuscarInformeMatriz($conmy, $_GET['informe']);
+        $informe = FnBuscarInformeMatriz($conmy, $Id);
         $supervisores = FnBuscarSupervisores($conmy,$informe->cliid);
     } 
   } catch (PDOException $e) {
@@ -16,9 +18,6 @@
   } finally {
       $conmy = null;
   }
-
-
-
 ?>
 
 <!doctype html>
@@ -36,7 +35,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="css/main.css">
-    <title>Sistema GPEM S.A.C</title>
+    <title>Datos Generales</title>
   </head>
   <style>
     ::placeholder{
@@ -98,6 +97,7 @@
 
       <!--DATOS GENERALES-->
       <div class="row g-3">
+        <input type="hidden" id="idInforme" value="<?php echo htmlspecialchars($Id) ?>">
         <div class="col-6 col-md-4 col-lg-4">
           <label for="nombreInformeInput" class="form-label mb-0">Nro. Informe</label>
           <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($informe->nombre); ?>" disabled>
@@ -121,7 +121,6 @@
             <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->clicontacto); ?>" placeholder="Seleccionar contacto" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="contactoList" class="custom-select-list">
-              <!-- Opciones de contactos pueden ser generadas dinámicamente si es necesario -->
               <div class="custom-select-item" data-value="contacto1">Contacto1</div>
               <div class="custom-select-item" data-value="contacto2">Contacto2</div>
               <div class="custom-select-item" data-value="contacto3">Contacto3</div>
@@ -137,18 +136,19 @@
         <div class="custom-select-container col-md-6 col-lg-6 mt-2">
           <label for="supervisorInput" class="form-label mb-0">Supervisor</label>
           <div class="custom-select-wrapper">
-            <input type="text" id="supervisorInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->supervisor); ?>" placeholder="Seleccionar supervisor" />
+            <input type="text" class="custom-select-input" id="supervisorInput" value="<?php echo  $informe->supervisor ?>" placeholder="Seleccionar supervisor" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="supervisorList" class="custom-select-list">
               <!-- SUPERVISORES -->
               <?php foreach ($supervisores as $supervisor): ?>
-                <div class="custom-select-item" data-value="<?php echo htmlspecialchars($supervisor['supervisor']); ?>">
+                <div class="custom-select-item" data-value="<?php echo htmlspecialchars($supervisor['idsupervisor']); ?>">
                   <?php echo htmlspecialchars($supervisor['supervisor']); ?>
                 </div>
               <?php endforeach; ?>
             </div>
           </div>
         </div>
+
         
       </div>  
 

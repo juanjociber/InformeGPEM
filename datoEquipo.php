@@ -1,37 +1,23 @@
-<?php 
-    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
-    $Id = $_GET['informe'];
+<?php
+  require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+  require_once 'Datos/InformesData.php';
 
-    // INICIALIZANDO VARIABLES
-    $Ordid = $Equid = $Cliid = $Nombre = $Ord_Nombre = $Cli_Nombre = $Equ_Codigo = $Equ_Nombre = $Equ_Marca = $Equ_Modelo = $Equ_Serie = $Equ_Datos = $Equ_Km = $Equ_Hm = $Estado = '';
+  $Id =  $_GET['informe'];
 
-    try {
-        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        // CONSULTA 
-        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, nombre, ord_nombre, cli_nombre, equ_codigo, equ_nombre, equ_marca, equ_modelo, equ_serie, equ_datos, equ_km, equ_hm, estado FROM tblinforme WHERE id=:Id;");
-        $stmt->execute(array(':Id' => $Id));
-        $row = $stmt->fetch();
-        if ($row) {
-          $Ordid = $row['ordid'];
-          $Equid = $row['equid'];
-          $Cliid = $row['cliid'];
-          $Nombre = $row['nombre'];
-          $Ord_Nombre = $row['ord_nombre'];
-          $Cli_Nombre = $row['cli_nombre'];
-          $Equ_Codigo = $row['equ_codigo'];
-          $Equ_Nombre = $row['equ_nombre'];
-          $Equ_Marca = $row['equ_marca'];
-          $Equ_Modelo = $row['equ_modelo'];
-          $Equ_Serie = $row['equ_serie'];
-          $Equ_Datos = $row['equ_datos'];
-          $Equ_Km = $row['equ_km'];
-          $Equ_Hm = $row['equ_hm'];
-          $Estado = $row['estado'];
-        }
-    } catch (PDOException $ex) {
-        $conmy = null;
-        echo $ex;
-    }
+  try {
+    $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+    if (!empty($_GET['informe'])) {
+        $informe  = FnBuscarInformeMatriz($conmy, $Id);
+        $archivos = FnBuscarInformesYArchivosPorId($conmy, $Id);
+    } 
+  } catch (PDOException $e) {
+      throw new Exception($e->getMessage());
+  } catch (Exception $e) {
+      throw new Exception($e->getMessage());
+  } finally {
+      $conmy = null;
+  }
 ?>
 
 <!doctype html>
@@ -101,9 +87,6 @@
         padding: 5px; 
       }
       .caja-imagen{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5px;
         margin-bottom: 5px;
       }
       @media(min-width:992px){
@@ -117,7 +100,7 @@
     <div class="container">
       <div class="row border-bottom mb-3 fs-5">
           <div class="col-12 fw-bold d-flex justify-content-between">
-              <p class="m-0 p-0"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
+              <p class="m-0 p-0"><?php echo htmlspecialchars($informe->clinombre); ?></p>
               <input type="text" class="d-none" id="txtIdOt" value="" readonly/>
               <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
           </div>
@@ -136,57 +119,59 @@
       </div>
       <div class="row mb-3">
         <div class="col-12">
-          <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#equipoModal"><i class="bi bi-pencil-square"></i></button>
-          <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#adjuntarImagenModal"><i class="bi bi-paperclip"></i></button>
+          <button type="button" class="btn btn-outline-primary" onclick="fnBuscarEquipoPorId(<?php echo htmlspecialchars($Id); ?>)"><i class="bi bi-pencil-square"></i></button>
+          <button type="button" class="btn btn-outline-secondary" onclick="fnAbrirModalRegistrarImagen()" ><i class="bi bi-paperclip"></i></button>
         </div>
       </div>
       <hr>
+
+      <!-- ID-INFORME -->
+      <input type="hidden" id="idInforme" value="<?php echo htmlspecialchars($Id); ?>">
 
       <!--DATOS EQUIPOS-->
       <div class="row g-3">
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
             <label class="form-label mb-0">Nombre</label>
-            <p class="mb-0" style="font-size:15px" id="nombreEquipo"><?php echo htmlspecialchars($Equ_Nombre); ?></p>
-        </div>
-        <div class="custom-select-container col-6 col-lg-4 col-xl-3 mt-2">
-          <label class="form-label mb-0">Modelo</label>
-          <p class="mb-0" style="font-size:15px" id="modeloEquipo"><?php echo htmlspecialchars($Equ_Modelo); ?></p>
-        </div>
-        <div class="col-6 col-lg-4 col-xl-3 mt-2">
-          <label class="form-label mb-0">Serie</label>
-          <p class="mb-0" style="font-size:15px" id="serieEquipo"><?php echo htmlspecialchars($Equ_Serie); ?></p>
+            <p class="mb-0" style="font-size:15px" id="nombreEquipo"><?php echo htmlspecialchars($informe->nombre); ?></p>
         </div>
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label class="form-label mb-0">Marca</label>
-          <p class="mb-0" style="font-size:15px" id="marcaEquipo"><?php echo htmlspecialchars($Equ_Marca); ?></p>
+          <p class="mb-0" style="font-size:15px" id="marcaEquipo"><?php echo htmlspecialchars($informe->equmarca); ?></p>
+        </div>
+        <div class="custom-select-container col-6 col-lg-4 col-xl-3 mt-2">
+          <label class="form-label mb-0">Modelo</label>
+          <p class="mb-0" style="font-size:15px" id="modeloEquipo"><?php echo htmlspecialchars($informe->equmodelo); ?></p>
+        </div>
+        <div class="col-6 col-lg-4 col-xl-3 mt-2">
+          <label class="form-label mb-0">Serie</label>
+          <p class="mb-0" style="font-size:15px" id="serieEquipo"><?php echo htmlspecialchars($informe->equserie); ?></p>
         </div>
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label class="form-label mb-0">Kilometraje</label>
-          <p class="mb-0" style="font-size:15px" id="kilometrajeEquipo"><?php echo htmlspecialchars($Equ_Km); ?></p>
+          <p class="mb-0" style="font-size:15px" id="kilometrajeEquipo"><?php echo htmlspecialchars($informe->equkm); ?></p>
         </div>
-        <div class="col-6 col-lg-4 col-xl-3 mt-2">
+        <div class="col-6 col-lg-5 col-xl-8 mt-2">
           <label class="form-label mb-0">Horas de motor</label>
-          <p class="mb-0" style="font-size:15px" id="horasMotorEquipo"><?php echo htmlspecialchars($Equ_Hm); ?></p>
+          <p class="mb-0" style="font-size:15px" id="horasMotorEquipo"><?php echo htmlspecialchars($informe->equhm); ?></p>
         </div>
-        <div class="caja-imagen col-12" id="5">
-          <div class="contenedor-imagen" id="archivo-19">
-            <p class="text-center mt-4 mb-1">título 14</p>
-              <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(19)"></i>
-              <img src="/mycloud/gesman/files/ORD_112_651f18cf9b6de.jpeg" class="img-fluid" alt="">
-            <p class="text-center">Prueba de imagen</p>
+        <!-- ARCHIVOS (TÍTULOS-IMAGENES-DESCRIPCIÓN) -->
+        <?php foreach($archivos as $archivo): ?>
+          <!-- REFID -->
+          <input type="hidden" id="refid" value="<?php echo htmlspecialchars($archivo['refid']); ?>">
+          <div class="caja-imagen col-6 col-lg-3" id="<?php echo htmlspecialchars($archivo['archivoid']); ?>">
+            <div class="contenedor-imagen">
+              <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
+                <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(<?php echo htmlspecialchars($archivo['archivoid']); ?>)"></i>
+                <img src="/mycloud/gesman/files/ORD_112_651f18cf9b6de.jpeg" class="img-fluid" alt="">
+              <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
+            </div>
           </div>
-          <div class="contenedor-imagen" id="archivo-29">
-            <p class="text-center mt-4 mb-1">título 19</p>
-              <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(29)"></i>
-              <img src="/mycloud/gesman/files/ORD_112_651f18cf9b6de.jpeg" class="img-fluid" alt="">
-            <p class="text-center">Imagen 1</p>
-          </div>
-        </div>
+        <?php endforeach; ?>
       </div>
     </div>
 
     <!-- M O D A L   D A T O S  D E  E Q U I P O -->
-    <div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEquipo" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
@@ -198,35 +183,30 @@
             <div class="row">
               <div class="col-md-12 mt-2">
                 <label for="" class="form-label mb-0">Nombre</label>
-                <input type="text" name="nombreEquipo" class="form-control" row=3 placeholder="Ingrese nombre de equipo."/>
-              </div>
-              <div class="col-md-12 mt-2">
-                <label for="" class="form-label mb-0">Modelo</label>
-                <input type="text" name="modelo" class="form-control" placeholder="Ingrese modelo."/>
-              </div>
-              <div class="col-md-12 mt-2">
-                <label for="" class="form-label mb-0">Serie</label>
-                <input type="text" name="serie" class="form-control" placeholder="Ingrese número de serie."/>
+                <input type="text" id="nombreModalEquipo" class="form-control" row=3 placeholder="Ingrese nombre de equipo."/>
               </div>
               <div class ="col-md-12 mt-2">
                 <label for="" class="form-label mb-0">Marca</label>
-                <input type="text" name="marca" class="form-control" placeholder="Ingrese marca."></textarea>
+                <input type="text" id="marcaModalEquipo" class="form-control" placeholder="Ingrese marca."></textarea>
+              </div>
+              <div class="col-md-12 mt-2">
+                <label for="" class="form-label mb-0">Modelo</label>
+                <input type="text" id="modeloModalEquipo" class="form-control" placeholder="Ingrese modelo."/>
+              </div>
+              <div class="col-md-12 mt-2">
+                <label for="" class="form-label mb-0">Serie</label>
+                <input type="text" id="serieModalEquipo" class="form-control" placeholder="Ingrese número de serie."/>
               </div>
               <div class ="col-md-12 mt-2">
                 <label for="" class="form-label mb-0">Kilometraje</label>
-                <input type="text" name="kilometraje" class="form-control" placeholder="Ingrese kilometraje."></textarea>
+                <input type="text" id="kilometrajeModalEquipo" class="form-control" placeholder="Ingrese kilometraje."></textarea>
               </div>
               <div class ="col-md-12 mt-2">
                 <label for="" class="form-label mb-0">Horas de motor</label>
-                <input type="text" name="horasMotor" class="form-control" placeholder="Ingrese horas de motor."></textarea>
+                <input type="text" id="horaMotorModalEquipo" class="form-control" placeholder="Ingrese horas de motor."></textarea>
               </div>
-              <div class ="col-md-12 mt-2">
-                <label for="" class="form-label mb-0">Descripcion</label>
-                <textarea type="text" name="descripcion" class="form-control" row=3 style="text-align:justify" placeholder="Puede ingresar adicionalmente la fecha de fabricación, número interno, número de padron,tipo de combustible y otros que considere necesario."></textarea>
-              </div>
-
               <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12 fw-light">Guardar <i class="bi bi-floppy"></i></button>
+                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12 fw-light"onclick="fnEditarDatosEquipos();" >Editar <i class="bi bi-pencil-square"></i></button>
               </div>
             </div>
           </div>
@@ -236,27 +216,36 @@
     </div><!-- END MODAL -->
 
     <!-- M O D A L - I M A G E N E S -->
-    <div class="modal fade" id="adjuntarImagenModal" tabindex="-1" aria-labelledby="adjuntarImagenLabel" aria-hidden="true">
+    <div class="modal fade" id="modalAgregarImagen" tabindex="-1" aria-labelledby="modalAgregarImagenLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="adjuntarImagenLabel">Agregar Actividad</h5>
+            <h5 class="modal-title fs-5 text-uppercase" id="modalAgregarImagenLabel">Registrar Imagen </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <form id="formAdjuntarImagen">
+          <input type="hidden" id="cabeceraIdInput">
+            <div class="row">
+              <div class ="col-md-12 mt-2">
+                <label for="registrarTituloInput" class="form-label mb-0">Título</label>
+                <input name="titulo" type="text" class="form-control" id="tituloInput" placeholder="Ingresar título.">
+              </div>
               <div class="col-md-12 mt-2">
-                <label for="" class="form-label mb-0">Agregar imagen</label>
-                <input name="imagen" class="form-control" type="file">
+                <label for="adjuntarImagenInput" class="form-label mb-0">Imagen</label>
+                <input name="archivo" class="form-control" type="file" id="imagenInput">
               </div>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light">Guardar <i class="bi bi-floppy"></i></button>
+              <div class ="col-md-12 mt-2">
+                <label for="registarDescripcionInput" class="form-label mb-0">Descripción</label>
+                <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="descripcionInput" placeholder="Ingresar título."></textarea>
               </div>
-            </form>
+              <div id="contenedorGuardarActividad" class="col-6 mt-4">
+                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()">Guardar <i class="bi bi-floppy"></i></button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </div><!-- END IMAGENES - M O D A L -->
 
     <script src="js/datoEquipo.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>

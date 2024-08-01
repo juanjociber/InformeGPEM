@@ -37,8 +37,8 @@
     function FnModificarInforme($conmy, $informe) {
         try {
             $res=false;
-            $stmt = $conmy->prepare("update tblinforme set fecha=:Fecha, cli_contacto=:CliContacto, ubicacion=:Ubicacion, supervisor=:Supervisor, equ_nombre=:EquNombre, equ_marca=:EquMarca, equ_modelo=:EquModelo, equ_serie=:EquSerie, equ_datos=:EquDatos, equ_km=:EquKm, equ_hm=:EquHm, actualizacion=:Actualizacion);");
-            $params = array(':Fecha'=>$informe->fecha, ':CliContacto'=>$informe->clicontacto, ':Ubicacion'=>$informe->ubicacion, ':Supervisor'=>$informe->supervisor, ':EquNombre'=>$informe->equnombre, ':EquMarca'=>$informe->equmarca, ':EquModelo'=>$informe->equmodelo, ':EquSerie'=>$informe->equserie, ':EquDatos'=>$informe->equdatos, ':EquKm'=>$informe->equkm, ':EquHm'=>$informe->equhm, ':Actualizacion'=>$informe->actualizacion);
+            $stmt = $conmy->prepare("update tblinforme set fecha=:Fecha, cli_contacto=:CliContacto, ubicacion=:Ubicacion, supervisor=:Supervisor, actualizacion=:Actualizacion;");
+            $params = array(':Fecha'=>$informe->fecha, ':CliContacto'=>$informe->clicontacto, ':Ubicacion'=>$informe->ubicacion, ':Supervisor'=>$informe->supervisor, ':Actualizacion'=>$informe->actualizacion);
             if($stmt->execute($params)){
                 $res=true;
             }
@@ -48,6 +48,61 @@
         }
     }
 
+    function FnModificarInformeDatosGenerales($conmy, $informe) {
+        try {
+            $res = false;
+            $stmt = $conmy->prepare("
+                UPDATE tblinforme 
+                SET fecha = :Fecha, cli_contacto = :CliContacto, ubicacion = :Ubicacion, supervisor = :Supervisor, actualizacion = :Actualizacion
+                
+                ");
+            $params = array(
+                ':Fecha' => $informe->fecha,
+                ':CliContacto' => $informe->clicontacto,
+                ':Ubicacion' => $informe->ubicacion,
+                ':Supervisor' => $informe->supervisor,
+                ':Actualizacion' => $informe->actualizacion
+            );
+            if ($stmt->execute($params)) {
+                $res = true;
+            }
+            return $res;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+    
+    function FnModificarInformeDatosEquipos($conmy, $informe) {
+        try {
+            $res = false;
+            $stmt = $conmy->prepare("update 
+            tblinforme set 
+            equ_nombre = :EquNombre, 
+            equ_marca = :EquMarca, 
+            equ_modelo = :EquModelo, 
+            equ_serie = :EquSerie, 
+            equ_km = :EquKm, 
+            equ_hm = :EquHm, 
+            actualizacion = :Actualizacion where id=Id;");
+            $params = array(
+              ':EquNombre' => $informe->equnombre,
+              ':EquMarca' => $informe->equmarca,
+              ':EquModelo' => $informe->equmodelo,
+              ':EquSerie' => $informe->equserie,
+              ':EquKm' => $informe->equkm,
+              ':EquHm' => $informe->equhm,
+              ':Actualizacion' => $informe->actualizacion,
+              ':Id' => $informe->id 
+            );
+            if ($stmt->execute($params)) {
+                $res = true;
+            }
+            return $res;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+    
     // BUSCAR INFORME MATRIZ
     function FnBuscarInformeMatriz($conmy, $id){
       try {
@@ -67,14 +122,14 @@
           $informe->clicontacto = $row['cli_contacto'];
           $informe->ubicacion = $row['ubicacion'];
           $informe->supervisor = $row['supervisor'];
-          $informe->equ_codigo = $row['equ_codigo'];
-          $informe->equ_nombre = $row['equ_nombre'];
-          $informe->equ_marca = $row['equ_marca'];
-          $informe->equ_modelo = $row['equ_modelo'];
-          $informe->equ_serie = $row['equ_serie'];
-          $informe->equ_datos = $row['equ_datos'];
-          $informe->equ_km = $row['equ_km'];
-          $informe->equ_hm = $row['equ_hm'];
+          $informe->equcodigo = $row['equ_codigo'];
+          $informe->equnombre = $row['equ_nombre'];
+          $informe->equmarca = $row['equ_marca'];
+          $informe->equmodelo = $row['equ_modelo'];
+          $informe->equserie = $row['equ_serie'];
+          $informe->equdatos = $row['equ_datos'];
+          $informe->equkm = $row['equ_km'];
+          $informe->equhm = $row['equ_hm'];
           $informe->actividad = $row['actividad'];
           $informe->antecedentes = $row['antecedentes'];
           $informe->diagnostico = $row['dianostico'];
@@ -97,6 +152,25 @@
         return $supervisores;
       } catch (PDOException $e) {
         throw new Exception('Error al buscar supervisores: ' . $e->getMessage());
+      }
+    }
+
+    // CONSULTAR INFORMES Y ARCHIVOS POR ID
+    function FnBuscarInformesYArchivosPorId($conmy, $id) {
+      try {
+          $stmt = $conmy->prepare("
+              SELECT ti.id, td.infid, ta.id AS archivoid, ta.refid, ta.titulo, ta.descripcion, ta.nombre,
+              td.actividad,td.observaciones,td.diagnostico,td.trabajos 
+              FROM tblinforme ti 
+              INNER JOIN tbldetalleinforme td ON ti.id = td.infid
+              INNER JOIN tblarchivos ta ON td.id = ta.refid
+              WHERE ti.id = :Id
+          ");
+          $stmt->execute(array(':Id' => $id));
+          $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
+          return $resultados;
+      } catch (PDOException $e) {
+          throw new Exception('Error al buscar informes y archivos por ID: ' . $e->getMessage());
       }
     }
 

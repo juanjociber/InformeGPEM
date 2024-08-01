@@ -1,59 +1,23 @@
-<?php 
-    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
-    $Id = $_GET['informe'];
+<?php
+  require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+  require_once 'Datos/InformesData.php';
 
-    // INICIALIZANDO VARIABLES
-    $Ordid = $Equid = $Cliid = $Numero = $Nombre = $Fecha = $Ord_Nombre = $Cli_Nombre = $Cli_Contacto = $Ubicacion =  $Supervisor = $Equ_Codigo = $Equ_Nombre = $Equ_Marca = $Equ_Modelo = $Equ_Serie = $Equ_Datos = $Equ_Km = $Equ_Hm  = $Actividad = $Antecedentes = $Diagnostico = $Conclusiones = $Recomendaciones = $Estado ='';
+  $Id =  $_GET['informe'];
 
-    try {
-        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  try {
+    $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // CONSULTA 1
-        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, numero, nombre, fecha, ord_nombre, cli_nombre, cli_contacto, ubicacion, supervisor, equ_codigo, equ_nombre, equ_marca, equ_modelo, equ_serie, equ_datos, equ_km, equ_hm, actividad, antecedentes, dianostico, conclusiones, recomendaciones, estado FROM tblinforme WHERE id=:Id;");
-        $stmt->execute(array(':Id' => $Id));
-        $row = $stmt->fetch();
-        if ($row) {
-          $Ordid = $row['ordid'];
-          $Equid = $row['equid'];
-          $Cliid = $row['cliid'];
-          $Numero = $row['numero'];
-          $Nombre = $row['nombre'];
-          $Fecha = $row['fecha'];
-          $Orden_Nombre = $row['ord_nombre'];
-          $Cli_Nombre = $row['cli_nombre'];
-          $Cli_Contacto = $row['cli_contacto'];         
-          $Ubicacion = $row['ubicacion'];
-          $Supervisor = $row['supervisor'];
-          $Equ_Codigo = $row['equ_codigo'];
-          $Equ_Nombre = $row['equ_nombre'];
-          $Equ_Marca = $row['equ_marca'];
-          $Equ_Modelo = $row['equ_modelo'];
-          $Equ_Serie = $row['equ_serie'];
-          $Equ_Datos = $row['equ_datos'];
-          $Equ_Km = $row['equ_km'];
-          $Equ_Hm = $row['equ_hm'];
-          $Actividad = $row['actividad'];
-          $Antecedentes = $row['antecedentes'];
-          $Conclusiones = $row['conclusiones'];
-          $Diagnostico = $row['dianostico'];
-          $Recomendaciones = $row['recomendaciones'];
-          $Estado = $row['estado'];
-        }
-
-        $stmt2 = $conmy->prepare("select id, ownid, tipo, actividad, diagnostico, trabajos, observaciones from tbldetalleinforme where infid=:InfId;");
-		    $stmt2->bindParam(':InfId', $Id, PDO::PARAM_INT);
-		    $stmt2->execute();
-		    $actividades = $stmt2->fetchAll(PDO::FETCH_ASSOC);
-        
-        $act = array_map(function($elemento) {
-          return $elemento['actividad'];
-        }, $actividades);
-
-
-    } catch (PDOException $ex) {
-        $conmy = null;
-        echo $ex;
-    }
+    if (!empty($_GET['informe'])) {
+        $informe  = FnBuscarInformeMatriz($conmy, $Id);
+        $archivos = FnBuscarInformesYArchivosPorId($conmy, $Id);
+    } 
+  } catch (PDOException $e) {
+      throw new Exception($e->getMessage());
+  } catch (Exception $e) {
+      throw new Exception($e->getMessage());
+  } finally {
+      $conmy = null;
+  }
 ?>
 <!doctype html>
 <html lang="es">
@@ -133,6 +97,21 @@
       color: green; /* Cambia el color según prefieras */
       margin-right: 8px;
     }
+    .contenedor-imagen{
+        position: relative;
+        border: 1px solid #67646442;
+        border-radius: 4px;
+        padding: 5px; 
+      }
+      .caja-imagen{
+
+        margin-bottom: 5px;
+      }
+      @media(min-width:992px){
+        .caja-imagen{
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+      }
     </style>
   <body>
 
@@ -152,126 +131,138 @@
           </div>
         </div>
 
-        <div class="row border-bottom mb-2 fs-5">
-          <div class="col-12 fw-bold d-flex justify-content-between">
-            <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
-            <input type="text" class="d-none" id="txtId" value="">
-            <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
+        <div class="row">
+          <div id="generarInforme" class="col-6 col-lg-2 mt-4 mb-4">
+            <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12 fw-light" >Generar informe <i class="bi bi-clipboard2-data"></i></button>
           </div>
         </div>
 
-        <div class="row p-1 mb-0">
+        <div class="row border-bottom mb-2 fs-5">
+          <div class="col-12 fw-bold d-flex justify-content-between">
+            <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+            <input type="text" class="d-none" id="txtId" value="">
+            <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
+          </div>
+        </div>
+
+        <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
             <p class="mt-2 mb-2 fw-bold color-titulo">INFORMACIÓN GENERAL</p>
           </div>
         </div>
-
         <div class="row p-1 mb-2">
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Nro. Informe</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Numero); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->numero); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Nombre Informe</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Nombre); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->nombre); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Fecha</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Fecha); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->fecha); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">OT N°</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Orden_Nombre); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->ordnombre); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Nombre de cliente:</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->clinombre); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Contacto</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Cli_Contacto); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->clicontacto); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Lugar</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Ubicacion); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->ubicacion); ?></p>
           </div>
           <div class="col-6 col-sm-8 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Supervisor</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Supervisor); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->supervisor); ?></p>
           </div>
 
-          <div class="col-12 mb-0 border-bottom bg-light">
+          <div class="col-12 mb-2 mt-2 border-bottom bg-light">
             <p class="mt-2 mb-2 fw-bold color-titulo">INFORMACIÓN DEL EQUIPO</p>
           </div>
 
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Nombre Equipo</p>
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Equ_Nombre); ?></p>              
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equnombre); ?></p>              
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Modelo Equipo</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Equ_Modelo); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equmodelo); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Serie Equipo</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Equ_Serie); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equserie); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Marca Equipo</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Equ_Marca); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equmarca); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Kilometraje</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Equ_Km); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equKm); ?></p>
           </div>
           <div class="col-6 col-sm-4 col-lg-4 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Horas Motor</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($Equ_Hm); ?></p>
+            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equhm); ?></p>
           </div>
           <div class="col-12 mb-1">
             <p class="m-0 text-secondary" style="font-size: 13px;">Descripción</p>
-            <div class="d-flex">
+            <?php foreach($archivos as $archivo): ?>
+              <div class="d-flex">
               <span class="vineta"></span>
-              <p class="m-0 p-0 textura-contenido" id="description" style="text-align: justify;"> LOREM IPSUM DOLOR SIT AMET, CONSECTETUR ADIPISCING ELIT. CRAS EU VELIT AT URNA TEMPUS MOLESTIE ET VEL MASSA. MAECENAS VITAE ERAT RHONCUS, SODALES PURUS SED, IACULIS JUSTO.</p>
-            </div>
+              <p class="m-0 p-0 textura-contenido" id="description" style="text-align: justify;"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
+              </div>
+            <?php endforeach; ?>
           </div>
 
-          <div class="col-12 mb-0 border-bottom bg-light">
+          <div class="col-12 mb-2 mt-2 border-bottom bg-light">
             <p class="mt-2 mb-2 fw-bold color-titulo">ACTIVIDADES REALIZADAS</p>
           </div>
-          <div class="col-12 mb-1">
+
+          <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Actividad</p>
-            <div class="d-flex">
-              <span class="vineta"></span> 
-              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($Actividad); ?>.</p>
-            </div>
+            <?php foreach($archivos as $archivo): ?>
+              <div class="d-flex">
+                <span class="vineta"></span> 
+                <p class="m-0 p-0 textura-contenido" id="actividad" style="text-align: justify;"><?php echo htmlspecialchars($archivo['actividad']); ?></p>
+              </div>
+              <?php endforeach; ?>
           </div>
-          <div class="col-12 mb-1">
+          <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Antecedentes</p>
             <div class="d-flex">
               <span class="vineta"></span> 
-              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($Antecedentes); ?></p>
+              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>
             </div>
           </div>
-          <div class="col-12 mb-1">
+          <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Diagnósticos</p>
+            <?php foreach($archivos as $archivo): ?>
             <div class="d-flex">
               <span class="vineta"></span> 
-              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($Diagnostico); ?></p>
+              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($archivo['diagnostico']); ?></p>
             </div>
+            <?php endforeach; ?>
           </div>
-          <div class="col-12 mb-1">
+          <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Conclusiones</p>
             <div class="d-flex">
               <span class="vineta"></span> 
-              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($Conclusiones); ?></p>
+              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->conclusiones); ?></p>
             </div>
           </div>
-          <div class="col-12 mb-1">
+          <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Recomendaciones</p>
             <div class="d-flex">
               <span class="vineta"></span> 
-              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($Recomendaciones); ?></p>
+              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->recomendaciones); ?></p>
             </div>
           </div>
           <?php
@@ -279,7 +270,7 @@
             $EstadoClass = ($Estado == 1) ? 'bg-primary' : ($Estado == 2 ? 'bg-success' : 'bg-danger');
             $EstadoText = ($Estado == 1) ? 'Abierto' : ($Estado == 2 ? 'Cerrado' : 'Anulado');
           ?>
-          <div class="col-12 col-lg-6 mb-1">
+          <div class="col-12 col-lg-6 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Estado</p> 
             <p class="m-0 p-0 textura-contenido textura-contenido-mod <?php echo $EstadoClass; ?>"><?php echo htmlspecialchars($EstadoText); ?></p>
           </div>            
@@ -290,11 +281,20 @@
         <div class="col-12 mb-0 border-bottom bg-light">
           <p class="mt-2 mb-2 fw-bold color-titulo">IMÁGENES</p>
         </div>
-        
-        <div class="row p-2 mb-3">
-          <div class="col-12">
-            <p class="fst-italic">No hay imágenes asociadas a esta Órden.</p>
-          </div>       
+        <div class="row mt-4">
+          <!-- ARCHIVOS (TÍTULOS-IMAGENES-DESCRIPCIÓN) -->
+          <?php foreach($archivos as $archivo): ?>
+            <!-- REFID -->
+            <input type="hidden" id="refid" value="<?php echo htmlspecialchars($archivo['refid']); ?>">
+            <div class="caja-imagen col-6 col-lg-3" id="<?php echo htmlspecialchars($archivo['archivoid']); ?>">
+              <div class="contenedor-imagen">
+                <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
+                  <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(<?php echo htmlspecialchars($archivo['archivoid']); ?>)"></i>
+                  <img src="/mycloud/gesman/files/ORD_112_651f18cf9b6de.jpeg" class="img-fluid" alt="">
+                <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
+              </div>
+            </div>
+          <?php endforeach; ?>
         </div>
       </div>
 

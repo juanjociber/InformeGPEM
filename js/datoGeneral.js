@@ -11,7 +11,7 @@ const cargaSelect = () => {
     // SELECCIONAR UN ELEMENTO DE LA LISTA
     Array.from(selectItems).forEach(item => {
         item.addEventListener('click', function() {
-            selectInput.value = this.textContent;
+            selectInput.value = this.textContent.trim();
             //GUARDANDO VALOR ASOCIONADO AL SELECCIONAR
             selectInput.dataset.value = this.dataset.value;
             selectList.style.display = 'none';
@@ -55,7 +55,8 @@ const cargaSelect = () => {
 
 // LLAMANDO FUNCIÓN PARA INICIALIZAR LOS SELECT PERSONALIZADOS
 document.addEventListener('DOMContentLoaded', cargaSelect);
-  
+
+ 
 // CARGA DE FECHA ACTUAL
 // const cargaFechaActual = () =>{
 //   const today = new Date();
@@ -66,39 +67,41 @@ document.addEventListener('DOMContentLoaded', cargaSelect);
 // }
 
 const fnDatosGenerales = async () => {
-  const formData = new FormData();
-  const nombre = document.querySelector('#nombreInformeInput').value;
-  const fecha = document.querySelector('#fechaInformeInput').value;
-  const orden = document.querySelector('#OrdenTrabajoInput').value;
-  const cliente = document.querySelector('#nombreClienteInput').value;
-  const contacto = document.querySelector('#contactoInput').value;
-  const lugar = document.querySelector('#ubicacionInput').value;
-  const supervisor = document.querySelector('#supervisorInput').value;
-
-  formData.append('nombre', nombre);
-  formData.append('fecha', fecha);
-  formData.append('orden', orden);
-  formData.append('cliente', cliente);
-  formData.append('contacto', contacto);
-  formData.append('lugar', lugar);
-  formData.append('supervisor', supervisor);
-
-  console.log('Datos a enviar: ', { nombre, fecha, orden, cliente, contacto, lugar, supervisor });
-  console.log(formData);
-
-
-  // const response = await fetch('http://192.168.40.70/marcador/controller/RegistrarMarcacion.php', {
-  //   method: 'POST',
-  //   body: formData
-  // });
-  // if (!response.ok) {
-  //   throw new Error(response.status + ' ' + response.statusText);
-  // }
-  // const datos = await response.json();
-
-  // if (!datos.res) {
-  //   throw new Error(datos.msg);
-  // }
-  // console.warn('Respuesta del servidor registro marcacion : ', datos);
-}
+    const formData = new FormData();
+    // const id = document.querySelector('#idInforme').value;
+    const fecha = document.querySelector('#fechaInformeInput').value.trim();
+    const clicontacto = document.querySelector('#contactoInput').value.trim();
+    const ubicacion = document.querySelector('#ubicacionInput').value.trim();
+    const supervisor = document.querySelector('#supervisorInput').value.trim();
+  
+    // formData.append('id', id);
+    formData.append('fecha', fecha);
+    formData.append('clicontacto', clicontacto); // Asegúrate de que coincida con el nombre en PHP
+    formData.append('ubicacion', ubicacion); // Asegúrate de que coincida con el nombre en PHP
+    formData.append('supervisor', supervisor);
+  
+    console.log('Datos a enviar: ', {fecha, clicontacto, ubicacion, supervisor });
+  
+    try {
+      const response = await fetch('http://localhost/informes/update/ModificarDatosGenerales.php', {
+        method: 'POST',
+        body: formData
+      });
+  
+      if (!response.ok) {
+        throw new Error(response.status + ' ' + response.statusText);
+      }
+  
+      const datos = await response.json();
+  
+      if (!datos.res) {
+        throw new Error(datos.msg);
+      }
+  
+      console.warn('Respuesta del servidor registro marcacion: ', datos);
+    } catch (error) {
+      console.error('Error: ', error);
+    }
+  }
+  
 

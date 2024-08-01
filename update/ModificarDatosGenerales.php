@@ -21,6 +21,11 @@ require_once '../datos/InformesData.php';
 try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+    // if (empty($_POST['id']) || empty($_POST['fecha']) || empty($_POST['clicontacto']) || empty($_POST['ubicacion']) || empty($_POST['supervisor'])) {
+    //     throw new Exception("La información está incompleta.");
+    // }
+
+    
     if (empty($_POST['fecha']) || empty($_POST['clicontacto']) || empty($_POST['ubicacion']) || empty($_POST['supervisor'])) {
         throw new Exception("La información está incompleta.");
     }
@@ -28,6 +33,7 @@ try {
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
     $informe = new stdClass();
+    // $informe->id = $_POST['id'];
     $informe->fecha = $_POST['fecha'];
     $informe->clicontacto = $_POST['clicontacto'];
     $informe->ubicacion = $_POST['ubicacion'];
