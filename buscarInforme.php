@@ -128,7 +128,7 @@
         </div>
         
         <div class="col-6 col-lg-3 mt-2 mb-2">
-          <button type="button" class="btn btn-primary text-uppercase fw-light col-12" onclick="fnBuscarInforme();">Buscar <i class="bi bi-search"></i></button>
+          <button type="button" class="btn btn-primary text-uppercase fw-light col-12" onclick="fnBuscarInforme();"><i class="bi bi-search"></i> Buscar</button>
         </div>  
       </div>
 

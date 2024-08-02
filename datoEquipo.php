@@ -35,7 +35,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="css/main.css">
 
     <title>Equipos</title>
@@ -113,14 +113,15 @@
                       <li class="breadcrumb-item active fw-bold" aria-current="page">EQUIPO</li>
                       <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php" class="text-decoration-none">RESUMEN</a></li>
                       <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php" class="text-decoration-none">ACTIVIDAD</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php" class="text-decoration-none">ANEXOS</a></li>
                   </ol>
               </nav>
           </div>
       </div>
       <div class="row mb-3">
         <div class="col-12">
-          <button type="button" class="btn btn-outline-primary" onclick="fnBuscarEquipoPorId(<?php echo htmlspecialchars($Id); ?>)"><i class="bi bi-pencil-square"></i></button>
-          <button type="button" class="btn btn-outline-secondary" onclick="fnAbrirModalRegistrarImagen()" ><i class="bi bi-paperclip"></i></button>
+          <button type="button" class="btn btn-outline-primary" onclick="fnBuscarEquipoPorId(<?php echo htmlspecialchars($Id); ?>)"><i class="bi bi-pencil-square"> EDITAR</i></button>
+          <button type="button" class="btn btn-outline-secondary" onclick="fnAbrirModalRegistrarImagen()"><i class="bi bi-paperclip"></i> AGREGAR</button>
         </div>
       </div>
       <hr>
@@ -154,15 +155,14 @@
           <label class="form-label mb-0">Horas de motor</label>
           <p class="mb-0" style="font-size:15px" id="horasMotorEquipo"><?php echo htmlspecialchars($informe->equhm); ?></p>
         </div>
+
         <!-- ARCHIVOS (TÍTULOS-IMAGENES-DESCRIPCIÓN) -->
         <?php foreach($archivos as $archivo): ?>
-          <!-- REFID -->
-          <input type="hidden" id="refid" value="<?php echo htmlspecialchars($archivo['refid']); ?>">
-          <div class="caja-imagen col-6 col-lg-3" id="<?php echo htmlspecialchars($archivo['archivoid']); ?>">
+          <div class="caja-imagen col-6 col-lg-3" id="<?php echo htmlspecialchars($archivo['id']); ?>">
             <div class="contenedor-imagen">
               <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
-                <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(<?php echo htmlspecialchars($archivo['archivoid']); ?>)"></i>
-                <img src="/mycloud/gesman/files/ORD_112_651f18cf9b6de.jpeg" class="img-fluid" alt="">
+                <i class="bi bi-x-lg" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(<?php echo htmlspecialchars($archivo['id']); ?>)"></i>
+                <img src="/mycloud/gesman/files/<?php echo htmlspecialchars($archivo['nombre']); ?>" class="img-fluid" alt="">
               <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
             </div>
           </div>
@@ -175,7 +175,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fs-5 text-uppercase" id="equipoModalLabel">Datos del equipo</h5>
+            <h5 class="modal-title fs-5 text-uppercase" id="equipoModalLabel">Actualizar datos de equipo</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <!-- START MODAL-BODY -->
@@ -206,7 +206,7 @@
                 <input type="text" id="horaMotorModalEquipo" class="form-control" placeholder="Ingrese horas de motor."></textarea>
               </div>
               <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12 fw-light"onclick="fnEditarDatosEquipos();" >Editar <i class="bi bi-pencil-square"></i></button>
+                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12"onclick="fnEditarDatosEquipo();" ><i class="bi bi-floppy"></i> Guadar</button>
               </div>
             </div>
           </div>
@@ -220,7 +220,7 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fs-5 text-uppercase" id="modalAgregarImagenLabel">Registrar Imagen </h5>
+            <h5 class="modal-title fs-5 text-uppercase" id="modalAgregarImagenLabel">Agregar imagen-detalle</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -239,7 +239,7 @@
                 <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="descripcionInput" placeholder="Ingresar título."></textarea>
               </div>
               <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()">Guardar <i class="bi bi-floppy"></i></button>
+                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()"><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </div>
           </div>

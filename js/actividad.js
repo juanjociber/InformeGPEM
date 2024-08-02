@@ -183,12 +183,12 @@ const fnAbrirModalRegistrarImagen = (id) => {
 
 // REGISTRAR IMAGEN
 const fnRegistrarImagen = async () => {
-  const refid = document.getElementById('cabeceraIdInput').value;
+  const id = document.getElementById('idInforme').value;
   const titulo = document.getElementById('registrarTituloInput').value;
   const descripcion = document.getElementById('registarDescripcionInput').value;
   const archivo = document.getElementById('adjuntarImagenInput').files[0];
 
-  if (!refid || !titulo || !descripcion || !archivo) {
+  if (!id || !titulo || !descripcion || !archivo) {
     console.log("Todos los campos son obligatorios.");
     return;
   }
@@ -197,11 +197,11 @@ const fnRegistrarImagen = async () => {
   reader.onloadend = async () => {
     const base64 = reader.result.split(',')[1]; 
     const formData = new FormData();
-    formData.append('refid', refid);
+    formData.append('id', id);
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('archivo', base64); 
-    console.log(refid,titulo,descripcion,archivo);
+    console.log(id,titulo,descripcion,archivo);
 
     try {
       const response = await fetch('http://localhost/informes/insert/AgregarArchivo.php', {
@@ -214,7 +214,7 @@ const fnRegistrarImagen = async () => {
       if (result.res) {
         console.log('Archivo registrado con éxito.');
         // LIMPIANDO MODAL
-        document.getElementById('cabeceraIdInput').value = '';
+        //document.getElementById('cabeceraIdInput').value = '';
         document.getElementById('registrarTituloInput').value = '';
         document.getElementById('registarDescripcionInput').value = '';
         document.getElementById('adjuntarImagenInput').value = '';

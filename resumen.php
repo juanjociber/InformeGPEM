@@ -134,6 +134,7 @@
                         <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php" class="text-decoration-none">EQUIPO</a></li>
                         <li class="breadcrumb-item active fw-bold" aria-current="page">RESUMEN</li>
                         <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php" class="text-decoration-none">ACTIVIDAD</a></li>
+                        <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php" class="text-decoration-none">ANEXOS</a></li>
                     </ol>
                 </nav>
             </div>

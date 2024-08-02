@@ -122,7 +122,7 @@
             <a href="/informes/buscarInforme.php" class="col-4">
               <button type="button" class="btn btn-outline-primary col-12 fw-bold d-flex flex-column align-items-center" style="border-radius:0"><i class="bi bi-list-task"></i><span class="text-button"> Informes</span></button>
             </a>
-            <a href="/informes/datoGeneral.php" class="col-4">
+            <a href="/informes/datoGeneral.php?informe=<?php echo htmlspecialchars($Id);?>" class="col-4">
               <button type="button" class="btn btn-outline-primary col-12 fw-bold d-flex flex-column align-items-center" style="border-radius:0; border-left:0"><i class="bi bi-pencil-square"></i><span class="text-button"> Editar</span></button>
             </a>
             <a href="#" class="col-4">
@@ -133,7 +133,7 @@
 
         <div class="row">
           <div id="generarInforme" class="col-6 col-lg-2 mt-4 mb-4">
-            <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12 fw-light" >Generar informe <i class="bi bi-clipboard2-data"></i></button>
+            <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" >Descargar <i class="bi bi-cloud-download"></i></button>
           </div>
         </div>
 
@@ -216,6 +216,7 @@
             <p class="m-0 text-secondary" style="font-size: 13px;">Descripción</p>
             <?php foreach($archivos as $archivo): ?>
               <div class="d-flex">
+              <p><?php echo htmlspecialchars($archivo['titulo']); ?></p>
               <span class="vineta"></span>
               <p class="m-0 p-0 textura-contenido" id="description" style="text-align: justify;"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
               </div>
@@ -225,7 +226,13 @@
           <div class="col-12 mb-2 mt-2 border-bottom bg-light">
             <p class="mt-2 mb-2 fw-bold color-titulo">ACTIVIDADES REALIZADAS</p>
           </div>
-
+          <div class="col-12 mb-2 mt-2">
+            <p class="m-0 text-secondary" style="font-size: 13px;">Antecedentes</p>
+            <div class="d-flex">
+              <span class="vineta"></span> 
+              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>
+            </div>
+          </div>
           <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Actividad</p>
             <?php foreach($archivos as $archivo): ?>
@@ -234,13 +241,6 @@
                 <p class="m-0 p-0 textura-contenido" id="actividad" style="text-align: justify;"><?php echo htmlspecialchars($archivo['actividad']); ?></p>
               </div>
               <?php endforeach; ?>
-          </div>
-          <div class="col-12 mb-2 mt-2">
-            <p class="m-0 text-secondary" style="font-size: 13px;">Antecedentes</p>
-            <div class="d-flex">
-              <span class="vineta"></span> 
-              <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>
-            </div>
           </div>
           <div class="col-12 mb-2 mt-2">
             <p class="m-0 text-secondary" style="font-size: 13px;">Diagnósticos</p>
@@ -299,32 +299,6 @@
       </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-    <!-- <script src="../js/vistaPreliminar.js"></script> -->
-     <script>
-      
-      // iniciando
-      // document.getElementById('description').value = '\u2022 ';
-
-      document.getElementById('description').value = '+';
-      
-      document.getElementById('description').addEventListener('input', function(event) {
-        console.log(event)
-          let textarea = event.target;
-          let value = textarea.value;
-          let lastChar = value.slice(-1);
-
-          if (lastChar === '.') {
-              // Salto de linea al detectar .
-              let lines = value.split('\n');
-              // Obteniendo la ultima liea
-              lines[lines.length - 1] = '\u2022 ' + lines[lines.length - 1];
-              // Une la nueva liena
-              textarea.value = lines.join('\n');
-              // agrega una nueva linea 
-              textarea.value += '\n\u2022 ';
-          }
-      });
-
-     </script>
+    <script src="js/vistaPreliminar.js"></script>
   </body>
 </html>

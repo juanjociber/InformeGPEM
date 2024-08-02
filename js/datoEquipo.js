@@ -1,16 +1,15 @@
 // INICIALIZANDO VARIABLES PARA MODAL GLOBAL
-// let modalEditarEquipo;
+let modalEquipo;
 
-// document.addEventListener('DOMContentLoaded', () => {
-//   modalEditarEquipo = new bootstrap.Modal(document.getElementById('modalEditarEquipo'), { keyboard: false });
-// });
+document.addEventListener('DOMContentLoaded', () => {
+  modalEquipo = new bootstrap.Modal(document.getElementById('modalEquipo'), { keyboard: false });
+});
 
 // FUNCIÓN BUSCAR EQUIPO POR ID
 const fnBuscarEquipoPorId = async (id)=>{
-  console.log(id);
+  //console.log(id);
+  modalEquipo.show();
   document.getElementById('idInforme').value = id;
-  const modal = new bootstrap.Modal(document.getElementById('modalEquipo'), { keyboard: false });
-  modal.show();
   const formData = new FormData();
   formData.append('id', id);
 
@@ -20,11 +19,20 @@ const fnBuscarEquipoPorId = async (id)=>{
       body: formData
     });
 
-    if (!response.ok) { throw new Error(response.status + ' ' + response.statusText); }
+    if (!response.ok) { 
+      throw new Error(response.status + ' ' + response.statusText); 
+    }
     const datos = await response.json();
     
-    if (!datos.res) { throw new Error(datos.msg); }
-    console.log('Respuesta del servidor: ', datos.data);
+    if (!datos.res) { 
+      Swal.fire({
+        title: "Información de servidor",
+        text: datos.msg,
+        icon: "info",
+        timer:3000,
+      }); 
+    }
+    //console.log('Respuesta del servidor: ', datos.data);
     document.getElementById('nombreModalEquipo').value = datos.data.nombre;
     document.getElementById('marcaModalEquipo').value = datos.data.equmarca;
     document.getElementById('modeloModalEquipo').value = datos.data.equmodelo;
@@ -32,11 +40,18 @@ const fnBuscarEquipoPorId = async (id)=>{
     document.getElementById('kilometrajeModalEquipo').value = datos.data.equkm;
     document.getElementById('horaMotorModalEquipo').value = datos.data.equhm;
   } 
-  catch (error) { console.error('Error:', error); }
+  catch (error) { 
+    Swal.fire({
+      title: "Información de servidor",
+      text: error,
+      icon: "error",
+      timer:3000,
+    });
+  }
 };
 
 // FUNCIÓN MÓDIFICAR EQUIPOS
-const fnEditarDatosEquipos = async () => {
+const fnEditarDatosEquipo = async () => {
   const id = document.getElementById('idInforme').value;
   const equnombre = document.getElementById('nombreModalEquipo').value.trim();
   const equmarca = document.getElementById('marcaModalEquipo').value.trim();
@@ -45,7 +60,7 @@ const fnEditarDatosEquipos = async () => {
   const equkm = document.getElementById('kilometrajeModalEquipo').value.trim();
   const equhm = document.getElementById('horaMotorModalEquipo').value.trim();
 
-  console.log({ id, equnombre, equmarca, equmodelo, equserie, equkm, equhm });
+  //console.log({ id, equnombre, equmarca, equmodelo, equserie, equkm, equhm });
 
   const formData = new FormData();
   formData.append('id',id);
@@ -71,13 +86,24 @@ const fnEditarDatosEquipos = async () => {
       document.querySelector('#modeloEquipo').textContent = equmodelo;
       document.querySelector('#serieEquipo').textContent = equserie;
       document.querySelector('#kilometrajeEquipo').textContent = equkm;
-      document.querySelector('#horaMotorEquipo').textContent = equhm;
-    
-      console.log('Actividad modificada:', datos);
+      document.querySelector('#horasMotorEquipo').textContent = equhm;
       // CERRAR MODAL
-      modalEditarEquipo.hide();
+      modalEquipo.hide();
+      Swal.fire({
+        title: "Información de servidor",
+        text: datos.msg,
+        icon: "success",
+        time:3000
+      });
   } 
-  catch (error) { console.error('Error:', error); }
+  catch (error) {
+    Swal.fire({
+      title: "Información de servidor",
+      text: error,
+      icon: "error",
+      timer:3000
+    }); 
+  }
 };
 
 
@@ -101,7 +127,14 @@ const fnEliminarImagen = async (id) => {
           if (elemento) {
               elemento.remove();
           }
-          console.log('Imagen eliminada correctamente.');
+          Swal.fire({
+            title: "Información de servidor",
+            text: result.msg,
+            icon: "success"
+          });
+          setTimeout(() => {
+            location.reload();          
+          }, 3000);
       } else {
           console.log('Error eliminando la imagen: ' + result.msg);
       }
@@ -111,22 +144,20 @@ const fnEliminarImagen = async (id) => {
   }
  };
 
- 
 // ABRIR MODAL PARA REGISTRAR IMAGEN
- const fnAbrirModalRegistrarImagen = () => {
+const fnAbrirModalRegistrarImagen = () => {
   const modal = new bootstrap.Modal(document.getElementById('modalAgregarImagen'), { keyboard: false });
   modal.show();
-  // document.getElementById('cabeceraIdInput').value = id;
 };
 
 // REGISTRAR IMAGEN
 const fnRegistrarImagen = async () => {
-  const refid = document.getElementById('refid').value;
+  const id = document.getElementById('idInforme').value;
   const titulo = document.getElementById('tituloInput').value;
   const descripcion = document.getElementById('descripcionInput').value;
   const archivo = document.getElementById('imagenInput').files[0];
 
-  if (!refid || !titulo || !descripcion || !archivo) {
+  if (!id || !titulo || !descripcion || !archivo) {
     console.log("Todos los campos son obligatorios.");
     return;
   }
@@ -135,24 +166,22 @@ const fnRegistrarImagen = async () => {
   reader.onloadend = async () => {
     const base64 = reader.result.split(',')[1]; 
     const formData = new FormData();
-    formData.append('refid', refid);
+    formData.append('id', id);
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('archivo', base64); 
-    console.log(refid,titulo,descripcion,archivo);
+    console.log(id,titulo,descripcion,archivo);
 
     try {
-      const response = await fetch('http://localhost/informes/insert/AgregarArchivo.php', {
+      const response = await fetch('http://localhost/informes/insert/AgregarArchivoEquipo.php', {
         method: 'POST',
         body: formData
       });
 
       const result = await response.json();
-
+     
       if (result.res) {
-        console.log('Archivo registrado con éxito.');
         // LIMPIANDO MODAL
-        document.getElementById('refid').value = '';
         document.getElementById('tituloInput').value = '';
         document.getElementById('descripcionInput').value = '';
         document.getElementById('imagenInput').value = '';
@@ -160,13 +189,24 @@ const fnRegistrarImagen = async () => {
         if (modalInstance) {
           modalInstance.hide();
         }
-        location.reload();
+        Swal.fire({
+          title: "Información de servidor",
+          text: result.msg,
+          icon: "success"
+        });
+        setTimeout(() => {
+          location.reload();          
+        }, 3000);       
       } else {
         console.log('Error al registrar el archivo: ' + result.msg);
       }
     } catch (error) {
-      console.error('Error:', error);
-      console.log('Error al registrar el archivo.');
+        Swal.fire({
+          title: "Información de servidor",
+          text: error,
+          icon: "error",
+          timer:3000,
+        });
     }
   };
   // CONVIRTIENDO ARCHIVO A base64

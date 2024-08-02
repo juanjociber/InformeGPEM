@@ -21,27 +21,23 @@ require_once '../datos/InformesData.php';
 try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // if (empty($_POST['id']) || empty($_POST['fecha']) || empty($_POST['clicontacto']) || empty($_POST['ubicacion']) || empty($_POST['supervisor'])) {
-    //     throw new Exception("La información está incompleta.");
-    // }
-
-    
-    if (empty($_POST['fecha']) || empty($_POST['clicontacto']) || empty($_POST['ubicacion']) || empty($_POST['supervisor'])) {
+    if (empty($_POST['id']) || empty($_POST['fecha']) || empty($_POST['clicontacto']) || empty($_POST['supervisor'])) {
         throw new Exception("La información está incompleta.");
     }
-    
+
+        
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
     $informe = new stdClass();
-    // $informe->id = $_POST['id'];
+    $informe->id = $_POST['id'];
     $informe->fecha = $_POST['fecha'];
     $informe->clicontacto = $_POST['clicontacto'];
-    $informe->ubicacion = $_POST['ubicacion'];
+    $informe->ubicacion = empty($_POST['ubicacion']) ? NULL : $_POST['ubicacion'] ;
     $informe->supervisor = $_POST['supervisor'];
     $informe->actualizacion = $USUARIO;
 
     // LOG DATOS RECIBIDOS
-    error_log("Datos recibidos: " . json_encode($informe));
+    //error_log("Datos recibidos: " . json_encode($informe));
 
     if (FnModificarInformeDatosGenerales($conmy, $informe)) {
         $data['msg'] = "Se modificó los datos generales.";
@@ -59,6 +55,6 @@ try {
     $conmy = null;
 }
 
-ob_end_clean();
+//ob_end_clean();
 echo json_encode($data);
 ?>

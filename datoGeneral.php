@@ -18,6 +18,17 @@
   } finally {
       $conmy = null;
   }
+
+  // VERIFICAR SI EL SUPERVISOR PERTENECE AL CLIENTE
+  $supervisorValido = false;
+  foreach ($supervisores as $supervisor) {
+    if ($supervisor['supervisor'] == $informe->supervisor) {
+        $supervisorValido = true;
+        break;
+    }
+  }
+  $supervisorInputValue = $supervisorValido ? $informe->supervisor : '';
+
 ?>
 
 <!doctype html>
@@ -33,7 +44,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="css/main.css">
     <title>Datos Generales</title>
   </head>
@@ -90,6 +101,7 @@
                     <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php" class="text-decoration-none">EQUIPO</a></li>
                     <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php" class="text-decoration-none">RESUMEN</a></li>
                     <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php" class="text-decoration-none">ACTIVIDAD</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php" class="text-decoration-none">ANEXOS</a></li>
                 </ol>
             </nav>
         </div>
@@ -97,7 +109,9 @@
 
       <!--DATOS GENERALES-->
       <div class="row g-3">
+        
         <input type="hidden" id="idInforme" value="<?php echo htmlspecialchars($Id) ?>">
+
         <div class="col-6 col-md-4 col-lg-4">
           <label for="nombreInformeInput" class="form-label mb-0">Nro. Informe</label>
           <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($informe->nombre); ?>" disabled>
@@ -136,7 +150,7 @@
         <div class="custom-select-container col-md-6 col-lg-6 mt-2">
           <label for="supervisorInput" class="form-label mb-0">Supervisor</label>
           <div class="custom-select-wrapper">
-            <input type="text" class="custom-select-input" id="supervisorInput" value="<?php echo  $informe->supervisor ?>" placeholder="Seleccionar supervisor" />
+            <input type="text" class="custom-select-input" id="supervisorInput" value="<?php echo  htmlspecialchars($supervisorInputValue);?>" placeholder="Seleccionar supervisor" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="supervisorList" class="custom-select-list">
               <!-- SUPERVISORES -->
@@ -154,7 +168,7 @@
 
       <div class="row mt-4">
         <div class="col-6 col-md-3 col-lg-2 mt-2">
-          <button id="guardarDataEquipo" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnDatosGenerales()" >Guardar <i class="bi bi-floppy"></i></button>
+          <button id="guardarDataEquipo" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnGuardarDatosGenerales()" >Guardar <i class="bi bi-floppy"></i></button>
         </div>
       </div> 
 

@@ -53,7 +53,7 @@
             $res = false;
             $stmt = $conmy->prepare("
                 UPDATE tblinforme 
-                SET fecha = :Fecha, cli_contacto = :CliContacto, ubicacion = :Ubicacion, supervisor = :Supervisor, actualizacion = :Actualizacion
+                SET fecha = :Fecha, cli_contacto = :CliContacto, ubicacion = :Ubicacion, supervisor = :Supervisor, actualizacion = :Actualizacion where id=:Id
                 
                 ");
             $params = array(
@@ -61,7 +61,8 @@
                 ':CliContacto' => $informe->clicontacto,
                 ':Ubicacion' => $informe->ubicacion,
                 ':Supervisor' => $informe->supervisor,
-                ':Actualizacion' => $informe->actualizacion
+                ':Actualizacion' => $informe->actualizacion,
+                ':Id' => $informe->id,
             );
             if ($stmt->execute($params)) {
                 $res = true;
@@ -83,7 +84,7 @@
             equ_serie = :EquSerie, 
             equ_km = :EquKm, 
             equ_hm = :EquHm, 
-            actualizacion = :Actualizacion where id=Id;");
+            actualizacion = :Actualizacion where id=:Id;");
             $params = array(
               ':EquNombre' => $informe->equnombre,
               ':EquMarca' => $informe->equmarca,
@@ -159,13 +160,7 @@
     function FnBuscarInformesYArchivosPorId($conmy, $id) {
       try {
           $stmt = $conmy->prepare("
-              SELECT ti.id, td.infid, ta.id AS archivoid, ta.refid, ta.titulo, ta.descripcion, ta.nombre,
-              td.actividad,td.observaciones,td.diagnostico,td.trabajos 
-              FROM tblinforme ti 
-              INNER JOIN tbldetalleinforme td ON ti.id = td.infid
-              INNER JOIN tblarchivos ta ON td.id = ta.refid
-              WHERE ti.id = :Id
-          ");
+              SELECT * FROM tblarchivos WHERE refid=:Id AND tabla='INF'");
           $stmt->execute(array(':Id' => $id));
           $resultados = $stmt->fetchAll(PDO::FETCH_ASSOC);
           return $resultados;
@@ -326,7 +321,7 @@
         try {
             $res=false;
             $stmt = $conmy->prepare("insert into tblarchivos(refid, tabla, nombre, titulo, descripcion, tipo, actualizacion) values(:RefId, :Tabla, :Nombre, :Titulo, :Descripcion, :Tipo, :Actualizacion);");
-            $params = array(':RefId'=>$imagen->refid, ':Tabla'=>$imagen->tabla, ':Nombre'=>$imagen->nombre, ':Titulo'=>$imagen->titulo, ':Descripcion'=>$imagen->descripcion, ':Tipo'=>$imagen->tipo, ':Actualizacion'=>$imagen->usuario);
+            $params = array(':RefId'=>$imagen->id, ':Tabla'=>$imagen->tabla, ':Nombre'=>$imagen->nombre, ':Titulo'=>$imagen->titulo, ':Descripcion'=>$imagen->descripcion, ':Tipo'=>$imagen->tipo, ':Actualizacion'=>$imagen->usuario);
             if($stmt->execute($params)){
                 $res=true;
             }
@@ -339,7 +334,7 @@
     function FnEliminarArchivo($conmy, $id) {
         try {
             $res = false;
-            $stmt = $conmy->prepare("DELETE FROM tblarchivos WHERE id = :Id");
+            $stmt = $conmy->prepare("DELETE FROM tblarchivos WHERE id =:Id");
             $params = array(':Id' => $id);
             if ($stmt->execute($params)) {
                 $res = true;

@@ -129,7 +129,11 @@ const fnBuscarInforme = async () => {
     if (data.res) {
       mostrarInformes(data.data);
     } else {
-      console.log('Mensaje del servidor:', data.msg);
+      Swal.fire({
+        title: "Información de servidor",
+        text: data.msg,
+        icon: "info"
+      });
     }
   } catch (error) {
     console.error('Error:', error);
@@ -147,7 +151,7 @@ function mostrarInformes(informes) {
   }
   // LIMPIANDO CONTENIDO PREVIO DEL CONTENEDOR
   resultadoDiv.innerHTML = '';
-  // VERIFICANDO QUE INFOREM SEA UN ARRAY CON ELEMENTOS
+  // VERIFICANDO QUE INFORME SEA UN ARRAY CON ELEMENTOS
   if (!Array.isArray(informes) || informes.length === 0) {
     resultadoDiv.innerHTML = '<div>No se encontraron informes.</div>';
     return;

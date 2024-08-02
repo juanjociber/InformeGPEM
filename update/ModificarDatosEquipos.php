@@ -20,11 +20,7 @@ require_once '../datos/InformesData.php';
 
 try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-    // if (empty($_POST['equnombre']) || empty($_POST['equmarca']) || empty($_POST['equmodelo']) || empty($_POST['equserie']) || empty($_POST['equkm']) || empty($_POST['equhm'])) {
-    //     throw new Exception("La información está incompleta.");
-    // }
-
+  
     $USUARIO = date('Ymd-His (').'jhuiza'.')'; // Identificador de usuario o acción
 
     $informe = new stdClass();
@@ -33,8 +29,8 @@ try {
     $informe->equmarca = empty($_POST['equmarca']) ? null : $_POST['equmarca'];
     $informe->equmodelo = empty($_POST['equmodelo']) ? null : $_POST['equmodelo'];
     $informe->equserie = empty($_POST['equserie']) ? null :$_POST['equserie'];
-    $informe->equkm = empty($_POST['equkm']) ? null : $_POST['equkm'];
-    $informe->equhm = empty($_POST['equhm']) ? null : $_POST['equhm'];
+    $informe->equkm = empty($_POST['equkm']) ? 0 : $_POST['equkm'];
+    $informe->equhm = empty($_POST['equhm']) ? 0 : $_POST['equhm'];
     $informe->actualizacion = $USUARIO;
 
     // LOG DATOS RECIBIDOS

@@ -65,7 +65,7 @@
 									$html.='
                     <div class="contenedor-imagen" id="archivo-'.$elemento['id'].'">
                       <p class="text-center mt-4 mb-1">'.$elemento['titulo'].'</p>
-                        <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen('.$elemento['id'].')"></i>
+                        <i class="bi bi-x-lg" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen('.$elemento['id'].')"></i>
                         <img src="/mycloud/gesman/files/'.$elemento['nombre'].'" class="img-fluid" alt="">
                       <p class="text-center">'.$elemento['descripcion'].'</p>
                     </div>';
@@ -239,7 +239,7 @@
     </style>
 </head>
 <body>
-
+  <input type="hidden" id="idInforme" value="<?php echo htmlspecialchars($Id); ?>">
 	<div class="container">
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
@@ -256,6 +256,7 @@
             <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php" class="text-decoration-none">EQUIPO</a></li>
             <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php" class="text-decoration-none">RESUMEN</a></li>
             <li class="breadcrumb-item active fw-bold" aria-current="page">ACTIVIDAD</li>
+            <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php" class="text-decoration-none">ANEXOS</a></li>
           </ol>
         </nav>
       </div>

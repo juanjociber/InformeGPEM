@@ -1,5 +1,5 @@
+// FUNCIÓN SELECT PERSONALIZADO
 const cargaSelect = () => {
-  // FUNCIÓN
   const initCustomSelect = (inputId, listId) => {
     const selectInput = document.getElementById(inputId);
     const selectList = document.getElementById(listId);
@@ -53,35 +53,18 @@ const cargaSelect = () => {
   initCustomSelect('supervisorInput', 'supervisorList');
 };
 
-// LLAMANDO FUNCIÓN PARA INICIALIZAR LOS SELECT PERSONALIZADOS
+// LLAMANDO FUNCIÓN CARGA DE SELECT
 document.addEventListener('DOMContentLoaded', cargaSelect);
 
- 
-// CARGA DE FECHA ACTUAL
-// const cargaFechaActual = () =>{
-//   const today = new Date();
-//   const year = today.getFullYear();
-//   const month = String(today.getMonth() + 1).padStart(2, '0');const day = String(today.getDate()).padStart(2, '0');
-//   const formattedDate = `${year}-${month}-${day}`;
-//   document.getElementById('fechaInforme').value = formattedDate;
-// }
-
-const fnDatosGenerales = async () => {
-    const formData = new FormData();
-    // const id = document.querySelector('#idInforme').value;
-    const fecha = document.querySelector('#fechaInformeInput').value.trim();
-    const clicontacto = document.querySelector('#contactoInput').value.trim();
-    const ubicacion = document.querySelector('#ubicacionInput').value.trim();
-    const supervisor = document.querySelector('#supervisorInput').value.trim();
-  
-    // formData.append('id', id);
-    formData.append('fecha', fecha);
-    formData.append('clicontacto', clicontacto); // Asegúrate de que coincida con el nombre en PHP
-    formData.append('ubicacion', ubicacion); // Asegúrate de que coincida con el nombre en PHP
-    formData.append('supervisor', supervisor);
-  
-    console.log('Datos a enviar: ', {fecha, clicontacto, ubicacion, supervisor });
-  
+// FUNCIÓN GUARDAR DATOS GENERALES
+const fnGuardarDatosGenerales = async () => {
+    const formData = new FormData();      
+    formData.append('id', document.querySelector('#idInforme').value);
+    formData.append('fecha', document.querySelector('#fechaInformeInput').value.trim());
+    formData.append('clicontacto', document.querySelector('#contactoInput').value.trim()); 
+    formData.append('ubicacion', document.querySelector('#ubicacionInput').value.trim()); 
+    formData.append('supervisor', document.querySelector('#supervisorInput').value.trim());
+    //console.log('Datos a enviar: ', {id, fecha, clicontacto, ubicacion, supervisor });
     try {
       const response = await fetch('http://localhost/informes/update/ModificarDatosGenerales.php', {
         method: 'POST',
@@ -91,16 +74,29 @@ const fnDatosGenerales = async () => {
       if (!response.ok) {
         throw new Error(response.status + ' ' + response.statusText);
       }
-  
       const datos = await response.json();
-  
       if (!datos.res) {
-        throw new Error(datos.msg);
+        //throw new Error(datos.msg);
+        Swal.fire({
+          title: "Información de servidor",
+          text: datos.msg,
+          icon: "info",
+          time:3000,
+        });
       }
-  
-      console.warn('Respuesta del servidor registro marcacion: ', datos);
+      Swal.fire({
+        title: "Respuesta del servidor",
+        text: datos.msg,
+        icon: "success",
+        timer:3000,
+      });
     } catch (error) {
-      console.error('Error: ', error);
+      Swal.fire({
+        title: "Información de servidor",
+        text: error,
+        icon: "info",
+        timer:3000,
+      });
     }
   }
   

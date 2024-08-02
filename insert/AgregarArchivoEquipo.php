@@ -17,10 +17,10 @@ $res = false;
 $msg = 'Error general.';
 $imagenRegistrada = null;
 
-try {
-    include($_SERVER['DOCUMENT_ROOT'].'/informes/gesman/connection/ConnGesmanDb.php');
-    require_once '../datos/InformesData.php';
+include($_SERVER['DOCUMENT_ROOT'].'/informes/gesman/connection/ConnGesmanDb.php');
+require_once '../datos/InformesData.php';
 
+try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     if (empty($_POST['id']) || empty($_POST['archivo'])) {
@@ -29,15 +29,15 @@ try {
 
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
-    $FileName = 'INFD'.'_'.$_POST['id'].'_'.uniqid().'.jpeg';
+    $FileName = 'INF'.'_'.$_POST['id'].'_'.uniqid().'.jpeg';
     $FileType = 'IMG';
     $FileEncoded = str_replace("data:image/jpeg;base64,", "", $_POST['archivo']);
     $FileDecoded = base64_decode($FileEncoded);
     file_put_contents($_SERVER['DOCUMENT_ROOT']."/mycloud/gesman/files/".$FileName, $FileDecoded);
 
     $imagen = new stdClass();
-    $imagen->refid = $_POST['id'];
-    $imagen->tabla = 'INFD';
+    $imagen->id = $_POST['id'];
+    $imagen->tabla = 'INF';
     $imagen->nombre = $FileName;
     $imagen->titulo = empty($_POST['titulo']) ? $FileName : $_POST['titulo'];
     $imagen->descripcion = empty($_POST['descripcion']) ? null : $_POST['descripcion'];
