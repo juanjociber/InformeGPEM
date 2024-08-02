@@ -58,47 +58,47 @@ document.addEventListener('DOMContentLoaded', cargaSelect);
 
 // FUNCIÓN GUARDAR DATOS GENERALES
 const fnGuardarDatosGenerales = async () => {
-    const formData = new FormData();      
-    formData.append('id', document.querySelector('#idInforme').value);
-    formData.append('fecha', document.querySelector('#fechaInformeInput').value.trim());
-    formData.append('clicontacto', document.querySelector('#contactoInput').value.trim()); 
-    formData.append('ubicacion', document.querySelector('#ubicacionInput').value.trim()); 
-    formData.append('supervisor', document.querySelector('#supervisorInput').value.trim());
-    //console.log('Datos a enviar: ', {id, fecha, clicontacto, ubicacion, supervisor });
-    try {
-      const response = await fetch('http://localhost/informes/update/ModificarDatosGenerales.php', {
-        method: 'POST',
-        body: formData
+  const formData = new FormData();      
+  formData.append('id', document.querySelector('#idInforme').value);
+  formData.append('fecha', document.querySelector('#fechaInformeInput').value.trim());
+  formData.append('clicontacto', document.querySelector('#contactoInput').value.trim()); 
+  formData.append('ubicacion', document.querySelector('#ubicacionInput').value.trim()); 
+  formData.append('supervisor', document.querySelector('#supervisorInput').value.trim());
+  //console.log('Datos a enviar: ', {id, fecha, clicontacto, ubicacion, supervisor });
+  try {
+    const response = await fetch('http://localhost/informes/update/ModificarDatosGenerales.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(response.status + ' ' + response.statusText);
+    }
+    const datos = await response.json();
+
+    if (datos.res) {
+      Swal.fire({
+        title: "Información de servidor",
+        text: datos.msg,
+        icon: "success",
+        timer:2000,
       });
-  
-      if (!response.ok) {
-        throw new Error(response.status + ' ' + response.statusText);
-      }
-      const datos = await response.json();
-      if (!datos.res) {
-        Swal.fire({
-          title: "Información de servidor",
-          text: datos.msg,
-          icon: "success",
-          timer:2000,
-        });
-        console.log('linea 85',datos.msg);
-      }
+    } else {
       Swal.fire({
         title: "Respuesta del servidor",
         text: datos.msg,
-        icon: "success",
+        icon: "info",
         timer:2000
       });
-      console.log('linea 93',datos.msg);
-    } catch (error) {
-      Swal.fire({
-        title: "Información de servidor",
-        text: error,
-        icon: "info",
-        timer:2000,
-      });
     }
+  } catch (error) {
+    Swal.fire({
+      title: "Información de servidor",
+      text: error,
+      icon: "info",
+      timer:2000,
+    });
   }
+}
   
 
