@@ -29,7 +29,7 @@ const fnBuscarEquipoPorId = async (id)=>{
         title: "Información de servidor",
         text: datos.msg,
         icon: "info",
-        timer:3000,
+        timer:2000,
       }); 
     }
     //console.log('Respuesta del servidor: ', datos.data);
@@ -45,7 +45,7 @@ const fnBuscarEquipoPorId = async (id)=>{
       title: "Información de servidor",
       text: error,
       icon: "error",
-      timer:3000,
+      timer:2000,
     });
   }
 };
@@ -93,7 +93,7 @@ const fnEditarDatosEquipo = async () => {
         title: "Información de servidor",
         text: datos.msg,
         icon: "success",
-        time:3000
+        timer:2000
       });
   } 
   catch (error) {
@@ -101,7 +101,7 @@ const fnEditarDatosEquipo = async () => {
       title: "Información de servidor",
       text: error,
       icon: "error",
-      timer:3000
+      timer:2000
     }); 
   }
 };
@@ -166,11 +166,11 @@ const fnRegistrarImagen = async () => {
   reader.onloadend = async () => {
     const base64 = reader.result.split(',')[1]; 
     const formData = new FormData();
-    formData.append('id', id);
+    formData.append('refid', id);
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('archivo', base64); 
-    console.log(id,titulo,descripcion,archivo);
+    //console.log(id,titulo,descripcion,archivo);
 
     try {
       const response = await fetch('http://localhost/informes/insert/AgregarArchivoEquipo.php', {
@@ -197,16 +197,17 @@ const fnRegistrarImagen = async () => {
         setTimeout(() => {
           location.reload();          
         }, 3000);       
-      } else {
-        console.log('Error al registrar el archivo: ' + result.msg);
+      } else {  
+        console.log(result.msg);
       }
     } catch (error) {
-        Swal.fire({
-          title: "Información de servidor",
-          text: error,
-          icon: "error",
-          timer:3000,
-        });
+      console.log(error);
+        // Swal.fire({
+        //   title: "Información de servidor",
+        //   text: error,
+        //   icon: "error",
+        //   timer:3000,
+        // });
     }
   };
   // CONVIRTIENDO ARCHIVO A base64

@@ -234,6 +234,31 @@
         }
     }
 
+    function FnBuscarActividadPorInfid($conmy, $infid) {
+        try {
+            $stmt = $conmy->prepare("SELECT id, infid, ownid, tipo, actividad, diagnostico, trabajos, observaciones, estado FROM tbldetalleinforme WHERE infid = :Infid;");
+            $stmt->execute([':Infid' => $infid]);
+            $actividades = [];
+            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $actividad = new stdClass();
+                $actividad->id = $row['id'];
+                $actividad->infid = $row['infid'];
+                $actividad->ownid = $row['ownid'];
+                $actividad->tipo = $row['tipo'];
+                $actividad->actividad = $row['actividad'];
+                $actividad->diagnostico = $row['diagnostico'];
+                $actividad->trabajos = $row['trabajos'];
+                $actividad->observaciones = $row['observaciones'];
+                $actividad->estado = $row['estado'];
+                $actividades[] = $actividad;
+            }
+            return $actividades;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+    
+
     function FnBuscarOrden($conmy, $id) {
         try {
             $stmt = $conmy->prepare("select idot, idactivo, idcliente, ot, km, hm, supervisor, contacto, estado from man_ots where idot=:Id;");
@@ -321,7 +346,7 @@
         try {
             $res=false;
             $stmt = $conmy->prepare("insert into tblarchivos(refid, tabla, nombre, titulo, descripcion, tipo, actualizacion) values(:RefId, :Tabla, :Nombre, :Titulo, :Descripcion, :Tipo, :Actualizacion);");
-            $params = array(':RefId'=>$imagen->id, ':Tabla'=>$imagen->tabla, ':Nombre'=>$imagen->nombre, ':Titulo'=>$imagen->titulo, ':Descripcion'=>$imagen->descripcion, ':Tipo'=>$imagen->tipo, ':Actualizacion'=>$imagen->usuario);
+            $params = array(':RefId'=>$imagen->refid, ':Tabla'=>$imagen->tabla, ':Nombre'=>$imagen->nombre, ':Titulo'=>$imagen->titulo, ':Descripcion'=>$imagen->descripcion, ':Tipo'=>$imagen->tipo, ':Actualizacion'=>$imagen->usuario);
             if($stmt->execute($params)){
                 $res=true;
             }

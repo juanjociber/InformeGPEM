@@ -23,20 +23,20 @@ try {
 
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    if (empty($_POST['id']) || empty($_POST['archivo'])) {
-        throw new Exception("La información está incompleta.");
-    }
+    // if (empty($_POST['refid']) || empty($_POST['archivo'])) {
+    //     throw new Exception("La información está incompleta.");
+    // }
 
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
-    $FileName = 'INFD'.'_'.$_POST['id'].'_'.uniqid().'.jpeg';
+    $FileName = 'INFD'.'_'.$_POST['refid'].'_'.uniqid().'.jpeg';
     $FileType = 'IMG';
     $FileEncoded = str_replace("data:image/jpeg;base64,", "", $_POST['archivo']);
     $FileDecoded = base64_decode($FileEncoded);
     file_put_contents($_SERVER['DOCUMENT_ROOT']."/mycloud/gesman/files/".$FileName, $FileDecoded);
 
     $imagen = new stdClass();
-    $imagen->refid = $_POST['id'];
+    $imagen->refid = $_POST['refid'];
     $imagen->tabla = 'INFD';
     $imagen->nombre = $FileName;
     $imagen->titulo = empty($_POST['titulo']) ? $FileName : $_POST['titulo'];

@@ -76,26 +76,27 @@ const fnGuardarDatosGenerales = async () => {
       }
       const datos = await response.json();
       if (!datos.res) {
-        //throw new Error(datos.msg);
         Swal.fire({
           title: "Información de servidor",
           text: datos.msg,
-          icon: "info",
-          time:3000,
+          icon: "success",
+          timer:2000,
         });
+        console.log('linea 85',datos.msg);
       }
       Swal.fire({
         title: "Respuesta del servidor",
         text: datos.msg,
         icon: "success",
-        timer:3000,
+        timer:2000
       });
+      console.log('linea 93',datos.msg);
     } catch (error) {
       Swal.fire({
         title: "Información de servidor",
         text: error,
         icon: "info",
-        timer:3000,
+        timer:2000,
       });
     }
   }

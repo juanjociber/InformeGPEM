@@ -179,17 +179,20 @@ const fnAbrirModalRegistrarImagen = (id) => {
   const modal = new bootstrap.Modal(document.getElementById('modalAgregarImagen'), { keyboard: false });
   modal.show();
   document.getElementById('cabeceraIdInput').value = id;
+
 };
 
 // REGISTRAR IMAGEN
 const fnRegistrarImagen = async () => {
-  const id = document.getElementById('idInforme').value;
+  const id = document.getElementById('cabeceraIdInput').value;
   const titulo = document.getElementById('registrarTituloInput').value;
   const descripcion = document.getElementById('registarDescripcionInput').value;
   const archivo = document.getElementById('adjuntarImagenInput').files[0];
 
+  console.log(id,archivo);
   if (!id || !titulo || !descripcion || !archivo) {
     console.log("Todos los campos son obligatorios.");
+    
     return;
   }
 
@@ -197,11 +200,11 @@ const fnRegistrarImagen = async () => {
   reader.onloadend = async () => {
     const base64 = reader.result.split(',')[1]; 
     const formData = new FormData();
-    formData.append('id', id);
+    formData.append('refid', id);
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('archivo', base64); 
-    console.log(id,titulo,descripcion,archivo);
+    //console.log(id,titulo,descripcion,archivo);
 
     try {
       const response = await fetch('http://localhost/informes/insert/AgregarArchivo.php', {
@@ -222,13 +225,19 @@ const fnRegistrarImagen = async () => {
         if (modalInstance) {
           modalInstance.hide();
         }
-        location.reload();
+        Swal.fire({
+          title: "Información de servidor",
+          text: result.msg,
+          icon: "success"
+        });
+        setTimeout(() => {
+          location.reload();  
+        }, 1000);
       } else {
-        console.log('Error al registrar el archivo: ' + result.msg);
+        console.log(result.msg);
       }
     } catch (error) {
       console.error('Error:', error);
-      console.log('Error al registrar el archivo.');
     }
   };
   // CONVIRTIENDO ARCHIVO A base64

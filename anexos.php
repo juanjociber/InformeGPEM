@@ -95,60 +95,63 @@
         <div class="col-12">
             <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
                 <ol class="breadcrumb">                        
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/datoGeneral.php" class="text-decoration-none">INFORME</a></li>
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php" class="text-decoration-none">EQUIPO</a></li>
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php" class="text-decoration-none">RESUMEN</a></li>
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php" class="text-decoration-none">ACTIVIDAD</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/datoGeneral.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">INFORME</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">EQUIPO</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">RESUMEN</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ACTIVIDAD</a></li>
                     <li class="breadcrumb-item active fw-bold" aria-current="page">ANEXOS</li>
-                    
                 </ol>
             </nav>
         </div>
       </div>
 
-      <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-  Launch demo modal
-</button>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
       <div class="card mb-4">
         <div class="card-header bg-primary"><h5 class="card-title text-white">ANEXOS</h5></div>
         <div class="card-body">
+
           <div class="row">
-            <div class="col-6 col-lg-4">
-              <label for="adjuntarImagenInput" class="form-label mb-0">Ingresar archivo</label>
-              <input name="archivo" class="form-control mt-1 mb-2" type="file" id="imagenInput">
-              <small class="card-text">El formato puede ser tipo jpeg, png o pdf.</small>
+
+            <label for="adjuntarImagenInput" class="form-label mb-0">Ingresar archivo</label>
+            <div class="col-6 col-lg-2 mt-2">
+              <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" data-bs-toggle="modal" data-bs-target="#modalArchivo"><i class="bi bi-paperclip"></i> Agregar</button>
             </div>
-            <div class="col-6 col-lg-2 mt-4">
-              <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnRegistrarAnexo()"><i class="bi bi-paperclip"></i> Agregar</button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- M O D A L - I M A G E N E S -->
+      <div class="modal fade" id="modalArchivo" tabindex="-1" aria-labelledby="modalArchivoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+              <h5 class="modal-title fs-5 text-uppercase" id="modalArchivoLabel">Agregar imagen-detalle</h5>
+              <button type="button" class="btn-close btn-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            <input type="hidden" id="cabeceraIdInput">
+              <div class="row">
+                <div class ="col-md-12 mt-2">
+                  <label for="registrarTituloInput" class="form-label mb-0">Título</label>
+                  <input name="titulo" type="text" class="form-control" id="tituloInput" placeholder="Ingresar título.">
+                </div>
+                <div class="col-md-12 mt-2">
+                  <label for="adjuntarImagenInput" class="form-label mb-0">Imagen</label>
+                  <input name="archivo" class="form-control" type="file" id="imagenInput">
+                </div>
+                <div class ="col-md-12 mt-2">
+                  <label for="registarDescripcionInput" class="form-label mb-0">Descripción</label>
+                  <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="descripcionInput" placeholder="Ingresar título."></textarea>
+                </div>
+                <div id="contenedorGuardarActividad" class="col-6 mt-4">
+                  <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()"><i class="bi bi-floppy"></i> Guardar</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </div><!-- END IMAGENES - M O D A L -->
+
 
       <div class="row">
         <?php foreach($archivos as $archivo): ?>

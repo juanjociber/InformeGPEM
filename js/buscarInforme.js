@@ -99,19 +99,18 @@ const fnBuscarInforme = async () => {
       text  : "Las fechas de busqueda están incompletas.",
       title : "Información!",
       icon  : "info",
-      timer : 3000
+      timer : 2000
     });
     return;
   }
-  
-  console.log({ nombre, equid, fechainicial, fechafinal });
+  //console.log({ nombre, equid, fechainicial, fechafinal });
 
   const formData = new FormData();
   formData.append('nombre', nombre);
   formData.append('equid', equid);
   formData.append('fechainicial', fechainicial);
   formData.append('fechafinal', fechafinal);
-  console.log(formData);
+  //console.log(formData);
 
   try {
     const response = await fetch('http://localhost/informes/search/BuscarInformes.php', {
@@ -122,11 +121,15 @@ const fnBuscarInforme = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-
     const data = await response.json();
-    console.log(data);
-
+    //console.log(data);
     if (data.res) {
+      Swal.fire({
+        title: "Información de servidor",
+        text: data.msg,
+        icon: "success",
+        timer:2000
+      });
       mostrarInformes(data.data);
     } else {
       Swal.fire({
@@ -136,8 +139,7 @@ const fnBuscarInforme = async () => {
       });
     }
   } catch (error) {
-    console.error('Error:', error);
-    console.log('Hubo un error al buscar los informes.');
+    console.error(error);
   }
 }
 
@@ -163,7 +165,7 @@ function mostrarInformes(informes) {
     const fecha = informe.fecha || 'Sin fecha';
     const estado = informe.estado || 0;
     const id = informe.id || 0;
-    const clinombre = informe.clinombre || 'Sin cliente';
+    //const clinombre = informe.clinombre || 'Sin cliente';
     const equcodigo = informe.equcodigo || 0;
     const actividad = informe.actividad || 'Sin actividad';
   

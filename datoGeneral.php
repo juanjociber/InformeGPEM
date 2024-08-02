@@ -98,9 +98,9 @@
             <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
                 <ol class="breadcrumb">                        
                     <li class="breadcrumb-item active fw-bold" aria-current="page">INFORME</li>
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php" class="text-decoration-none">EQUIPO</a></li>
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php" class="text-decoration-none">RESUMEN</a></li>
-                    <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php" class="text-decoration-none">ACTIVIDAD</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">EQUIPO</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/resumen.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">RESUMEN</a></li>
+                    <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ACTIVIDAD</a></li>
                     <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php" class="text-decoration-none">ANEXOS</a></li>
                 </ol>
             </nav>
@@ -135,9 +135,12 @@
             <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->clicontacto); ?>" placeholder="Seleccionar contacto" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="contactoList" class="custom-select-list">
-              <div class="custom-select-item" data-value="contacto1">Contacto1</div>
-              <div class="custom-select-item" data-value="contacto2">Contacto2</div>
-              <div class="custom-select-item" data-value="contacto3">Contacto3</div>
+              <!-- CONTACTOS -->
+              <?php foreach ($supervisores as $supervisor): ?>
+                <div class="custom-select-item" data-value="<?php echo htmlspecialchars($supervisor['idsupervisor']); ?>">
+                  <?php echo htmlspecialchars($supervisor['supervisor']); ?>
+                </div>
+              <?php endforeach; ?>
             </div>
           </div>
         </div>

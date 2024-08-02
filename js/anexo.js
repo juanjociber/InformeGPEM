@@ -1,7 +1,4 @@
-const fnAbrirModal = () =>{
-  const modal = new bootstrap.Modal(document.getElementById('modalAgregarAnexo'), { keyboard: false });
-  modal.show();
-};
+
   
 // REGISTRAR IMAGEN
 // const fnRegistrarAnexo = async () => {
