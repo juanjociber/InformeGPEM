@@ -103,6 +103,7 @@
             throw new Exception($e->getMessage());
         }
     }
+
     
     // BUSCAR INFORME MATRIZ
     function FnBuscarInformeMatriz($conmy, $id){
@@ -143,21 +144,22 @@
         throw new Exception('Error al buscar Informe: ' .$e->getMessage());
       }
     }
+    //BUSCAR ACTIVIDAD POR INFORME
     function FnBuscarActividadPorInforme($conmy, $id){
-        try {
-          $stmt = $conmy->prepare("SELECT id, actividad, estado FROM tblinforme WHERE id=:Id;");
-          $stmt->execute(array(':Id' => $id));
-          $informe = new stdClass();
-          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $informe->id = $row['id'];
-            $informe->actividad = $row['actividad'];
-            $informe->estado = $row['estado'];
-          }
-          return $informe;
-        } catch (PDOException $ex) {
-          throw new Exception('Error al buscar Informe: ' .$e->getMessage());
+      try {
+        $stmt = $conmy->prepare("SELECT id, actividad, estado FROM tblinforme WHERE id=:Id;");
+        $stmt->execute(array(':Id' => $id));
+        $informe = new stdClass();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+          $informe->id = $row['id'];
+          $informe->actividad = $row['actividad'];
+          $informe->estado = $row['estado'];
         }
+        return $informe;
+      } catch (PDOException $ex) {
+        throw new Exception('Error al buscar Informe: ' .$e->getMessage());
       }
+    }
 
     // BUSCAR SUPERVISORES
     function FnBuscarSupervisores($comy, $id) {
@@ -355,7 +357,21 @@
             throw new Exception($e->getMessage());
         }
     }
-    
+
+    function FnModificarAntecedenteActividad($conmy, $actividad){
+        try{
+            $res = false;
+            $stmt = $conmy->prepare("UPDATE tbldetalleinforme SET actividad=:Actividad WHERE id=:Id AND tipo='ant' AND infid=:Infid;");
+            $params = array(':Actividad' => $actividad->actividad, ':Id' => $actividad->id, ':Infid' => $actividad->infid);
+            if ($stmt->execute($params)) {
+                $res = true;
+            }
+            return $res;
+        } catch(PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
+      
         
     function FnEliminarActividad($conmy, $id) {
         try {

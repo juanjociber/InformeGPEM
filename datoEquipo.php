@@ -94,6 +94,9 @@
           grid-template-columns: 1fr 1fr 1fr 1fr;
         }
       }
+      #canvas{
+        width: 100%;
+      }
     </style>
   </head>
   <body>
@@ -216,36 +219,40 @@
     </div><!-- END MODAL -->
 
     <!-- M O D A L - I M A G E N E S -->
-    <div class="modal fade" id="modalAgregarImagen" tabindex="-1" aria-labelledby="modalAgregarImagenLabel" aria-hidden="true">
-      <div class="modal-dialog">
+    <div class="modal fade" id="modalAgregarImagen" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable ">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title fs-5 text-uppercase" id="modalAgregarImagenLabel">Agregar archivo</h5>
+            <h5 class="modal-title fs-5 text-uppercase" id="modalAgregarImagenLabel">Agregar Imagen </h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body pb-1">
           <input type="hidden" id="cabeceraIdInput">
             <div class="row">
-              <div class ="col-md-12 mt-2">
-                <label for="registrarTituloInput" class="form-label mb-0">Título</label>
-                <input name="titulo" type="text" class="form-control" id="tituloInput" placeholder="Ingresar título.">
+              <div class="col-12 mb-2">
+                <label class="form-label mb-0">Título</label>
+                <input type="text" class="form-control" id="txtTitulo">
               </div>
-              <div class="col-md-12 mt-2">
+              <div class="col-12 mb-2">
+                <label class="form-label mb-0">Descripción</label>
+                <input type="text" class="form-control" id="txtDescripcion">
+              </div>                        
+              <div class="col-12">
                 <label for="adjuntarImagenInput" class="form-label mb-0">Imagen</label>
-                <input name="archivo" class="form-control" type="file" id="imagenInput">
+                <input id="fileImagen" type="file" accept="image/*,.pdf" class="form-control mb-2"/>
               </div>
-              <div class ="col-md-12 mt-2">
-                <label for="registarDescripcionInput" class="form-label mb-0">Descripción</label>
-                <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="descripcionInput" placeholder="Ingresar título."></textarea>
-              </div>
-              <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnRegistrarImagen()"><i class="bi bi-floppy"></i> Guardar</button>
+              <div class="col-12 m-0">
+                  <div class="col-md-12 text-center" id="divImagen"><i class="fas fa-images fs-2"></i></div>
               </div>
             </div>
           </div>
+          <div id="msjAgregarImagen" class="modal-body pt-1"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="FnAgregarImagen(); return false;"><i class="bi bi-floppy"></i>  Guardar</button>
+          </div>
         </div>
       </div>
-    </div><!-- END IMAGENES - M O D A L -->
+    </div><!-- END IMAGENES - M O D A L --><!-- END IMAGENES - M O D A L -->
 
     <script src="js/datoEquipo.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>

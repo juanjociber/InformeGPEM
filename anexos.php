@@ -110,10 +110,9 @@
         <div class="card-body">
 
           <div class="row">
-
             <label for="adjuntarImagenInput" class="form-label mb-0">Ingresar archivo</label>
             <div class="col-6 col-lg-2 mt-2">
-              <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" data-bs-toggle="modal" data-bs-target="#modalArchivo"><i class="bi bi-paperclip"></i> Agregar</button>
+              <button id="descripcion" class="btn btn-outline-primary text-uppercase pt-2 pb-2 col-12" data-bs-toggle="modal" data-bs-target="#modalArchivo"><i class="bi bi-paperclip"></i> Agregar</button>
             </div>
           </div>
 

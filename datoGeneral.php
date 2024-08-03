@@ -112,24 +112,24 @@
         
         <input type="hidden" id="idInforme" value="<?php echo htmlspecialchars($Id) ?>">
 
-        <div class="col-6 col-md-4 col-lg-4">
+        <div class="col-6 col-md-4 col-lg-3">
           <label for="nombreInformeInput" class="form-label mb-0">Nro. Informe</label>
           <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($informe->nombre); ?>" disabled>
         </div>
-        <div class="col-6 col-md-4 col-lg-4">
+        <div class="col-6 col-md-4 col-lg-3">
           <label for="fechaInformeInput" class="form-label mb-0">Fecha</label>
           <input type="date" class="form-control" id="fechaInformeInput" value="<?php echo htmlspecialchars($informe->fecha); ?>">
         </div>
-        <div class="col-6 col-md-4 col-lg-4 mt-2 mt--mod">
+        <div class="col-6 col-md-4 col-lg-3 mt-2 mt--mod">
           <label for="OrdenTrabajoInput" class="form-label mb-0">Orden de trabajo</label>
           <input type="text" class="form-control" id="OrdenTrabajoInput" value="<?php echo htmlspecialchars($informe->ordnombre); ?>" disabled>
         </div>
-        <div class="col-6 col-md-6 col-lg-6 mt-2">
+        <div class="col-6 col-md-6 col-lg-3 mt-2">
           <label for="nombreClienteInput" class="form-label mb-0">Cliente</label>
           <input type="text" class="form-control" id="nombreClienteInput" value="<?php echo htmlspecialchars($informe->clinombre); ?>" disabled>
         </div>
         
-        <div class="custom-select-container col-md-6 col-lg-6 mt-2">
+        <div class="custom-select-container col-md-6 col-lg-4 mt-2">
           <label for="contactoInput" class="form-label mb-0">Contacto</label>
           <div class="custom-select-wrapper">
             <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->clicontacto); ?>" placeholder="Seleccionar contacto" />
@@ -145,12 +145,12 @@
           </div>
         </div>
         
-        <div class="col-md-6 col-lg-6 mt-2">
+        <div class="col-md-6 col-lg-4 mt-2">
           <label for="ubicacionInput" class="form-label mb-0">Lugar</label>
           <input type="text" class="form-control" id="ubicacionInput" value="<?php echo htmlspecialchars($informe->ubicacion); ?>" placeholder="Ingresar lugar">
         </div>      
         
-        <div class="custom-select-container col-md-6 col-lg-6 mt-2">
+        <div class="custom-select-container col-md-6 col-lg-4 mt-2">
           <label for="supervisorInput" class="form-label mb-0">Supervisor</label>
           <div class="custom-select-wrapper">
             <input type="text" class="custom-select-input" id="supervisorInput" value="<?php echo  htmlspecialchars($supervisorInputValue);?>" placeholder="Seleccionar supervisor" />

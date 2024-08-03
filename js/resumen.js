@@ -99,6 +99,33 @@ const FnModificarActividad = async () => {
 };
 
 
+// ABRIR MODAL
+const abrirModalAgregar = ()=>{
+  const modal = new bootstrap.Modal(document.getElementById('modalAntecedente'), { keyboard: false });
+  modal.show() 
+}
+
+const abrirModalEditar = ()=>{
+  const modal = new bootstrap.Modal(document.getElementById('modalAntecedente'), { keyboard: false });
+  modal.show()
+}
+
+const abrirModalEliminar = ()=>{
+  const modal = new bootstrap.Modal(document.getElementById('modalAntecedente'), { keyboard: false });
+  modal.show()
+}
+
+// AGREGAR ACTIVIDADES
+const FnAgregarAntecedente =()=>{
+  
+}
+const FnAgregarConclusion =()=>{
+  
+}
+const FnAgregarRecomendacion =()=>{
+  
+}
+
 // const fnEliminarActividad = async (id) => {
 //   const formData = new FormData();
 //   formData.append('id', id);

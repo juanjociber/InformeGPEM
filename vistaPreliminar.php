@@ -3,6 +3,7 @@
   require_once 'Datos/InformesData.php';
 
   $Id =  $_GET['informe'];
+  $NUMERO=1;
   $Nombre='';
 	$Estado=0;
 
@@ -23,23 +24,24 @@
 		return $arbol;
 	}
 
-	function FnGenerarInformeHtmlAcordeon($arbol, $imagenes, $clsHide, $nivel = 0, $indice ='1') {
+
+	function FnGenerarInformeHtmlAcordeon($arbol, $imagenes,$numero, $clsHide, $nivel = 0, $indice ='1') {
 		$html='';
 		$contador=1;		
 
 		foreach ($arbol as $key=>$nodo) {
       //ASIGNANDO VALOR A NODOGLOBAL
 			$indiceActual = $nivel==0?$contador++:$indice.'.'.($key+1);
-			$html.='<div id="'.$nodo['id'].'">';
+			//$html.='<div id="'.$nodo['id'].'">';
 			$html.='
           <div class="cabecera col-12 mb-0 border-bottom bg-light">
             <p class="mt-2 mb-2 fw-bold color-titulo">
-						'.$indiceActual.' - '.$nodo['actividad'].'
+						'.$numero.'.'.$indiceActual.' - '.$nodo['actividad'].'
             </p>
           </div>
 
-				<div id="collapse-accordion-'.$nodo['id'].'" class="accordion-collapse collapse show" aria-labelledby="accordion-header-'.$nodo['id'].'">
-					<div class="accordion-body">
+				<div>
+					<div>
 						<div class="row">
 							<div class="col-6">
                 <label class="form-label mb-0">Diagnóstico</label>
@@ -54,11 +56,11 @@
                 <p class="mb-1 textura-contenido" style="font-size=15px" id="observacion-'.$nodo['id'].'">'.$nodo['observaciones'].'</p>
               </div>
 						</div>
-						<div class="archivos" id="'.$nodo['id'].'">';
+						<div class="row contenedor-row" id="'.$nodo['id'].'">';
 							if(isset($imagenes[$nodo['id']])){
 								foreach($imagenes[$nodo['id']] as $elemento){
 									$html.='
-                    <div class="contenedor-imagen" id="archivo-'.$elemento['id'].'">
+                    <div class="col-6 border mr-2" id="archivo-'.$elemento['id'].'">
                       <p class="text-center mt-4 mb-1 textura-contenido">'.$elemento['titulo'].'</p>
                         <img src="/mycloud/gesman/files/'.$elemento['nombre'].'" class="img-fluid" alt="">
                       <p class="text-center textura-contenido">'.$elemento['descripcion'].'</p>
@@ -68,7 +70,7 @@
 						$html.='</div>';
 			if (!empty($nodo['hijos'])) {
 				$html.='<div  id="accordion-container-'.$nodo['id'].'">';
-				$html.=FnGenerarInformeHtmlAcordeon($nodo['hijos'], $imagenes, $nivel+1, $indiceActual, $clsHide);
+				$html.=FnGenerarInformeHtmlAcordeon($nodo['hijos'], $imagenes,$numero, $nivel+1, $indiceActual, $clsHide);
 				$html.='</div>';
 			}
 			$html.='</div>';
@@ -135,10 +137,36 @@
 		$stmt2 = $conmy->prepare("select id, ownid, tipo, actividad, diagnostico, trabajos, observaciones from tbldetalleinforme where infid=:InfId;");
 		$stmt2->bindParam(':InfId', $Id, PDO::PARAM_INT);
 		$stmt2->execute();
-		$actividades = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+		$datos = $stmt2->fetchAll(PDO::FETCH_ASSOC);
 
+    $actividades=array();
+		$conclusiones=array();
+		$recomendaciones=array();
+		$antecedentes=array();
+
+		foreach($datos as $dato){
+			if($dato['tipo']=='act'){
+				$actividades[]=array(
+					'id'=>$dato['id'],
+					'ownid'=>$dato['ownid'],
+					'tipo'=>$dato['tipo'],
+					'actividad'=>$dato['actividad'],
+					'diagnostico'=>$dato['diagnostico'],
+					'trabajos'=>$dato['trabajos'],
+					'observaciones'=>$dato['observaciones'],
+				);
+			}else if($dato['tipo']=='con'){
+				$conclusiones[]=array('actividad'=>$dato['actividad']);
+			}else if($dato['tipo']=='rec'){
+				$recomendaciones[]=array('actividad'=>$dato['actividad']);
+			}else if($dato['tipo']=='ant'){
+				$antecedentes[]=array('actividad'=>$dato['actividad']);
+			}	
+		}
 		$arbol = construirArbol($actividades);
-
+    // echo '<pre>';
+    // print_r($arbol);
+    // echo '</pre>';
 		$ids = array_map(function($elemento) {
 			return $elemento['id'];
 		}, $actividades);
@@ -156,10 +184,10 @@
         'titulo'=>$row3['titulo'],
 			);
 		}
-		$tablaHTML.='<div class="accordion" id="accordion-container-'.$nodo['id'].'">';
-			$tabla=FnGenerarInformeHtmlAcordeon($arbol, $imagenes, $clsHide);
-			$tablaHTML .=$tabla;
-		$tablaHTML.='</div>';
+		// $tablaHTML.='<div class="accordion" id="accordion-container-'.$nodo['id'].'">';
+		// 	$tabla=FnGenerarInformeHtmlAcordeon($arbol, $imagenes, $clsHide);
+		// 	$tablaHTML .=$tabla;
+		// $tablaHTML.='</div>';
   } catch (PDOException $e) {
       throw new Exception($e->getMessage());
   } catch (Exception $e) {
@@ -284,10 +312,11 @@
       margin-top:10px;
     }
     @media(min-width:992px){
-      .archivos{
-        grid-template-columns: 1fr 1fr 1fr 1fr;
+      .contenedor-row{
+        padding: 0px 250px;
       }
     }
+
     </style>
   <body>
       <!-- INICIO CONTAINER -->
@@ -326,7 +355,7 @@
         <!-- DATOS GENERALES -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">1. DATOS GENERALES</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- DATOS GENERALES</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -363,11 +392,12 @@
             <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->supervisor); ?></p>
           </div>
         </div>
-
+        <?php $NUMERO+=1; ?>
+        
         <!-- DATOS DEL EQUIPO -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">2. DATOS DEL EQUIPO</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- DATOS DEL EQUIPO</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -399,9 +429,9 @@
             <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Carateristicas</p> 
             <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equdatos); ?></p>
           </div>
-          <div class="archivos">
+          <div class="row contenedor-row">
             <?php foreach($archivos as $archivo): ?>
-              <div class="contenedor-imagen-equipo">
+              <div class="col-6 border">
                 <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
                 <img src="/mycloud/gesman/files/<?php echo htmlspecialchars($archivo['nombre']); ?>" class="img-fluid" alt="">
                 <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
@@ -409,11 +439,11 @@
             <?php endforeach; ?>
           </div>
         </div>
-  
+        <?php $NUMERO+=1; ?>
         <!-- SOLICITUD DEL CLIENTE-->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">3. SOLICITUD DEL CLIENTE</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- SOLICITUD DEL CLIENTE</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -421,28 +451,34 @@
             <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>          
           </div>
         </div>
+        <?php $NUMERO+=1; ?>
 
         <!-- ANTECEDENTES-->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">4. ANTECEDENTES</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- ANTECEDENTES</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
-          <div class="col-12 mb-2 mt-2">
-            <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>          
-          </div>
+          <?php foreach($antecedentes as $antecedente) :?>
+              <div class="d-flex">
+                <span class="vineta"></span> 
+                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo $antecedente['actividad'];?></p>
+              </div>
+          <?php endforeach ;?>
         </div>
+        <?php $NUMERO+=1; ?>
   
         <!-- ACTIVIDADES -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">5. ACTIVIDADES</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- ACTIVIDADES</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
           <?php
-            echo $tablaHTML;
+            $html = FnGenerarInformeHtmlAcordeon($arbol, $imagenes,$NUMERO, $clsHide);
+            echo $html;
           ?>
         </div>
 
@@ -453,16 +489,11 @@
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
-          <?php foreach($actividadesdetalles as $detalle) :?>
-            <?php if($detalle->tipo ==='con') :?>
+          <?php foreach($conclusiones as $conclusion) :?>
               <div class="d-flex">
                 <span class="vineta"></span> 
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->actividad); echo ' - ' ?></p>
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->diagnostico); echo ' - ' ?></p>
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->trabajos); echo ' - ' ?></p>
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->observaciones); ?></p>
+                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo $conclusion['actividad'];?></p>
               </div>
-            <?php endif; ?>
           <?php endforeach ;?>
         </div>
 
@@ -473,16 +504,11 @@
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
-          <?php foreach($actividadesdetalles as $detalle) :?>
-            <?php if($detalle->tipo ==='rec') :?>
+          <?php foreach($recomendaciones as $recomendacion) :?>
               <div class="d-flex">
                 <span class="vineta"></span> 
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->actividad); echo ' - ' ?></p>
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->diagnostico); echo ' - ' ?></p>
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->trabajos); echo ' - ' ?></p>
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($detalle->observaciones); ?></p>
+                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo $recomendacion['actividad'];?></p>
               </div>
-            <?php endif; ?>
           <?php endforeach ;?>
         </div>
 

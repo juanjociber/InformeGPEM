@@ -10,6 +10,27 @@
     if (!empty($_GET['informe'])) {
         $informe  = FnBuscarInformeMatriz($conmy, $Id);
     } 
+
+    $stmt2 = $conmy->prepare("select id, ownid, tipo, actividad, diagnostico, trabajos, observaciones from tbldetalleinforme where infid=:InfId;");
+		$stmt2->bindParam(':InfId', $Id, PDO::PARAM_INT);
+		$stmt2->execute();
+		$datos = $stmt2->fetchAll(PDO::FETCH_ASSOC);
+
+		$conclusiones=array();
+		$recomendaciones=array();
+		$antecedentes=array();
+
+		foreach($datos as $dato){
+			if($dato['tipo']=='con'){
+				$conclusiones[]=array('actividad'=>$dato['actividad']);
+			}else if($dato['tipo']=='rec'){
+				$recomendaciones[]=array('actividad'=>$dato['actividad']);
+			}else if($dato['tipo']=='ant'){
+				$antecedentes[]=array('actividad'=>$dato['actividad']);
+			}	
+		}
+
+
   } catch (PDOException $e) {
       throw new Exception($e->getMessage());
   } catch (Exception $e) {
@@ -106,97 +127,89 @@
   </head>
   <body>
     <div class="container">
-        <div class="row border-bottom mb-3 fs-5">
-            <div class="col-12 fw-bold d-flex justify-content-between">
-                <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
-                <input type="text" class="d-none" id="txtIdInforme" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
-                <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
+      <div class="row border-bottom mb-3 fs-5">
+          <div class="col-12 fw-bold d-flex justify-content-between">
+              <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+              <input type="text" class="d-none" id="txtIdInforme" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
+              <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
+          </div>
+      </div>
+      <div class="row">
+          <div class="col-12">
+              <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/datoGeneral.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">INFORME</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">EQUIPO</a></li>
+                      <li class="breadcrumb-item active fw-bold" aria-current="page">RESUMEN</li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ACTIVIDAD</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ANEXOS</a></li>
+                  </ol>
+              </nav>
+          </div>
+      </div>
+
+      <!--RESUMEN-->
+      <div class="row">
+        <div class="col-12 mt-2" id="containerActividad" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
+          <label class="form-label">Actividades</i></label>
+          <!-- ITEM ACTIVIDADES -->
+          <div class="input-group mt-1" data-id="actividadId">
+            <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>
+            <div class="input-grop-icons">
+              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo htmlspecialchars($informe->id); ?>)"></i></span>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item fw-bold"><a href="/informes/datoGeneral.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">INFORME</a></li>
-                        <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">EQUIPO</a></li>
-                        <li class="breadcrumb-item active fw-bold" aria-current="page">RESUMEN</li>
-                        <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ACTIVIDAD</a></li>
-                        <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ANEXOS</a></li>
-                    </ol>
-                </nav>
-            </div>
+          </div>
         </div>
 
-        <!--RESUMEN-->
-        <div class="row">
-            <div class="col-12 mt-2" id="containerActividad" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Actividades</i></label>
-              <!-- ITEM ACTIVIDADES -->
-              <div class="input-group mt-1" data-id="actividadId">
-                <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>
-                <div class="input-grop-icons">
-                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo htmlspecialchars($informe->id); ?>)"></i></span>
-                  <span class="input-group-text"><i class="bi bi-trash3" onclick="fnEliminarActividad(<?php echo htmlspecialchars($informe->id); ?>)"></i></span>
-                </div>
-              </div>
+        <!-- ITEM ANTECEDENTES -->
+        <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
+          <label class="form-label">Antecedentes <i class="bi bi-plus-lg" onclick="abrirModalAgregar()"></i></label>
+          <div class="input-group mt-1">
+            <?php foreach($antecedentes as $antecedente) : ?>
+            <div class="d-flex">
+              <span class="vineta"></span>
+              <p class="mb-0" id="antecedenteId" style="text-align: justify;"><?php echo htmlspecialchars($antecedente['actividad']); ?></p>
             </div>
-            <!-- ITEM ANTECEDENTES -->
-            <div class="col-12 mt-2" id="containerAntecedente" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Antecedentes <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalAntecedente"></i></label>
-              <div class="input-group mt-1" data-id="antecedenteId">
-                <div class="d-flex">
-                  <span class="vineta"></span>
-                  <p class="mb-0" id="antecedenteId" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>
-                </div>
-                <div class="input-grop-icons">
-                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('antecedente', 'antecedenteId')"></i></span>
-                  <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('antecedenteId')"></i></span>
-                </div>
-              </div>
+            <div class="input-grop-icons">
+              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="abrirModalEditar()"></i></span>
+              <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar()"></i></span>
             </div>
-            <!-- ITEM DIAGNÍSTICOS -->
-            <div class="col-12 mt-2" id="containerAnalisis" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Diagnósticos <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalAnalisis"></i></label>
-              <div class="input-group mt-1" data-id="analisisId">
-                <div class="d-flex">
-                  <span class="vineta"></span>
-                  <p class="mb-0" id="analisisId" style="text-align: justify;"><?php echo htmlspecialchars($informe->diagnostico); ?></p>
-                </div>
-                <div class="input-grop-icons">
-                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('analisis', 'analisisId')"></i></span>
-                  <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('analisisId')"></i></span>
-                </div>
-              </div>
-            </div>
-            <!-- ITEM CONCLUSION -->
-            <div class="col-12 mt-2" id="containerConclusion" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Conclusiones <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalConclusion"></i></label>
-              <div class="input-group mt-1" data-id="conclusionId">
-                <div class="d-flex">
-                  <span class="vineta"></span>
-                  <p class="mb-0" id="conclusionId" style="text-align: justify;"><?php echo htmlspecialchars($informe->conclusiones); ?></p>
-                </div>
-                <div class="input-grop-icons">
-                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('conclusion', 'conclusionId')"></i></span>
-                  <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('conclusionId')"></i></span>
-                </div>
-              </div>
-            </div>
-             <!-- ITEM RECOMENDACIÓN -->
-            <div class="col-12 mt-2" id="containerRecomendacion" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-              <label class="form-label">Recomendaciones <i class="bi bi-plus-lg" data-bs-toggle="modal" data-bs-target="#modalRecomendacion"></i></label>
-              <div class="input-group mt-1" data-id="recomendacionId">
-                <div class="d-flex">
-                  <span class="vineta"></span>
-                  <p class="mb-0" id="recomendacionId" style="text-align: justify;"><?php echo htmlspecialchars($informe->recomendaciones); ?></p>
-                </div>
-                <div class="input-grop-icons">
-                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('recomendacion', 'recomendacionId')"></i></span>
-                  <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('recomendacionId')"></i></span>
-                </div>
-              </div>
-            </div>
+            <?php endforeach ?>
+          </div>
         </div>
+        <!-- ITEM CONCLUSION -->
+        <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
+          <label class="form-label">Conclusiones <i class="bi bi-plus-lg" onclick="abrirModalAgregar()()"></i></label>
+          <div class="input-group mt-1">
+            <?php foreach($conclusiones as $conclusion) : ?>
+            <div class="d-flex">
+              <span class="vineta"></span>
+              <p class="mb-0" id="conclusionId" style="text-align: justify;"><?php echo htmlspecialchars($conclusion['actividad']); ?></p>
+            </div>
+            <div class="input-grop-icons">
+              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="abrirModalEditar()()"></i></span>
+              <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar()()"></i></span>
+            </div>
+            <?php endforeach ?>
+          </div>
+        </div>
+        <!-- ITEM RECOMENDACIÓN -->
+        <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
+          <label class="form-label">Recomendaciones <i class="bi bi-plus-lg" onclick="abrirModalAgregar()()"></i></label>
+          <div class="input-group mt-1">
+            <?php foreach($recomendaciones as $recomendacion) :?>
+            <div class="d-flex">
+              <span class="vineta"></span>
+              <p class="mb-0" id="recomendacionId" style="text-align: justify;"><?php echo htmlspecialchars($recomendacion['actividad']); ?></p>
+            </div>
+            <div class="input-grop-icons">
+              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="abrirModalEditar()"></i></span>
+              <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar()"></i></span>
+            </div>
+            <?php endforeach ?>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- M O D A L E S -->
@@ -232,27 +245,7 @@
             <form id="formAntecedente">
               <textarea type="text" class="form-control" id="modalAntecedenteInput" name="antecedente" row=3 placeholder="Ingresar nuevo antecedente"></textarea>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="agregarItem('antecedente')">Guardar <i class="bi bi-floppy"></i></button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- DIAGNOSTICO -->
-    <div class="modal fade" id="modalAnalisis" tabindex="-1" aria-labelledby="modalAnalisisLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="modalAnalisisLabel">Agregar Diagnóstico</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formAnalisis">
-              <textarea type="text" class="form-control" id="modalAnalisisInput" name="analisis" row=3 placeholder="Ingresar nuevo diagnóstico"></textarea>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="agregarItem('analisis')">Guardar <i class="bi bi-floppy"></i></button>
+                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnAgregarAntecedente();"><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </form>
           </div>
@@ -272,7 +265,7 @@
             <form id="formConclusion">
               <textarea type="text" class="form-control" id="modalConclusionInput" name="conclusion" row=3 placeholder="Ingresar nueva conclusión"></textarea>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="agregarItem('conclusion')">Guardar <i class="bi bi-floppy"></i></button>
+                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnAgregarConclusion();"><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </form>
           </div>
@@ -292,7 +285,7 @@
             <form id="formRecomendacion">
               <textarea type="text" class="form-control" id="modalRecomendacionInput" name="recomendacion" placeholder="Ingresar nueva recomendación"></textarea>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="agregarItem('recomendacion')">Guardar <i class="bi bi-floppy"></i></button>
+                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnAgregarRecomendacion();"><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </form>
           </div>

@@ -37,10 +37,10 @@ const fnRegistrarAnexo = ()=>{
         document.getElementById('tituloInput').value = '';
         document.getElementById('descripcionInput').value = '';
         document.getElementById('anexoInput').value = '';
-        // const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalAgregarImagen'));
-        // if (modalInstance) {
-        //   modalInstance.hide();
-        // }
+        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalAgregarImagen'));
+        if (modalInstance) {
+          modalInstance.hide();
+        }
         Swal.fire({
           title: "Éxito",
           text: result.msg,
