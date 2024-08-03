@@ -33,7 +33,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
-    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="css/main.css">
     <title>Datos Generales</title>
   </head>
@@ -85,8 +85,8 @@
 
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-            <p class="m-0 p-0"><?php echo htmlspecialchars($informe->clinombre); ?></p>
-            <input type="text" class="d-none" id="txtIdOt" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
+            <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+            <input type="text" class="d-none" id="txtIdInforme" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
             <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
         </div>
       </div>
@@ -125,7 +125,7 @@
         <div class="modal-dialog">
           <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-              <h5 class="modal-title fs-5 text-uppercase" id="modalArchivoLabel">Agregar imagen-detalle</h5>
+              <h5 class="modal-title fs-5 text-uppercase" id="modalArchivoLabel">Agregar Anexo</h5>
               <button type="button" class="btn-close btn-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -137,14 +137,14 @@
                 </div>
                 <div class="col-md-12 mt-2">
                   <label for="adjuntarImagenInput" class="form-label mb-0">Imagen</label>
-                  <input name="archivo" class="form-control" type="file" id="imagenInput">
+                  <input name="archivo" class="form-control" type="file" id="anexoInput">
                 </div>
                 <div class ="col-md-12 mt-2">
                   <label for="registarDescripcionInput" class="form-label mb-0">Descripción</label>
                   <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="descripcionInput" placeholder="Ingresar título."></textarea>
                 </div>
                 <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                  <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()"><i class="bi bi-floppy"></i> Guardar</button>
+                  <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarAnexo()"><i class="bi bi-floppy"></i> Guardar</button>
                 </div>
               </div>
             </div>
@@ -159,7 +159,7 @@
           <div class="caja-imagen col-6 col-lg-3" id="<?php echo htmlspecialchars($archivo['archivoid']); ?>">
             <div class="contenedor-imagen">
               <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
-                <i class="bi bi-x-circle" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(<?php echo htmlspecialchars($archivo['archivoid']); ?>)"></i>
+                <i class="bi bi-x-lg" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarAnexo(<?php echo htmlspecialchars($archivo['archivoid']); ?>)"></i>
                 <img src="/mycloud/gesman/files/ORD_112_651f18cf9b6de.jpeg" class="img-fluid" alt="">
               <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
             </div>

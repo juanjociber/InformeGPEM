@@ -143,6 +143,21 @@
         throw new Exception('Error al buscar Informe: ' .$e->getMessage());
       }
     }
+    function FnBuscarActividadPorInforme($conmy, $id){
+        try {
+          $stmt = $conmy->prepare("SELECT id, actividad, estado FROM tblinforme WHERE id=:Id;");
+          $stmt->execute(array(':Id' => $id));
+          $informe = new stdClass();
+          while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $informe->id = $row['id'];
+            $informe->actividad = $row['actividad'];
+            $informe->estado = $row['estado'];
+          }
+          return $informe;
+        } catch (PDOException $ex) {
+          throw new Exception('Error al buscar Informe: ' .$e->getMessage());
+        }
+      }
 
     // BUSCAR SUPERVISORES
     function FnBuscarSupervisores($comy, $id) {
@@ -326,7 +341,22 @@
             throw new Exception($e->getMessage());
         }
     }
+
+    function FnModificarActividadInforme($conmy, $actividad) {
+        try {
+            $res = false;
+            $stmt = $conmy->prepare("UPDATE tblinforme SET actividad = :Actividad WHERE id = :Id;");
+            $params = array(':Actividad' => $actividad->actividad, ':Id' => $actividad->id);
+            if ($stmt->execute($params)) {
+                $res = true;
+            }
+            return $res;
+        } catch (PDOException $e) {
+            throw new Exception($e->getMessage());
+        }
+    }
     
+        
     function FnEliminarActividad($conmy, $id) {
         try {
             $res = false;

@@ -23,9 +23,9 @@ require_once '../datos/InformesData.php';
 try {
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // if (empty($_POST['refid']) || empty($_POST['archivo'])) {
-    //     throw new Exception("La información está incompleta.");
-    // }
+    if (empty($_POST['refid']) || empty($_POST['archivo'])) {
+        throw new Exception("La información está incompleta.");
+    }
 
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
@@ -33,7 +33,10 @@ try {
     $FileType = 'IMG';
     $FileEncoded = str_replace("data:image/jpeg;base64,", "", $_POST['archivo']);
     $FileDecoded = base64_decode($FileEncoded);
-    file_put_contents($_SERVER['DOCUMENT_ROOT']."/mycloud/gesman/files/".$FileName, $FileDecoded);
+
+    if (file_put_contents($_SERVER['DOCUMENT_ROOT']."/mycloud/gesman/files/".$FileName, $FileDecoded) === false) {
+        throw new Exception("Error guardando el archivo en el servidor.");
+    }
 
     $imagen = new stdClass();
     $imagen->refid = $_POST['refid'];
@@ -49,12 +52,12 @@ try {
         $res = true;
         $imagenRegistrada = $imagen; // Retornar imagen registrada
     } else {
-        $msg = "Error registrando el Archivo.";
+        throw new Exception("Error registrando el archivo en la base de datos.");
     }
 } catch (PDOException $ex) {
-    $msg = $ex->getMessage();
+    $msg = "Error en la base de datos: " . $ex->getMessage();
 } catch (Exception $ex) {
-    $msg = $ex->getMessage();
+    $msg = "Error: " . $ex->getMessage();
 } finally {
     $conmy = null;
 }

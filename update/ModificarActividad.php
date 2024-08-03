@@ -35,9 +35,6 @@ try {
     $actividad->observaciones = empty($_POST['observaciones']) ? null : $_POST['observaciones'];
     $actividad->usuario = $USUARIO;
 
-    // LOG DATOS RECIBIDOS
-    error_log("Datos recibidos: " . json_encode($actividad));
-
     if (FnModificarActividad($conmy, $actividad)) {
         $data['msg'] = "Se modificó la Actividad.";
         $data['res'] = true;

@@ -244,7 +244,7 @@
 	<div class="container">
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-          <p class="m-0 p-0"><?php echo htmlspecialchars($ClienteNombre); ?></p>
+          <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($ClienteNombre); ?></p>
             <input type="text" class="d-none" value="" readonly/>
           <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
         </div>
@@ -305,7 +305,7 @@
                 <textarea type="text" name="observacion" class="form-control" id="guardarObservacionInput" row=3 placeholder="Ingresar observación."></textarea>
               </div>
               <div class="col-6 col-lg-3 mt-2">
-                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-3 pb-3 col-12" style="font-weight:200;" onclick="fnCrearActividad()" >Guardar <i class="bi bi-floppy"></i></button>
+                <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnCrearActividad()" ><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </div>
           </div>
@@ -342,7 +342,7 @@
                 <textarea type="text" name="observacion" class="form-control" id="guardarObservacionSubActividadInput" row=3 placeholder="Ingresar observación."></textarea>
               </div>
               <div class="col-6 mt-2">
-                <button id="guardarSubActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnGuardarSubActividad()" >Guardar <i class="bi bi-floppy"></i></button>
+                <button id="guardarSubActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnGuardarSubActividad()" ><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </div>
           </div>
@@ -378,7 +378,7 @@
                 <textarea type="text" name="observacion" class="form-control" id="editarObservacionInput" row=3></textarea>
               </div>
               <div class="col-6 mt-2">
-                <button id="editarActividadBtn" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="FnModificarActividad()" >Editar <i class="bi bi-pencil-square"></i></button>
+                <button id="editarActividadBtn" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="FnModificarActividad()"><i class="bi bi-pencil-square"></i> Editar</button>
               </div>
             </div>
           </div>
@@ -410,7 +410,7 @@
                 <textarea type="descripcion1" name="titulo1" class="form-control" row=3 id="registarDescripcionInput" placeholder="Ingresar título."></textarea>
               </div>
               <div id="contenedorGuardarActividad" class="col-6 mt-4">
-                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" style="font-weight:200;" onclick="fnRegistrarImagen()">Guardar <i class="bi bi-floppy"></i></button>
+                <button id="descripcion" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnRegistrarImagen()"><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </div>
           </div>

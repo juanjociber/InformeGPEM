@@ -167,7 +167,6 @@
   } finally {
       $conmy = null;
   }
-
 ?>
 <!doctype html>
 <html lang="es">
@@ -311,7 +310,7 @@
         <!-- BOTON DESCARGAR INFORME -->
         <div class="row">
           <div id="generarInforme" class="col-6 col-lg-2 mt-4 mb-4">
-            <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" >Descargar <i class="bi bi-cloud-download"></i></button>
+            <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick=fnGenerarInforme()><i class="bi bi-cloud-download"></i> Descargar </button>
           </div>
         </div>
 
@@ -422,11 +421,23 @@
             <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>          
           </div>
         </div>
+
+        <!-- ANTECEDENTES-->
+        <div class="row p-1 mb-2 mt-2">
+          <div class="col-12 mb-0 border-bottom bg-light">
+            <p class="mt-2 mb-2 fw-bold color-titulo">4. ANTECEDENTES</p>
+          </div>
+        </div>
+        <div class="row p-1 mb-2 contenedor-datos">
+          <div class="col-12 mb-2 mt-2">
+            <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>          
+          </div>
+        </div>
   
         <!-- ACTIVIDADES -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">4. ACTIVIDADES</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo">5. ACTIVIDADES</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -438,7 +449,7 @@
         <!-- CONCLUSIONES -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">5. CONCLUSIONES</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo">6. CONCLUSIONES</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -458,7 +469,7 @@
         <!-- RECOMENDACIONES -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">6. RECOMENDACIONES</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo">7. RECOMENDACIONES</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -478,7 +489,7 @@
         <!-- ANEXOS -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">7. ANEXOS</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo">8. ANEXOS</p>
           </div>
         </div>
         <div class="row p-1 mb-2 contenedor-datos">
@@ -488,7 +499,7 @@
         <!-- ESTADO -->
         <div class="row p-1 mb-2 mt-2">
           <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">8. ESTADO</p>
+            <p class="mt-2 mb-2 fw-bold color-titulo">ESTADO</p>
           </div>
         </div>
         <div class="row p-1 mb-2">

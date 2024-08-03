@@ -1,85 +1,124 @@
+const fnRegistrarAnexo = ()=>{
+  const id = document.getElementById('txtIdInforme').value;
+  const titulo = document.getElementById('tituloInput').value;
+  const archivo = document.getElementById('anexoInput').files[0];
+  const descripcion = document.getElementById('descripcionInput').value;
+  
+
+  // Validar que los campos no estén vacíos
+  if (!id || !titulo || !descripcion || !archivo) {
+    Swal.fire({
+      title: "Error",
+      text: "Todos los campos son obligatorios.",
+      icon: "error"
+    });
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const base64 = reader.result.split(',')[1]; 
+    const formData = new FormData();
+    formData.append('refid', id);
+    formData.append('titulo', titulo);
+    formData.append('descripcion', descripcion);
+    formData.append('archivo', base64); 
+
+    try {
+      const response = await fetch('http://localhost/informes/insert/AgregarAnexo.php', {
+        method: 'POST',
+        body: formData
+      });
+
+      const result = await response.json();
+
+      if (result.res) {
+        // Limpiar los campos del modal
+        document.getElementById('tituloInput').value = '';
+        document.getElementById('descripcionInput').value = '';
+        document.getElementById('anexoInput').value = '';
+        // const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalAgregarImagen'));
+        // if (modalInstance) {
+        //   modalInstance.hide();
+        // }
+        Swal.fire({
+          title: "Éxito",
+          text: result.msg,
+          icon: "success",
+          timer:2000
+        });
+        setTimeout(() => {
+          location.reload();          
+        }, 2000);       
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: result.msg,
+          icon: "error",
+          timer:2000
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrió un error al procesar la solicitud.",
+        icon: "error",
+        timer:2000
+      });
+    }
+  };
+  // Convertir archivo a base64
+  try {
+    reader.readAsDataURL(archivo); 
+  } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: "No se pudo leer el archivo. Asegúrate de que es un archivo válido.",
+      icon: "error",
+      timer:2000
+    });
+  }
+};
 
   
-// REGISTRAR IMAGEN
-// const fnRegistrarAnexo = async () => {
-//   const refid = document.getElementById('refid').value;
-//   const titulo = document.getElementById('tituloInput').value;
-//   const descripcion = document.getElementById('descripcionInput').value;
-//   const archivo = document.getElementById('imagenInput').files[0];
+const fnEliminarAnexo = async (id) => {
+  const formData = new FormData();
+  formData.append('id', id);
+  console.log(id);
+  try {
+      const response = await fetch('http://localhost/informes/delete/EliminarAnexo.php', {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'Accept': 'application/json'
+          }
+      });
 
-//   if (!refid || !titulo || !descripcion || !archivo) {
-//     console.log("Todos los campos son obligatorios.");
-//     return;
-//   }
-
-//   const reader = new FileReader();
-//   reader.onloadend = async () => {
-//     const base64 = reader.result.split(',')[1]; 
-//     const formData = new FormData();
-//     formData.append('refid', refid);
-//     formData.append('titulo', titulo);
-//     formData.append('descripcion', descripcion);
-//     formData.append('archivo', base64); 
-//     console.log(refid,titulo,descripcion,archivo);
-
-//     try {
-//       const response = await fetch('http://localhost/informes/insert/AgregarArchivo.php', {
-//         method: 'POST',
-//         body: formData
-//       });
-
-//       const result = await response.json();
-
-//       if (result.res) {
-//         console.log('Archivo registrado con éxito.');
-//         document.getElementById('refid').value = '';
-//         document.getElementById('tituloInput').value = '';
-//         document.getElementById('descripcionInput').value = '';
-//         document.getElementById('imagenInput').value = '';
-//         const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalAgregarImagen'));
-//         if (modalInstance) {
-//           modalInstance.hide();
-//         }
-//         location.reload();
-//       } else {
-//         console.log('Error al registrar el archivo: ' + result.msg);
-//       }
-//     } catch (error) {
-//       console.error('Error:', error);
-//       console.log('Error al registrar el archivo.');
-//     }
-//  };
-//   reader.readAsDataURL(archivo); 
-// };
-
-//ELIMINAR ARCHIVO
-// const fnEliminarAnexo = async (id) => {
-//   const formData = new FormData();
-//   formData.append('id', id);
-//   console.log(id);
-//   try {
-//       const response = await fetch('http://localhost/informes/delete/EliminarArchivo.php', {
-//           method: 'POST',
-//           body: formData,
-//           headers: {
-//               'Accept': 'application/json'
-//           }
-//       });
-
-//       const result = await response.json();
-//       if (result.res) {
-//           const elemento = document.getElementById(id);
-//           if (elemento) {
-//               elemento.remove();
-//           }
-//           console.log('Imagen eliminada correctamente.');
-//       } else {
-//           console.log('Error eliminando la imagen: ' + result.msg);
-//       }
-//   } catch (error) {
-//       console.error('Error:', error);
-//       console.log('Hubo un problema al eliminar la imagen.');
-//   }
-//  };
+      const result = await response.json();
+      if (result.res) {
+          const elemento = document.getElementById(id);
+          if (elemento) {
+              elemento.remove();
+          }
+          Swal.fire({
+            title: "Información de servidor",
+            text: result.msg,
+            icon: "success"
+          });
+          setTimeout(() => {
+            location.reload();          
+          }, 2000);
+      } else {
+        Swal.fire({
+          title: "Información de servidor",
+          text: result.msg,
+          icon: "error",
+          timer: 2000
+        });
+      }
+  } catch (error) {
+      console.error('Error:', error);
+  }
+ };
 
  

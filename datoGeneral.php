@@ -87,7 +87,7 @@
 
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-            <p class="m-0 p-0"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+            <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
             <input type="text" class="d-none" id="txtIdOt" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
             <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
         </div>

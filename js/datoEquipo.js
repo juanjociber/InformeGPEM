@@ -134,13 +134,17 @@ const fnEliminarImagen = async (id) => {
           });
           setTimeout(() => {
             location.reload();          
-          }, 3000);
+          }, 2000);
       } else {
-          console.log('Error eliminando la imagen: ' + result.msg);
+        Swal.fire({
+          title: "Información de servidor",
+          text: result.msg,
+          icon: "error",
+          timer: 2000
+        });
       }
   } catch (error) {
       console.error('Error:', error);
-      console.log('Hubo un problema al eliminar la imagen.');
   }
  };
 
@@ -157,11 +161,15 @@ const fnRegistrarImagen = async () => {
   const descripcion = document.getElementById('descripcionInput').value;
   const archivo = document.getElementById('imagenInput').files[0];
 
+  // Validar que los campos no estén vacíos
   if (!id || !titulo || !descripcion || !archivo) {
-    console.log("Todos los campos son obligatorios.");
+    Swal.fire({
+      title: "Error",
+      text: "Todos los campos son obligatorios.",
+      icon: "error"
+    });
     return;
   }
-
   const reader = new FileReader();
   reader.onloadend = async () => {
     const base64 = reader.result.split(',')[1]; 
@@ -170,7 +178,6 @@ const fnRegistrarImagen = async () => {
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
     formData.append('archivo', base64); 
-    //console.log(id,titulo,descripcion,archivo);
 
     try {
       const response = await fetch('http://localhost/informes/insert/AgregarArchivoEquipo.php', {
@@ -179,9 +186,9 @@ const fnRegistrarImagen = async () => {
       });
 
       const result = await response.json();
-     
+
       if (result.res) {
-        // LIMPIANDO MODAL
+        // Limpiar los campos del modal
         document.getElementById('tituloInput').value = '';
         document.getElementById('descripcionInput').value = '';
         document.getElementById('imagenInput').value = '';
@@ -190,26 +197,40 @@ const fnRegistrarImagen = async () => {
           modalInstance.hide();
         }
         Swal.fire({
-          title: "Información de servidor",
+          title: "Éxito",
           text: result.msg,
-          icon: "success"
+          icon: "success",
+          timer:2000
         });
         setTimeout(() => {
           location.reload();          
-        }, 3000);       
-      } else {  
-        console.log(result.msg);
+        }, 2000);       
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: result.msg,
+          icon: "error",
+          timer:2000
+        });
       }
     } catch (error) {
-      console.log(error);
-        // Swal.fire({
-        //   title: "Información de servidor",
-        //   text: error,
-        //   icon: "error",
-        //   timer:3000,
-        // });
+      Swal.fire({
+        title: "Error",
+        text: "Ocurrió un error al procesar la solicitud.",
+        icon: "error",
+        timer:2000
+      });
     }
   };
-  // CONVIRTIENDO ARCHIVO A base64
-  reader.readAsDataURL(archivo); 
+  // Convertir archivo a base64
+  try {
+    reader.readAsDataURL(archivo); 
+  } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: "No se pudo leer el archivo. Asegúrate de que es un archivo válido.",
+      icon: "error",
+      timer:2000
+    });
+  }
 };

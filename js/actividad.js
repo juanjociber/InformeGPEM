@@ -7,24 +7,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
 //FUNCIÓN CREA ACTIVIDAD
 const fnCrearActividad = async () => {
-  // OBTENER DATOS DEL MODAL
   const actividad = document.getElementById('guardarNombreActividadInput').value.trim();
   const diagnostico = document.getElementById('guardarDiagnosticoInput').value.trim();
   const trabajos = document.getElementById('guardarTrabajoInput').value.trim();
   const observaciones = document.getElementById('guardarObservacionInput').value.trim();
-  // VERIFICAR SI SE HA INGRESADO NOMBRE DE ACTIVIDAD
   if (!actividad) {
-    Swal.fire({
-      title: 'Aviso',
-      html: `Por favor, ingrese el nombre de la actividad.`,
-      icon: 'info',
-      confirmButtonText: 'OK'
-    });
-    return;
+      Swal.fire({
+          title: 'Aviso',
+          text: 'Por favor, ingrese el nombre de la actividad.',
+          icon: 'info',
+          confirmButtonText: 'OK',
+          timer:2000
+      });
+      return;
   }
-  // OBTENIENDO ID DEL INFORME
   const infid = document.getElementById('guardarActividadInput').value;
-  // CREAR FORM-DATA
   const formData = new FormData();
   formData.append('infid', infid);
   formData.append('actividad', actividad);
@@ -34,25 +31,49 @@ const fnCrearActividad = async () => {
 
   try {
     const response = await fetch('http://localhost/informes/insert/AgregarActividad.php', {
-      method: 'POST',
-      body: formData
+        method: 'POST',
+        body: formData
     });
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
     const result = await response.json();
+
     if (result.res) {
-      console.log('Respuesta de servidor :', result.msg);
-      const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaActividad'));
-      if (modal) {
-        modal.hide();
-      }
-      location.reload();      
+        Swal.fire({
+            title: 'Éxito',
+            text: result.msg,
+            icon: 'success',
+            confirmButtonText: 'OK',
+            timer:2000
+        }).then(() => {
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalNuevaActividad'));
+            if (modal) {
+                modal.hide();
+            }
+            location.reload();
+        });
     } else {
-      console.error('Error al registrar la actividad:', result.msg);
+        Swal.fire({
+          title: 'Error',
+          text: result.msg,
+          icon: 'error',
+          confirmButtonText: 'OK',
+          timer:2000
+        });
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error);
+      Swal.fire({
+        title: 'Error',
+        text: `Se produjo un error inesperado: ${error.message}`,
+        icon: 'error',
+        confirmButtonText: 'OK',
+        timer:2000
+      });
   }
 };
+
 
 // CREAR SUBACTIVIDAD
 const fnCrearSubActividad = async (id) => {
@@ -70,12 +91,17 @@ const fnGuardarSubActividad = async () =>{
   const observaciones = document.getElementById('guardarObservacionSubActividadInput').value.trim(); 
   // VERIFICAR SI SE HA INGRESADO NOMBRE DE ACTIVIDAD
   if (!actividad) {
-    console.log('Debe ingresar subactividad');
-    return;
+    Swal.fire({
+      title: 'Aviso',
+      text: 'Debe ingresar el nombre de la subactividad.',
+      icon: 'info',
+      confirmButtonText: 'OK',
+      timer:2000
+  });
+  return;
   }
   // OBTENIENDO ID DEL INFORME
   const infid = document.getElementById('guardarSubActividadInput').value; 
-  // OBTENIENDO ID DEL INFORME
   const ownid = document.getElementById('cabeceraIdInput').value; 
   // CREAR FORM-DATA
   const formData = new FormData();
@@ -92,48 +118,83 @@ const fnGuardarSubActividad = async () =>{
       method: 'POST',
       body: formData
     });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const result = await response.json();
+
     if (result.res) {
-      console.log('SubActividad registrada exitosamente:', result.msg);
-      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalNuevaSubActividad'));
-      if (modalInstance) {
-        modalInstance.hide();
-      }
-      location.reload();
+      Swal.fire({
+        title: 'Éxito',
+        text: result.msg,
+        icon: 'success',
+        confirmButtonText: 'OK'
+      }).then(() => {
+          const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalNuevaSubActividad'));
+          if (modalInstance) {
+              modalInstance.hide();
+          }
+          setTimeout(() => {
+            location.reload();  
+          }, 2000);
+      });
     } else {
-      console.error('Error al registrar la subactividad:', result.msg);
+      Swal.fire({
+        title: 'Error',
+        text: result.msg,
+        icon: 'error',
+        confirmButtonText: 'OK',
+        timer:2000
+      });
     }
   } catch (error) {
-    console.error('Error en la solicitud:', error);
+    Swal.fire({
+      title: 'Error',
+      text: `Se produjo un error inesperado: ${error.message}`,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      timer:2000
+    });
   }
 };
 
 //BUSCAR ACTIVIDAD
 const fnEditarActividad = async (id) => {
-  // MOSTRAR MODAL
+  // Mostrar modal
   modalEditarActividad.show();
   const formData = new FormData();
   formData.append('id', id);
 
   try {
     const response = await fetch('http://localhost/informes/search/buscarActividad.php', {
-      method: 'POST',
-      body: formData
+        method: 'POST',
+        body: formData
     });
 
-    if (!response.ok) { throw new Error(response.status + ' ' + response.statusText); }
+    if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     const datos = await response.json();
-    if (!datos.res) { throw new Error(datos.msg); }
-    console.log('Respuesta del servidor: ', datos.data);
-    // MOSTRANDO DATA RECIBIDA DE SERVIDOR
+
+    if (!datos.res) {
+        throw new Error(datos.msg);
+    }
     document.getElementById('editarActividadInput').value = datos.data.id;
     document.getElementById('editarNombreActividadInput').value = datos.data.actividad;
     document.getElementById('editarDiagnosticoInput').value = datos.data.diagnostico;
     document.getElementById('editarTrabajoInput').value = datos.data.trabajos;
     document.getElementById('editarObservacionInput').value = datos.data.observaciones;
-  } 
-  catch (error) { console.error('Error:', error); }
+  } catch (error) {
+    Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error',
+        confirmButtonText: 'OK',
+        timer:2000
+    });
+  }
 };
+
 
 //MODIFICAR ACTIVIDAD
 const FnModificarActividad = async () => {
@@ -142,7 +203,6 @@ const FnModificarActividad = async () => {
   const diagnostico = document.getElementById('editarDiagnosticoInput').value;
   const trabajo = document.getElementById('editarTrabajoInput').value;
   const observacion = document.getElementById('editarObservacionInput').value;
-  console.log({ id, actividad, diagnostico, trabajo, observacion });
 
   const formData = new FormData();
   formData.append('id', id);
@@ -157,22 +217,42 @@ const FnModificarActividad = async () => {
       body: formData
     });
 
-    if (!response.ok) { throw new Error(`Error: ${response.status} ${response.statusText}`); }
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
     const datos = await response.json();
 
-    if (!datos.res) { throw new Error(datos.msg); }
-    // ACTUALIZANDO CAMPOS : ACTIVIDAD-DIAGNOSTICO-TRABAJO-OBSERVACION
+    if (!datos.res) {
+      throw new Error(datos.msg);
+    }
     document.querySelector(`#accordion-header-${id} .accordion-button`).textContent = actividad;
     document.getElementById(`diagnostico-${id}`).textContent = diagnostico;
     document.getElementById(`trabajo-${id}`).textContent = trabajo;
     document.getElementById(`observacion-${id}`).textContent = observacion;
-    console.log('Actividad modificada:', datos);
-    // CERRAR MODAL
-    modalEditarActividad.hide();
-  } 
-  catch (error) { console.error('Error:', error); }
-};
+    Swal.fire({
+      title: 'Éxito',
+      text: datos.msg,
+      icon: 'success',
+      confirmButtonText: 'OK',
+      timer:2000
+    });
 
+    const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalEditarActividad'));
+    if (modalInstance) {
+      modalInstance.hide();
+    }
+
+  } catch (error) {
+    Swal.fire({
+      title: 'Error',
+      text: error.message,
+      icon: 'error',
+      confirmButtonText: 'OK',
+      timer:2000
+    });
+  }
+};
 
 // ABRIR MODAL REGISTRAR IMAGEN
 const fnAbrirModalRegistrarImagen = (id) => {
@@ -189,123 +269,177 @@ const fnRegistrarImagen = async () => {
   const descripcion = document.getElementById('registarDescripcionInput').value;
   const archivo = document.getElementById('adjuntarImagenInput').files[0];
 
-  console.log(id,archivo);
   if (!id || !titulo || !descripcion || !archivo) {
-    console.log("Todos los campos son obligatorios.");
-    
+    Swal.fire({
+      title: "Error",
+      text: "Todos los campos son obligatorios.",
+      icon: "error"
+    });
     return;
   }
 
   const reader = new FileReader();
   reader.onloadend = async () => {
-    const base64 = reader.result.split(',')[1]; 
-    const formData = new FormData();
-    formData.append('refid', id);
-    formData.append('titulo', titulo);
-    formData.append('descripcion', descripcion);
-    formData.append('archivo', base64); 
-    //console.log(id,titulo,descripcion,archivo);
+  const base64 = reader.result.split(',')[1]; 
+  const formData = new FormData();
+  formData.append('refid', id);
+  formData.append('titulo', titulo);
+  formData.append('descripcion', descripcion);
+  formData.append('archivo', base64); 
 
-    try {
-      const response = await fetch('http://localhost/informes/insert/AgregarArchivo.php', {
-        method: 'POST',
-        body: formData
+  try {
+    const response = await fetch('http://localhost/informes/insert/AgregarArchivo.php', {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (result.res) {
+      Swal.fire({
+        title: "Éxito",
+        text: result.msg,
+        icon: "success",
+        timer:2000
       });
 
-      const result = await response.json();
-
-      if (result.res) {
-        console.log('Archivo registrado con éxito.');
-        // LIMPIANDO MODAL
-        //document.getElementById('cabeceraIdInput').value = '';
-        document.getElementById('registrarTituloInput').value = '';
-        document.getElementById('registarDescripcionInput').value = '';
-        document.getElementById('adjuntarImagenInput').value = '';
-        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalAgregarImagen'));
-        if (modalInstance) {
-          modalInstance.hide();
-        }
-        Swal.fire({
-          title: "Información de servidor",
-          text: result.msg,
-          icon: "success"
-        });
-        setTimeout(() => {
-          location.reload();  
-        }, 1000);
-      } else {
-        console.log(result.msg);
+      document.getElementById('registrarTituloInput').value = '';
+      document.getElementById('registarDescripcionInput').value = '';
+      document.getElementById('adjuntarImagenInput').value = '';
+      const modalInstance = bootstrap.Modal.getInstance(document.getElementById('modalAgregarImagen'));
+      if (modalInstance) {
+        modalInstance.hide();
       }
-    } catch (error) {
-      console.error('Error:', error);
+      
+      setTimeout(() => {
+        location.reload();  
+      }, 1000);
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: result.msg,
+        icon: "error",
+        timer:2000
+      });
     }
+  } catch (error) {
+    Swal.fire({
+      title: "Error",
+      text: error.message,
+      icon: "error",
+      timer:2000
+    });
+  }
   };
-  // CONVIRTIENDO ARCHIVO A base64
+  // Convertir archivo a base64
   reader.readAsDataURL(archivo); 
 };
+
 
 
 //ELIMINAR ARCHIVO
 const fnEliminarImagen = async (id) => {
   const formData = new FormData();
   formData.append('id', id);
-  console.log(id);
   try {
-      const response = await fetch('http://localhost/informes/delete/EliminarArchivo.php', {
-          method: 'POST',
-          body: formData,
-          headers: {
-              'Accept': 'application/json'
-          }
-      });
-
-      const result = await response.json();
-      if (result.res) {
-          const elemento = document.getElementById(id);
-          if (elemento) {
-              elemento.remove();
-          }
-          location.reload();
-          console.log('Imagen eliminada correctamente.');
-      } else {
-          console.log('Error eliminando la imagen: ' + result.msg);
+    const response = await fetch('http://localhost/informes/delete/EliminarArchivo.php', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Accept': 'application/json'
       }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} ${response.statusText}`);
+    }
+
+    const result = await response.json();
+
+    if (result.res) {
+      const elemento = document.getElementById(id);
+      if (elemento) {
+        elemento.remove();
+      }
+      Swal.fire({
+        title: "Éxito",
+        text: result.msg,
+        icon: "success",
+        timer:2000
+      }).then(() => {
+        location.reload();
+      });
+    } else {
+      Swal.fire({
+        title: "Error",
+        text: result.msg,
+        icon: "error",
+        timer:2000
+      });
+    }
   } catch (error) {
-      console.error('Error:', error);
+    Swal.fire({
+      title: "Error",
+      text: error.message,
+      icon: "error",
+      timer:2000
+    });
   }
- };
+};
+
 
 // FUNCIÓN ELIMINAR ACTIVIDAD
 const fnEliminarActividad = async (id) => {
   const formData = new FormData();
   formData.append('id', id);
-  console.log(`Eliminando actividad con ID: ${id}`);
+
   try {
     const response = await fetch('http://localhost/informes/delete/EliminarActividad.php', {
-        method: 'POST',
-        body: formData
+      method: 'POST',
+      body: formData
     });
-    // Verificar si la respuesta es OK
+
     if (!response.ok) {
-        throw new Error('Error en la respuesta del servidor');
+      throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
     }
+
     const result = await response.json();
+
     if (result.res) {
-        console.log(result.msg);
-        // ELIMINADO ACCORDION POR SU ID
+      Swal.fire({
+        title: "Éxito",
+        text: result.msg,
+        icon: "success",
+        timer: 2000
+      }).then(() => {
         const actividadDiv = document.getElementById(id);
         if (actividadDiv) {
-            actividadDiv.remove();
-        } else {
-            console.error(`No se encontró el accordion con ID ${id}.`);
-        }
+          actividadDiv.remove();
+        } 
+      });
+      console.log(result.msg);
     } else {
-        console.error(result.msg);
+      Swal.fire({
+        title: "Error",
+        text: result.msg,
+        icon: "error",
+        timer: 2000
+      });
     }
   } catch (error) {
-      console.error('Hubo un problema con la operación de fetch:', error);
+    Swal.fire({
+      title: "Error",
+      text: error.message,
+      icon: "error",
+      timer: 2000
+    });
   }
-}
+};
+
 
 
 

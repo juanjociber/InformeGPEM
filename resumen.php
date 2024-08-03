@@ -1,35 +1,22 @@
-<?php 
-    require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
-    $Id = $_GET['informe'];
+<?php
+  require_once $_SERVER['DOCUMENT_ROOT']."/informes/gesman/connection/ConnGesmanDb.php";
+  require_once 'Datos/InformesData.php';
 
-    // INICIALIZANDO VARIABLES
-    $Ordid = $Equid = $Cliid = $Nombre = $Ord_Nombre = $Cli_Nombre = $Actividad = $Antecedentes = $Conclusiones = $Diagnostico = $Recomendaciones = $Estado ='';
+  $Id =  $_GET['informe'];
 
-    try {
-        $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+  try {
+    $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // CONSULTA 1
-        $stmt = $conmy->prepare("SELECT id, ordid, equid, cliid, nombre, ord_nombre, cli_nombre, actividad, antecedentes, conclusiones, dianostico, recomendaciones, estado FROM tblinforme WHERE id=:Id;");
-        $stmt->execute(array(':Id' => $Id));
-        $row = $stmt->fetch();
-        if ($row) {
-            $Nombre = $row['nombre'];
-            $Fecha = $row['fecha'];
-            $Orden_Nombre = $row['ord_nombre'];
-            $Cli_Nombre = $row['cli_nombre'];
-            $Cli_Contacto = $row['cli_contacto'];
-            $Actividad = $row['actividad'];
-            $Antecedentes = $row['antecedentes'];
-            $Conclusiones = $row['conclusiones'];
-            $Diagnostico = $row['dianostico'];
-            $Recomendaciones = $row['recomendaciones'];
-            $Estado = $row['estado'];
-        }
-
-    } catch (PDOException $ex) {
-        $conmy = null;
-        echo $ex;
-    }
+    if (!empty($_GET['informe'])) {
+        $informe  = FnBuscarInformeMatriz($conmy, $Id);
+    } 
+  } catch (PDOException $e) {
+      throw new Exception($e->getMessage());
+  } catch (Exception $e) {
+      throw new Exception($e->getMessage());
+  } finally {
+      $conmy = null;
+  }
 ?>
 <!doctype html>
 <html lang="es">
@@ -45,10 +32,10 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="css/main.css">
     <title>Resumen</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="css/main.css">
+
     <style>
       ::placeholder {
         color: #cecccc !important;
@@ -121,9 +108,9 @@
     <div class="container">
         <div class="row border-bottom mb-3 fs-5">
             <div class="col-12 fw-bold d-flex justify-content-between">
-                <p class="m-0 p-0"><?php echo htmlspecialchars($Cli_Nombre); ?></p>
-                <input type="text" class="d-none" id="txtIdOt" value="" readonly/>
-                <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($Nombre); ?></p>
+                <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+                <input type="text" class="d-none" id="txtIdInforme" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
+                <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
             </div>
         </div>
         <div class="row">
@@ -146,10 +133,10 @@
               <label class="form-label">Actividades</i></label>
               <!-- ITEM ACTIVIDADES -->
               <div class="input-group mt-1" data-id="actividadId">
-                <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo htmlspecialchars($Actividad); ?></p>
+                <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>
                 <div class="input-grop-icons">
-                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('actividad', 'actividadId')"></i></span>
-                  <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('actividadId')"></i></span>
+                  <span class="input-group-text"><i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo htmlspecialchars($informe->id); ?>)"></i></span>
+                  <span class="input-group-text"><i class="bi bi-trash3" onclick="fnEliminarActividad(<?php echo htmlspecialchars($informe->id); ?>)"></i></span>
                 </div>
               </div>
             </div>
@@ -159,7 +146,7 @@
               <div class="input-group mt-1" data-id="antecedenteId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="antecedenteId" style="text-align: justify;"><?php echo htmlspecialchars($Antecedentes); ?></p>
+                  <p class="mb-0" id="antecedenteId" style="text-align: justify;"><?php echo htmlspecialchars($informe->antecedentes); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('antecedente', 'antecedenteId')"></i></span>
@@ -173,7 +160,7 @@
               <div class="input-group mt-1" data-id="analisisId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="analisisId" style="text-align: justify;"><?php echo htmlspecialchars($Diagnostico); ?></p>
+                  <p class="mb-0" id="analisisId" style="text-align: justify;"><?php echo htmlspecialchars($informe->diagnostico); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('analisis', 'analisisId')"></i></span>
@@ -187,7 +174,7 @@
               <div class="input-group mt-1" data-id="conclusionId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="conclusionId" style="text-align: justify;"><?php echo htmlspecialchars($Conclusiones); ?></p>
+                  <p class="mb-0" id="conclusionId" style="text-align: justify;"><?php echo htmlspecialchars($informe->conclusiones); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('conclusion', 'conclusionId')"></i></span>
@@ -201,7 +188,7 @@
               <div class="input-group mt-1" data-id="recomendacionId">
                 <div class="d-flex">
                   <span class="vineta"></span>
-                  <p class="mb-0" id="recomendacionId" style="text-align: justify;"><?php echo htmlspecialchars($Recomendaciones); ?></p>
+                  <p class="mb-0" id="recomendacionId" style="text-align: justify;"><?php echo htmlspecialchars($informe->recomendaciones); ?></p>
                 </div>
                 <div class="input-grop-icons">
                   <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('recomendacion', 'recomendacionId')"></i></span>
@@ -214,18 +201,18 @@
 
     <!-- M O D A L E S -->
     <!-- ACTIVIDAD -->
-    <div class="modal fade" id="modalActividad" tabindex="-1" aria-labelledby="modalActividadLabel" aria-hidden="true">
+    <div class="modal fade" id="modalEditarActividad" tabindex="-1" aria-labelledby="modalActividadLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="modalActividadLabel">Agregar Actividad</h5>
+            <h5 class="modal-title text-uppercase" id="modalActividadLabel">Modificar Actividad</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <form id="formActividad">
-              <textarea type="text" class="form-control" id="modalActividadInput" name="actividad" row=3 placeholder="Ingresar nueva ctividad"></textarea>
+              <textarea type="text" class="form-control" id="editarActividadInput" name="actividad" row=3 placeholder="Ingresar nueva ctividad"></textarea>
               <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="agregarItem('actividad')">Guardar <i class="bi bi-floppy"></i></button>
+                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnModificarActividad()"><i class="bi bi-floppy"></i> Guardar</button>
               </div>
             </form>
           </div>

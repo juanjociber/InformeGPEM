@@ -1,135 +1,130 @@
-let nuevoId;
+// INICIALIZANDO VARIABLES PARA MODAL GLOBAL
+let modalEditarActividad;
 
-// FUNCIÓN PARA AGREGAR ITEM
-const agregarItem = (categoria) => {
-  const input = document.getElementById(`modal${capitalizarPrimeraLetra(categoria)}Input`);
-  const value = input.value.trim();
-  
-  if (value === "") {
-    Swal.fire({
-      title: 'Aviso',
-      html: `<div class="custom-select-item">Debe Ingresar ${categoria}</div>`,
-      icon: 'info',
-      confirmButtonText: 'OK'
-    }); 
-    return;
-  }
-  const form = document.getElementById(`form${capitalizarPrimeraLetra(categoria)}`);
-  const editId = form.dataset.editId;
+document.addEventListener('DOMContentLoaded', () => {
+  modalEditarActividad = new bootstrap.Modal(document.getElementById('modalEditarActividad'), { keyboard: false });
+});
 
-  if (editId) {
-    // SI HAY UN EDIT-ID, ACTUALIZA EL ITEM EXISTENTE
-    const item = document.querySelector(`div[data-id='${editId}']`);
-    if (item) {
-      item.querySelector('p').textContent = value;
-      // LIMPIA EL EDIT-ID Y EL VALOR DEL INPUT
-      delete form.dataset.editId;
-    } else {
-      Swal.fire({
-        title: 'Aviso',
-        html: `<div class="custom-select-item">${categoria} no encontrado para editar</div>`,
-        icon: 'info',
-        confirmButtonText: 'OK'
-      });
-    }
-  } 
-  else {
-    // SI NO HAY UN EDIT-ID, AGREGA UN NUEVO ITEM 
-    const nuevoItem = document.createElement("div");
-    nuevoItem.className = "input-group mt-2";
-    // GENERA UN IDENTIFICADOR ÚNICO
-    nuevoId = `id-${Date.now()}`;
-    nuevoItem.setAttribute("data-id", nuevoId);
-
-    if (categoria === 'actividad') {
-      nuevoItem.innerHTML = `
-        <p class="mb-0" id="${categoria}-${nuevoId}" style="text-align: justify;">${value}</p>
-        <div class="input-grop-icons">
-          <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('${categoria}', '${nuevoId}')"></i></span>
-          <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('${nuevoId}')"></i></span>
-        </div>
-      `;
-    } else {
-      nuevoItem.innerHTML = `
-        <div class="d-flex">
-          <span class="vineta"></span>
-          <p class="mb-0" id="${categoria}-${nuevoId}" style="text-align: justify;">${value}</p>
-        </div>
-        <div class="input-grop-icons">
-          <span class="input-group-text"><i class="bi bi-pencil-square" onclick="editarItem('${categoria}', '${nuevoId}')"></i></span>
-          <span class="input-group-text"><i class="bi bi-trash3" onclick="eliminarItem('${nuevoId}')"></i></span>
-        </div>
-      `;
-    }
-    const container = document.getElementById(`container${capitalizarPrimeraLetra(categoria)}`);
-    container.appendChild(nuevoItem);
-  }
-  // LIMPIAR EL VALOR DEL INPUT Y CIERRA EL MODAL.
-  input.value = "";
-  const modal = bootstrap.Modal.getInstance(document.getElementById(`modal${capitalizarPrimeraLetra(categoria)}`));
-  modal.hide();
-}
-
-// FUNCIÓN MUESTRA VALORES ACTUALES PARA EDITAR
-const editarItem = (categoria, id) => {
-  // OBTIENE EL ITEM PARA EDITAR
-  const item = document.querySelector(`div[data-id='${id}']`);
-  const text = item.querySelector('p').textContent.trim();
-
-  // RELLENA EL MODAL CON EL VALOR ACTUAL
-  const modalInput = document.getElementById(`modal${capitalizarPrimeraLetra(categoria)}Input`);
-  modalInput.value = text;
-
-  // GUARDA EL VALOR VALOR DEL ID EN EL MODAL
-  const modalForm = document.getElementById(`form${capitalizarPrimeraLetra(categoria)}`);
-  modalForm.dataset.editId = id;
-
-  // MUESTRA EL MODAL
-  const modal = new bootstrap.Modal(document.getElementById(`modal${capitalizarPrimeraLetra(categoria)}`));
-  modal.show();
-}
-
-// FUNCIÓN PARA ELIMINAR ITEM
-const eliminarItem = (id) => {
-  const item = document.querySelector(`div[data-id='${id}']`);
-  if (item) {
-    item.remove();
-  }
-}
-
-// FUNCIÓN PARA CAPITALIZAR LA PRIMERA LETRA
-const capitalizarPrimeraLetra = (string) => {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-const fnResumen = async () => {
+const fnEditarActividad = async (id) => {
+  // MOSTRAR MODAL
+  modalEditarActividad.show();
   const formData = new FormData();
-  console.log(nuevoId);
-  const actividad     = document.querySelector(`#actividadId`).textContent.trim();
-  // const actividad     = document.querySelector(`#actividad-${nuevoId}`).textContent.trim();
-  const antecedente   = document.querySelector('#antecedenteId').textContent.trim();
-  const diagnostico   = document.querySelector('#DiagnosticoId').textContent.trim();
-  const conclusion    = document.querySelector('#conclusionId').textContent.trim();
-  const recomendacion = document.querySelector('#recomendacionId').textContent.trim();
+  formData.append('id', id);
 
-  formData.append('actividad', actividad);
-  formData.append('antecedente', antecedente);
-  formData.append('diagnostico', diagnostico);
-  formData.append('conclusion', conclusion);
-  formData.append('recomendacion', recomendacion);
+  try {
+    const response = await fetch('http://localhost/informes/search/BuscarActividadInforme.php', {
+      method: 'POST',
+      body: formData
+    });
 
-  console.log('Datos a enviar: ', { actividad, antecedente, diagnostico, conclusion,recomendacion });
-  console.log(formData);
-
-  // const response = await fetch(``, {
-  //   method: 'POST',
-  //   body: formData
-  // });
-  // if (!response.ok) {
-  //   throw new Error(response.status + ' ' + response.statusText);
-  // }
-  // const datos = await response.json();
-  // if (!datos.res) {
-  //   throw new Error(datos.msg);
-  // }
+    if (!response.ok) { 
+      throw new Error(response.status + ' ' + response.statusText); 
+    }
+    const datos = await response.json();
+    if (!datos.res) { 
+      throw new Error(datos.msg); 
+    }
+    console.log(datos);
+    // MOSTRANDO DATA RECIBIDA DE SERVIDOR
+    document.getElementById('editarActividadInput').value = datos.data.actividad;
+  } 
+  catch (error) { console.error('Error:', error); }
 };
+
+//MODIFICAR ACTIVIDAD
+const FnModificarActividad = async () => {
+  const id = document.getElementById('txtIdInforme').value;
+  const actividad = document.getElementById('editarActividadInput').value;
+
+  if (isNaN(id)) {
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'ID debe ser un número',
+          timer: 2000
+      });
+      return;
+  }
+  const formData = new FormData();
+  formData.append('id', id);
+  formData.append('actividad', actividad);
+  try {
+      const response = await fetch('http://localhost/informes/update/ModificarActividadInforme.php', {
+          method: 'POST',
+          body: formData
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: errorText,
+              timer: 2000
+          });
+          return;
+      }
+      const datos = await response.json();
+      if (!datos.res) {
+          Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: datos.msg,
+              timer: 2000
+          });
+          return;
+      }
+      // Mensaje de éxito
+      Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: datos.msg,
+          timer: 3000
+      });
+      // ACTUALIZANDO CAMPO : ACTIVIDAD
+      document.querySelector('#actividadId').textContent = actividad;
+      // CERRAR MODAL
+      const modalEditarActividad = bootstrap.Modal.getInstance(document.getElementById('modalEditarActividad'));
+      if (modalEditarActividad) {
+          modalEditarActividad.hide();
+      }
+  } catch (error) {
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: `Se produjo un error inesperado: ${error.message}`,
+          timer: 3000
+      });
+  }
+};
+
+
+// const fnEliminarActividad = async (id) => {
+//   const formData = new FormData();
+//   formData.append('id', id);
+//   try {
+//     const response = await fetch('http://localhost/informes/delete/EliminarActividad.php', {
+//         method: 'POST',
+//         body: formData
+//     });
+//     // Verificar si la respuesta es OK
+//     if (!response.ok) {
+//         throw new Error('Error en la respuesta del servidor');
+//     }
+//     const result = await response.json();
+//     if (result.res) {
+//         console.log(result.msg);
+//         // ELIMINADO ACCORDION POR SU ID
+//         const actividadDiv = document.getElementById(id);
+//         if (actividadDiv) {
+//             actividadDiv.remove();
+//         } else {
+//             console.error(`No se encontró el accordion con ID ${id}.`);
+//         }
+//     } else {
+//         console.error(result.msg);
+//     }
+//   } catch (error) {
+//       console.error('Hubo un problema con la operación de fetch:', error);
+//   }
+// }

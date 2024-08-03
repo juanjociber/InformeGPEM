@@ -23,10 +23,6 @@ try {
 
     $conmy->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // if (empty($_POST['refid']) || empty($_POST['archivo'])) {
-    //     throw new Exception("La información está incompleta.");
-    // }
-
     $USUARIO = date('Ymd-His (').'jhuiza'.')';
 
     $FileName = 'INFD'.'_'.$_POST['refid'].'_'.uniqid().'.jpeg';

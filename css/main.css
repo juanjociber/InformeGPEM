@@ -15,8 +15,36 @@ body {
     font-family: 'Roboto', sans-serif;
     transition: .3s ease all;
 }
+input[type="text"], textarea {
+    text-transform: uppercase;
+}
 
+@media(max-width:992px){
+    .container{
+        max-width: 95%;
+    }
+}
+.img-fluid{
+    width: 100%;
+}
 
+/*BOTONES ELIMINAR*/
+.bi-x-lg::before {
+  content: "\f659";
+  border: 1px solid #ff6347cf;
+  padding: 5px;
+  border-radius: 50%;
+  background: #ff6347cf;
+  color: white;
+  font-weight: 800 !important;
+}
+.contenedor-imagen p{
+  text-transform: uppercase;
+}
+
+.text-secondary{
+  color : rgb(87 84 84) !important;
+}
 /*SELECT*/
 .custom-select-container {
     position: relative;
