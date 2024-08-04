@@ -329,7 +329,7 @@
             throw new Exception($e->getMessage());
         }
     }
-    
+        
     function FnModificarActividad($conmy, $actividad) {
         try {
             $res=false;
@@ -357,22 +357,7 @@
             throw new Exception($e->getMessage());
         }
     }
-
-    function FnModificarAntecedenteActividad($conmy, $actividad){
-        try{
-            $res = false;
-            $stmt = $conmy->prepare("UPDATE tbldetalleinforme SET actividad=:Actividad WHERE id=:Id AND tipo='ant' AND infid=:Infid;");
-            $params = array(':Actividad' => $actividad->actividad, ':Id' => $actividad->id, ':Infid' => $actividad->infid);
-            if ($stmt->execute($params)) {
-                $res = true;
-            }
-            return $res;
-        } catch(PDOException $e) {
-            throw new Exception($e->getMessage());
-        }
-    }
-      
-        
+         
     function FnEliminarActividad($conmy, $id) {
         try {
             $res = false;

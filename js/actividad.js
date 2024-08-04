@@ -491,9 +491,7 @@ const fnEliminarActividad = async (id) => {
     if (!response.ok) {
       throw new Error(`Error en la respuesta del servidor: ${response.statusText}`);
     }
-
     const result = await response.json();
-
     if (result.res) {
       Swal.fire({
         title: "Éxito",
@@ -506,7 +504,6 @@ const fnEliminarActividad = async (id) => {
           actividadDiv.remove();
         } 
       });
-      console.log(result.msg);
     } else {
       Swal.fire({
         title: "Error",

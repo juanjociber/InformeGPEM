@@ -22,14 +22,13 @@
 
 		foreach($datos as $dato){
 			if($dato['tipo']=='con'){
-				$conclusiones[]=array('actividad'=>$dato['actividad']);
+				$conclusiones[]=array('actividad'=>$dato['actividad'],'id'=>$dato['id'],'tipo'=>$dato['tipo']);
 			}else if($dato['tipo']=='rec'){
-				$recomendaciones[]=array('actividad'=>$dato['actividad']);
+				$recomendaciones[]=array('actividad'=>$dato['actividad'],'id'=>$dato['id'],'tipo'=>$dato['tipo']);
 			}else if($dato['tipo']=='ant'){
-				$antecedentes[]=array('actividad'=>$dato['actividad']);
+				$antecedentes[]=array('actividad'=>$dato['actividad'],'id'=>$dato['id'],'tipo'=>$dato['tipo']);
 			}	
 		}
-
 
   } catch (PDOException $e) {
       throw new Exception($e->getMessage());
@@ -112,6 +111,7 @@
       }
       .input-group p{
         font-weight: 300;
+        text-transform:uppercase;
       }
       .input-grop-icons{
         display: flex;
@@ -129,20 +129,22 @@
     <div class="container">
       <div class="row border-bottom mb-3 fs-5">
           <div class="col-12 fw-bold d-flex justify-content-between">
-              <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
-              <input type="text" class="d-none" id="txtIdInforme" value="<?php echo htmlspecialchars($informe->id); ?>" readonly/>
-              <p class="m-0 p-0 text-center text-secondary"><?php echo htmlspecialchars($informe->nombre); ?></p>
+              <p class="m-0 p-0 text-secondary"><?php echo $informe->clinombre; ?></p>
+              <input type="text" class="d-none" id="txtIdInforme" value="<?php echo $informe->id; ?>" readonly/>
+              <input type="text" class="d-none" id="txtIdtblDetalleInf" readonly/>
+              <input type="text" class="d-none" id="txtInfid" readonly/>
+              <p class="m-0 p-0 text-center text-secondary"><?php echo $informe->nombre; ?></p>
           </div>
       </div>
       <div class="row">
           <div class="col-12">
               <nav style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
                   <ol class="breadcrumb">
-                      <li class="breadcrumb-item fw-bold"><a href="/informes/datoGeneral.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">INFORME</a></li>
-                      <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">EQUIPO</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/datoGeneral.php?informe=<?php echo $Id ?>" class="text-decoration-none">INFORME</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/datoEquipo.php?informe=<?php echo $Id ?>" class="text-decoration-none">EQUIPO</a></li>
                       <li class="breadcrumb-item active fw-bold" aria-current="page">RESUMEN</li>
-                      <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ACTIVIDAD</a></li>
-                      <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php?informe=<?php echo htmlspecialchars($Id) ?>" class="text-decoration-none">ANEXOS</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/actividad.php?informe=<?php echo $Id ?>" class="text-decoration-none">ACTIVIDAD</a></li>
+                      <li class="breadcrumb-item fw-bold"><a href="/informes/anexos.php?informe=<?php echo $Id ?>" class="text-decoration-none">ANEXOS</a></li>
                   </ol>
               </nav>
           </div>
@@ -151,148 +153,141 @@
       <!--RESUMEN-->
       <div class="row">
         <div class="col-12 mt-2" id="containerActividad" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-          <label class="form-label">Actividades</i></label>
+          <label class="form-label">Actividades</label>
           <!-- ITEM ACTIVIDADES -->
-          <div class="input-group mt-1" data-id="actividadId">
-            <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>
+          <div class="input-group mt-1">
+            <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo $informe->actividad; ?></p>
             <div class="input-grop-icons">
-              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo htmlspecialchars($informe->id); ?>)"></i></span>
+              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo $informe->id; ?>)"></i></span>
             </div>
           </div>
         </div>
 
         <!-- ITEM ANTECEDENTES -->
         <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-          <label class="form-label">Antecedentes <i class="bi bi-plus-lg" onclick="abrirModalAgregar()"></i></label>
-          <div class="input-group mt-1">
-            <?php foreach($antecedentes as $antecedente) : ?>
-            <div class="d-flex">
-              <span class="vineta"></span>
-              <p class="mb-0" id="antecedenteId" style="text-align: justify;"><?php echo htmlspecialchars($antecedente['actividad']); ?></p>
+            <label class="form-label">Antecedentes <i class="bi bi-plus-lg" data-tipo="ant" onclick="abrirModalAgregar('antecedente','ant')"></i></label>
+            <div class="mt-1">
+                <?php foreach ($antecedentes as $antecedente) : ?>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex";>
+                      <span class="vineta"></span>
+                      <p class="mb-0 fw-light text-uppercase" data-tipo="<?php echo $antecedente['tipo']; ?>" id="antecedenteId" style="text-align: justify;"><?php echo $antecedente['actividad']; ?></p>
+                  </div>
+                  <div class="input-grop-icons">
+                      <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $antecedente['tipo']; ?>" onclick="abrirModalEditar(<?php echo $antecedente['id']; ?>, 'antecedente')"></i></span>
+                      <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar(<?php echo $antecedente['id']; ?>)"></i></span>
+                  </div>
+                </div>
+                <?php endforeach ?>
             </div>
-            <div class="input-grop-icons">
-              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="abrirModalEditar()"></i></span>
-              <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar()"></i></span>
-            </div>
-            <?php endforeach ?>
-          </div>
         </div>
         <!-- ITEM CONCLUSION -->
         <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-          <label class="form-label">Conclusiones <i class="bi bi-plus-lg" onclick="abrirModalAgregar()()"></i></label>
-          <div class="input-group mt-1">
-            <?php foreach($conclusiones as $conclusion) : ?>
-            <div class="d-flex">
-              <span class="vineta"></span>
-              <p class="mb-0" id="conclusionId" style="text-align: justify;"><?php echo htmlspecialchars($conclusion['actividad']); ?></p>
+            <label class="form-label">Conclusiones <i class="bi bi-plus-lg" data-tipo="con" onclick="abrirModalAgregar('conclusion','con')"></i></label>
+            <div class="mt-1">
+                <?php foreach ($conclusiones as $conclusion) : ?>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex">
+                    <span class="vineta"></span>
+                    <p class="mb-0 fw-light text-uppercase" data-tipo="<?php echo $conclusion['tipo']; ?>" id="conclusionId>" style="text-align: justify;"><?php echo $conclusion['actividad']; ?></p>
+                  </div>
+                  <div class="input-grop-icons">
+                    <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $conclusion['tipo']; ?>" onclick="abrirModalEditar(<?php echo $conclusion['id']; ?>, 'conclusion')"></i></span>
+                    <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar(<?php echo $conclusion['id']; ?>)"></i></span>
+                  </div>
+                </div>
+                <?php endforeach ?>
             </div>
-            <div class="input-grop-icons">
-              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="abrirModalEditar()()"></i></span>
-              <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar()()"></i></span>
-            </div>
-            <?php endforeach ?>
-          </div>
         </div>
         <!-- ITEM RECOMENDACIÓN -->
         <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-          <label class="form-label">Recomendaciones <i class="bi bi-plus-lg" onclick="abrirModalAgregar()()"></i></label>
-          <div class="input-group mt-1">
-            <?php foreach($recomendaciones as $recomendacion) :?>
-            <div class="d-flex">
-              <span class="vineta"></span>
-              <p class="mb-0" id="recomendacionId" style="text-align: justify;"><?php echo htmlspecialchars($recomendacion['actividad']); ?></p>
+            <label class="form-label">Recomendaciones <i class="bi bi-plus-lg" data-tipo="rec" onclick="abrirModalAgregar('recomendacion','rec')"></i></label>
+            <div class="mt-1">
+                <?php foreach ($recomendaciones as $recomendacion) : ?>
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="d-flex">
+                    <span class="vineta"></span>
+                    <p class="mb-0 fw-light text-uppercase" data-tipo="<?php echo $recomendacion['tipo']; ?>" id="recomendacionId" style="text-align: justify;"><?php echo $recomendacion['actividad']; ?></p>
+                  </div>
+                  <div class="input-grop-icons">
+                    <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $recomendacion['tipo']; ?>" onclick="abrirModalEditar(<?php echo $recomendacion['id']; ?>, 'recomendacion')"></i></span>
+                    <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar(<?php echo $recomendacion['id']; ?>)"></i></span>
+                  </div>
+                </div>
+                <?php endforeach ?>
             </div>
-            <div class="input-grop-icons">
-              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="abrirModalEditar()"></i></span>
-              <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar()"></i></span>
+        </div>
+
+        <!-- MODAL EDITAR : ACTIVIDAD -->
+        <div class="modal fade" id="modalActividad" tabindex="-1" aria-labelledby="modalGeneralLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title text-uppercase" id="modalGeneralLabel">Modificar actividad</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formGeneral">
+                            <textarea type="text" class="form-control" id="modalActividadInput" name="actividad" rows="3" placeholder=""></textarea>
+                            <textarea type="text" class="form-control d-none" id="diagnosticoModalInput" name="diagnostico" rows="3" placeholder=""></textarea>
+                            <textarea type="text" class="form-control d-none" id="trabajoModalInput" name="trabajos" rows="3" placeholder=""></textarea>
+                            <textarea type="text" class="form-control d-none" id="observacionModalInput" name="observaciones" rows="3" placeholder=""></textarea>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary text-uppercase fw-light" id="modalGuardarBtn" onclick="fnModificarActividadInforme()"><i class="bi bi-floppy"></i> Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <?php endforeach ?>
-          </div>
         </div>
-      </div>
-    </div>
 
-    <!-- M O D A L E S -->
-    <!-- ACTIVIDAD -->
-    <div class="modal fade" id="modalEditarActividad" tabindex="-1" aria-labelledby="modalActividadLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="modalActividadLabel">Modificar Actividad</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formActividad">
-              <textarea type="text" class="form-control" id="editarActividadInput" name="actividad" row=3 placeholder="Ingresar nueva ctividad"></textarea>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnModificarActividad()"><i class="bi bi-floppy"></i> Guardar</button>
+        <!-- MODAL REGISTRAR : ANTECEDENTE-CONCLUSION-RECOMENDACIÓN -->
+        <div class="modal fade" id="agregarActividadModal" tabindex="-1" aria-labelledby="cabeceraRegistrarModal" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title text-uppercase" id="cabeceraRegistrarModal"></h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
-            </form>
+              <div class="modal-body">
+                <form id="formGeneral">
+                  <textarea type="text" class="form-control" id="registroActividadInput" name="actividad" rows="3" placeholder=""></textarea>
+                  <textarea type="text" class="form-control d-none" id="registroDiagnosticoInput" name="diagnostico" rows="3" placeholder=""></textarea>
+                  <textarea type="text" class="form-control d-none" id="registroTrabajoInput" name="trabajos" rows="3" placeholder=""></textarea>
+                  <textarea type="text" class="form-control d-none" id="registroObservacionInput" name="observaciones" rows="3" placeholder=""></textarea>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-primary text-uppercase fw-light" id="modalGuardarBtn" onclick="fnRegistrarActividadDetalle()"><i class="bi bi-floppy"></i> Guardar</button>
+                  </div>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ANTECEDENTE -->
-    <div class="modal fade" id="modalAntecedente" tabindex="-1" aria-labelledby="modalAntecedenteLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="modalAntecedenteLabel">Agregar Antecedente</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formAntecedente">
-              <textarea type="text" class="form-control" id="modalAntecedenteInput" name="antecedente" row=3 placeholder="Ingresar nuevo antecedente"></textarea>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnAgregarAntecedente();"><i class="bi bi-floppy"></i> Guardar</button>
-              </div>
-            </form>
-          </div>
+        <!-- MODAL EDITAR : ANTECEDENTE-CONCLUSION-RECOMENDACIÓN- -->
+        <div class="modal fade" id="modalGeneral" tabindex="-1" aria-labelledby="cabeceraModal" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title text-uppercase" id="cabeceraModal"></h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="formGeneral">
+                            <textarea type="text" class="form-control" id="actividadModalInput" name="actividad" rows="3" placeholder=""></textarea>
+                            <textarea type="text" class="form-control d-none" id="diagnosticoModalInput" name="diagnostico" rows="3" placeholder=""></textarea>
+                            <textarea type="text" class="form-control d-none" id="trabajoModalInput" name="trabajos" rows="3" placeholder=""></textarea>
+                            <textarea type="text" class="form-control d-none" id="observacionModalInput" name="observaciones" rows="3" placeholder=""></textarea>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary text-uppercase fw-light" id="modalGuardarBtn" onclick="FnModificarActividad()"><i class="bi bi-floppy"></i> Guardar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     </div>
-    
-    <!-- CONCLUSIÓN -->
-    <div class="modal fade" id="modalConclusion" tabindex="-1" aria-labelledby="modalConclusionLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="modalConclusionLabel">Agregar Conclusión</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formConclusion">
-              <textarea type="text" class="form-control" id="modalConclusionInput" name="conclusion" row=3 placeholder="Ingresar nueva conclusión"></textarea>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnAgregarConclusion();"><i class="bi bi-floppy"></i> Guardar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RECOMENDACIÓN -->
-    <div class="modal fade" id="modalRecomendacion" tabindex="-1" aria-labelledby="modalRecomendacionLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header bg-primary text-white">
-            <h5 class="modal-title text-uppercase" id="modalRecomendacionLabel">Agregar Recomendación</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formRecomendacion">
-              <textarea type="text" class="form-control" id="modalRecomendacionInput" name="recomendacion" placeholder="Ingresar nueva recomendación"></textarea>
-              <div class="modal-footer">
-                <button type="button" class="btn btn-primary text-uppercase fw-light" onclick="FnAgregarRecomendacion();"><i class="bi bi-floppy"></i> Guardar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <script src="js/resumen.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
