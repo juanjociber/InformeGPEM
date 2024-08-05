@@ -80,20 +80,6 @@
         background-color: black;
         color: white;
       }
-      .contenedor-imagen{
-        position: relative;
-        border: 1px solid #67646442;
-        border-radius: 4px;
-        padding: 5px; 
-      }
-      .caja-imagen{
-        margin-bottom: 5px;
-      }
-      @media(min-width:992px){
-        .caja-imagen{
-          grid-template-columns: 1fr 1fr 1fr 1fr;
-        }
-      }
       #canvas{
         width: 100%;
       }
@@ -136,40 +122,40 @@
       <div class="row g-3">
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
             <label class="form-label mb-0">Nombre</label>
-            <p class="mb-0" style="font-size:15px" id="nombreEquipo"><?php echo htmlspecialchars($informe->nombre); ?></p>
+            <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size:15px" id="nombreEquipo"><?php echo htmlspecialchars($informe->nombre); ?></p>
         </div>
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label class="form-label mb-0">Marca</label>
-          <p class="mb-0" style="font-size:15px" id="marcaEquipo"><?php echo htmlspecialchars($informe->equmarca); ?></p>
+          <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size:15px" id="marcaEquipo"><?php echo htmlspecialchars($informe->equmarca); ?></p>
         </div>
         <div class="custom-select-container col-6 col-lg-4 col-xl-3 mt-2">
           <label class="form-label mb-0">Modelo</label>
-          <p class="mb-0" style="font-size:15px" id="modeloEquipo"><?php echo htmlspecialchars($informe->equmodelo); ?></p>
+          <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size:15px" id="modeloEquipo"><?php echo htmlspecialchars($informe->equmodelo); ?></p>
         </div>
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label class="form-label mb-0">Serie</label>
-          <p class="mb-0" style="font-size:15px" id="serieEquipo"><?php echo htmlspecialchars($informe->equserie); ?></p>
+          <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size:15px" id="serieEquipo"><?php echo htmlspecialchars($informe->equserie); ?></p>
         </div>
         <div class="col-6 col-lg-4 col-xl-3 mt-2">
           <label class="form-label mb-0">Kilometraje</label>
-          <p class="mb-0" style="font-size:15px" id="kilometrajeEquipo"><?php echo htmlspecialchars($informe->equkm); ?></p>
+          <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size:15px" id="kilometrajeEquipo"><?php echo htmlspecialchars($informe->equkm); ?></p>
         </div>
         <div class="col-6 col-lg-5 col-xl-8 mt-2">
           <label class="form-label mb-0">Horas de motor</label>
-          <p class="mb-0" style="font-size:15px" id="horasMotorEquipo"><?php echo htmlspecialchars($informe->equhm); ?></p>
+          <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size:15px" id="horasMotorEquipo"><?php echo htmlspecialchars($informe->equhm); ?></p>
         </div>
 
         <!-- ARCHIVOS (TÍTULOS-IMAGENES-DESCRIPCIÓN) -->
-        <?php foreach($archivos as $archivo): ?>
-          <div class="caja-imagen col-6 col-lg-3" id="<?php echo htmlspecialchars($archivo['id']); ?>">
-            <div class="contenedor-imagen">
-              <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
+        <div class="row m-0 mt-2 mb-2 p-0 d-flex justify-content-evenly">
+          <?php foreach($archivos as $archivo): ?>
+            <div class="col-5 col-lg-4 col-xl-3 border border-secondary border-opacity-50 position-relative">
+              <p class="text-center mt-4 mb-1 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
                 <i class="bi bi-x-lg" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen(<?php echo htmlspecialchars($archivo['id']); ?>)"></i>              
                 <img src="/mycloud/gesman/files/<?php echo htmlspecialchars($archivo['nombre']); ?>" class="img-fluid" alt="">
-              <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
+              <p class="text-center text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
             </div>
-          </div>
-        <?php endforeach; ?>
+          <?php endforeach; ?>
+        </div>
       </div>
     </div>
 

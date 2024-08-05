@@ -51,8 +51,11 @@
   <style>
     ::placeholder{
       color: #cecccc !important;
-      font-weight: 300;
-      font-size: 15px;
+      font-weight: 200;
+      text-transform: uppercase;
+    }
+    img{
+      width: 100%;
     }
     .form-label{
       color:#212529;
@@ -60,12 +63,7 @@
     }
     @media(max-width:767px){
       .form-label{
-        font-size: 13px;
-      }
-    }
-    @media(min-width:768px){
-      .mt--mod{
-        margin-top: 17px !important;
+        font-size: 15px;
       }
     }
     @media(min-width:92px){
@@ -75,16 +73,16 @@
     }
     .form-control{
       border-radius:.25rem;
-      font-size: 15px;
     }
-    .btn-control{
-      padding:.375rem .75rem;
+    @media(max-width:576px){
+      .text-button{
+        display:none;
+      }
     }
   </style>
   <body>
 
     <div class="container">
-
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
             <p class="m-0 p-0 text-secondary"><?php echo htmlspecialchars($informe->clinombre); ?></p>
@@ -109,32 +107,31 @@
 
       <!--DATOS GENERALES-->
       <div class="row g-3">
-        
         <input type="hidden" id="idInforme" value="<?php echo htmlspecialchars($Id) ?>">
 
         <div class="col-6 col-md-4 col-lg-3">
           <label for="nombreInformeInput" class="form-label mb-0">Nro. Informe</label>
-          <input type="text" class="form-control" id="nombreInformeInput" value="<?php echo htmlspecialchars($informe->nombre); ?>" disabled>
+          <input type="text" class="form-control text-secondary text-uppercase fw-bold" id="nombreInformeInput" value="<?php echo htmlspecialchars($informe->nombre); ?>" disabled>
         </div>
         <div class="col-6 col-md-4 col-lg-3">
           <label for="fechaInformeInput" class="form-label mb-0">Fecha</label>
-          <input type="date" class="form-control" id="fechaInformeInput" value="<?php echo htmlspecialchars($informe->fecha); ?>">
+          <input type="date" class="form-control text-secondary text-uppercase fw-bold" id="fechaInformeInput" value="<?php echo htmlspecialchars($informe->fecha); ?>">
         </div>
         <div class="col-6 col-md-4 col-lg-3 mt-2 mt--mod">
           <label for="OrdenTrabajoInput" class="form-label mb-0">Orden de trabajo</label>
-          <input type="text" class="form-control" id="OrdenTrabajoInput" value="<?php echo htmlspecialchars($informe->ordnombre); ?>" disabled>
+          <input type="text" class="form-control text-secondary text-uppercase fw-bold" id="OrdenTrabajoInput" value="<?php echo htmlspecialchars($informe->ordnombre); ?>" disabled>
         </div>
-        <div class="col-6 col-md-6 col-lg-3 mt-2">
+        <div class="col-6 col-md-6 col-lg-3 mt-2 mt-2--mod ">
           <label for="nombreClienteInput" class="form-label mb-0">Cliente</label>
-          <input type="text" class="form-control" id="nombreClienteInput" value="<?php echo htmlspecialchars($informe->clinombre); ?>" disabled>
+          <input type="text" class="form-control text-secondary text-uppercase fw-bold" id="nombreClienteInput" value="<?php echo htmlspecialchars($informe->clinombre); ?>" disabled>
         </div>
         
         <div class="custom-select-container col-md-6 col-lg-4 mt-2">
           <label for="contactoInput" class="form-label mb-0">Contacto</label>
           <div class="custom-select-wrapper">
-            <input type="text" id="contactoInput" class="custom-select-input" value="<?php echo htmlspecialchars($informe->clicontacto); ?>" placeholder="Seleccionar contacto" />
-            <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
-            <div id="contactoList" class="custom-select-list">
+            <input type="text" id="contactoInput" class="custom-select-input text-secondary text-uppercase fw-bold" value="<?php echo htmlspecialchars($informe->clicontacto); ?>" placeholder="Seleccionar contacto" />
+            <span class="custom-select-arrow text-secondary text-uppercase fw-bold"><i class="bi bi-chevron-down"></i></span>
+            <div id="contactoList" class="custom-select-list ">
               <!-- CONTACTOS -->
               <?php foreach ($supervisores as $supervisor): ?>
                 <div class="custom-select-item" data-value="<?php echo htmlspecialchars($supervisor['idsupervisor']); ?>">
@@ -147,13 +144,13 @@
         
         <div class="col-md-6 col-lg-4 mt-2">
           <label for="ubicacionInput" class="form-label mb-0">Lugar</label>
-          <input type="text" class="form-control" id="ubicacionInput" value="<?php echo htmlspecialchars($informe->ubicacion); ?>" placeholder="Ingresar lugar">
+          <input type="text" class="form-control text-secondary text-uppercase fw-bold" id="ubicacionInput" value="<?php echo htmlspecialchars($informe->ubicacion); ?>" placeholder="Ingresar lugar">
         </div>      
         
         <div class="custom-select-container col-md-6 col-lg-4 mt-2">
           <label for="supervisorInput" class="form-label mb-0">Supervisor</label>
           <div class="custom-select-wrapper">
-            <input type="text" class="custom-select-input" id="supervisorInput" value="<?php echo  htmlspecialchars($supervisorInputValue);?>" placeholder="Seleccionar supervisor" />
+            <input type="text" class="custom-select-input text-secondary text-uppercase fw-bold" id="supervisorInput" value="<?php echo  htmlspecialchars($supervisorInputValue);?>" placeholder="Seleccionar supervisor" />
             <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
             <div id="supervisorList" class="custom-select-list">
               <!-- SUPERVISORES -->
@@ -165,8 +162,6 @@
             </div>
           </div>
         </div>
-
-        
       </div>  
 
       <div class="row mt-4">
@@ -174,8 +169,8 @@
           <button id="guardarDataEquipo" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick="fnGuardarDatosGenerales()" >Guardar <i class="bi bi-floppy"></i></button>
         </div>
       </div> 
-
     </div>
+    
     <script src="js/datoGeneral.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybBogGzW7S6U7h6C7Ll5/oqb5yiFTRHlFxB4OlF9AMMXNR9hl" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js" integrity="sha384-cu6U7+UzTQpS3/6TLAJ+8HXTFM3zUddWkaSbYfR6wv4l/5EXp7XKVI1LG6J9D2Bg" crossorigin="anonymous"></script>

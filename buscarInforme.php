@@ -21,72 +21,76 @@
     <title>Buscador</title>
 
     <style>
-      ::placeholder {
-        color: #cecccc !important;
-        font-weight: 300;
+      ::placeholder{
+      color: #cecccc !important;
+      font-weight: 200;
+      text-transform: uppercase;
+    }
+    img{
+      width: 100%;
+    }
+    @media(max-width:767px){
+      .form-label{
         font-size: 15px;
       }
+    }
+    @media(min-width:92px){
       .form-label{
-        color:#212529;
-        font-weight:300; 
+        font-size: 15px;
       }
-      @media(max-width:767px){
-        .form-label{
-          font-size: 13px !important;
-        }
-      }
-      .form-control {
-        border-radius: .25rem;
-      }
-      .btn-control {
-        padding: .375rem .75rem;
-      }
-      .custom-select-arrow {
-        top: 75%;
-        right: 20px;
-      }
-      .custom-select-list {
-        display: none;
-        position: absolute;
-        width: 100%;
-        background: #fff;
-        border: 1px solid #ced4da;
-        z-index: 1000;
-      }
-      .custom-select-item {
-        padding: .375rem .75rem;
-        cursor: pointer;
-      }
-      .custom-select-item:hover {
-        background-color: #e9ecef;
-      }
-      .fullscreen-spinner {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5); 
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999; 
-      }
-      .spinner {
-        border: 8px solid #f3f3f3; 
-        border-top: 8px solid #3498db; 
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        animation: spin 2s linear infinite;
-        position: absolute;
-        left: 45%;
-        top: 50%;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
+    }
+    .form-control{
+      border-radius:.25rem;
+    }
+    .btn-control {
+      padding: .375rem .75rem;
+    }
+    .custom-select-arrow {
+      top: 75%;
+      right: 20px;
+    }
+    .custom-select-list {
+      display: none;
+      position: absolute;
+      width: 100%;
+      background: #fff;
+      border: 1px solid #ced4da;
+      z-index: 1000;
+    }
+    .custom-select-item {
+      padding: .375rem .75rem;
+      cursor: pointer;
+    }
+    .custom-select-item:hover {
+      background-color: #e9ecef;
+    }
+    .fullscreen-spinner {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5); 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999; 
+    }
+    .spinner {
+      border: 8px solid #f3f3f3; 
+      border-top: 8px solid #3498db; 
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 2s linear infinite;
+      position: absolute;
+      left: 45%;
+      top: 50%;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
     </style>
   </head>
   <body>
@@ -95,7 +99,7 @@
       <!-- CABECERA -->
       <div class="row border-bottom mb-3 fs-5">
         <div class="col-12 fw-bold d-flex justify-content-between">
-          <p class="m-0 p-0">CLIENTE</p>
+          <p class="m-0 p-0 text-secondary text-uppercase fw-bold">CLIENTE</p>
         </div>
       </div>
 
@@ -103,12 +107,12 @@
       <div class="row mb-1 border-bottom">
         <div class="col-6 col-lg-6 col-xl-3">
           <label for="informeInput" class="form-label mb-0">Informe</label>
-          <input type="text" class="form-control text-uppercase" id="informeInput">
+          <input type="text" class="form-control text-secondary text-uppercase fw-bold" id="informeInput">
         </div>
         
         <div class="col-6 col-lg-6 col-xl-3 custom-select-wrapper">
           <label for="equipoInput" class="form-label mb-0">Equipo</label>
-          <input type="text" id="equipoInput" class="form-control text-uppercase" autocomplete="off" placeholder="Ingrese 1 o más caracteres">
+          <input type="text" id="equipoInput" class="form-control text-secondary text-uppercase fw-bold" autocomplete="off" placeholder="Ingrese 1 o más caracteres">
           <span class="custom-select-arrow"><i class="bi bi-chevron-down"></i></span>
           <div id="equipoList" class="custom-select-list"></div>
           <div class="fullscreen-spinner" id="spinner" style="display: none;">
@@ -120,15 +124,15 @@
         
         <div class="col-6 col-lg-6 col-xl-3">
           <label for="fechaInicialInput" class="form-label mb-0">Fecha inicial</label>
-          <input type="date" class="form-control" id="fechaInicialInput" value=""/>
+          <input type="date" class="form-control text-secondary text-uppercase fw-bold" id="fechaInicialInput" value=""/>
         </div>
         <div class="col-6 col-lg-6 col-xl-3">
           <label for="fechaFinalInput" class="form-label mb-0">Fecha final</label>
-          <input type="date" class="form-control" id="fechaFinalInput" value=""/>
+          <input type="date" class="form-control text-secondary text-uppercase fw-bold" id="fechaFinalInput" value=""/>
         </div>
         
         <div class="col-6 col-lg-3 mt-2 mb-2">
-          <button type="button" class="btn btn-primary text-uppercase fw-light col-12" onclick="fnBuscarInforme();"><i class="bi bi-search"></i> Buscar</button>
+          <button type="button" class="btn btn-primary text-uppercase col-12 col-lg-6" onclick="fnBuscarInforme();"><i class="bi bi-search"></i> Buscar</button>
         </div>  
       </div>
 

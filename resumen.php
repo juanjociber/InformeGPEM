@@ -61,7 +61,6 @@
         color: #cecccc !important;
         font-weight: 300;
         font-size: 15px;
-        /* text-transform: uppercase; */
       }
       .form-label {
         color: #212529;
@@ -77,11 +76,6 @@
       @media(max-width:767px) {
         .form-label {
           font-size: 13px;
-        }
-      }
-      @media(min-width:768px) {
-        .mt--mod {
-          margin-top: 17px !important;
         }
       }
       @media(min-width:92px) {
@@ -109,19 +103,12 @@
         align-items: center;
         border-radius: 4px;
       }
-      .input-group p{
-        font-weight: 300;
-        text-transform:uppercase;
-      }
       .input-grop-icons{
         display: flex;
         justify-content: flex-end;
       }
-      .vineta::before {
-        content: '\2713'; 
-        font-size: 13px;
-        color: green; 
-        margin-right: 8px;
+      .bi-plus-lg::before{
+        font-weight:bold!important;
       }
     </style>
   </head>
@@ -151,45 +138,42 @@
       </div>
 
       <!--RESUMEN-->
-      <div class="row">
-        <div class="col-12 mt-2" id="containerActividad" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-          <label class="form-label">Actividades</label>
-          <!-- ITEM ACTIVIDADES -->
-          <div class="input-group mt-1">
-            <p class="mb-0" id="actividadId" style="text-align: justify;"><?php echo $informe->actividad; ?></p>
-            <div class="input-grop-icons">
-              <span class="input-group-text"><i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo $informe->id; ?>)"></i></span>
-            </div>
-          </div>
+      <div class="row" id="containerActividad">
+        <label class="form-label text-white p-2 bg-primary d-flex justify-content-between align-items-center">Actividades</label>
+        <!-- ITEM ACTIVIDADES -->
+        <div class="mt-1 p-2 d-flex justify-content-between align-items-center border border-secondary border-opacity-50">
+          <p class="mb-0 text-uppercase text-secondary fw-bold" id="actividadId" style="text-align: justify;"><?php echo $informe->actividad; ?></p>
+          <i class="bi bi-pencil-square" onclick="fnEditarActividad(<?php echo $informe->id; ?>)"></i>
         </div>
-
-        <!-- ITEM ANTECEDENTES -->
-        <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-            <label class="form-label">Antecedentes <i class="bi bi-plus-lg" data-tipo="ant" onclick="abrirModalAgregar('antecedente','ant')"></i></label>
-            <div class="mt-1">
-                <?php foreach ($antecedentes as $antecedente) : ?>
+      </div>
+      
+      <!-- ITEM ANTECEDENTES -->
+      <div class="row">
+          <label class="form-label text-white p-2 mt-2 bg-primary d-flex justify-content-between align-items-center">Antecedentes <i class="bi bi-plus-lg fw-bold text-white" data-tipo="ant" onclick="abrirModalAgregar('antecedente','ant')"></i></label>
+          <div class="mt-1 border border-secondary border-opacity-50">
+              <?php foreach ($antecedentes as $antecedente) : ?>
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex";>
-                      <span class="vineta"></span>
-                      <p class="mb-0 fw-light text-uppercase" data-tipo="<?php echo $antecedente['tipo']; ?>" id="antecedenteId" style="text-align: justify;"><?php echo $antecedente['actividad']; ?></p>
+                    <i class="bi bi-stop" style="margin-right:10px"></i>
+                    <p class="mb-0 text-uppercase text-secondary fw-bold" data-tipo="<?php echo $antecedente['tipo']; ?>" id="antecedenteId" style="text-align: justify;"><?php echo $antecedente['actividad']; ?></p>
                   </div>
                   <div class="input-grop-icons">
-                      <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $antecedente['tipo']; ?>" onclick="abrirModalEditar(<?php echo $antecedente['id']; ?>, 'antecedente')"></i></span>
-                      <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar(<?php echo $antecedente['id']; ?>)"></i></span>
+                    <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $antecedente['tipo']; ?>" onclick="abrirModalEditar(<?php echo $antecedente['id']; ?>, 'antecedente')"></i></span>
+                    <span class="input-group-text"><i class="bi bi-trash3" onclick="abrirModalEliminar(<?php echo $antecedente['id']; ?>)"></i></span>
                   </div>
                 </div>
-                <?php endforeach ?>
-            </div>
-        </div>
+              <?php endforeach ?>
+          </div>
+      </div>
         <!-- ITEM CONCLUSION -->
-        <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-            <label class="form-label">Conclusiones <i class="bi bi-plus-lg" data-tipo="con" onclick="abrirModalAgregar('conclusion','con')"></i></label>
-            <div class="mt-1">
+        <div class="row">
+            <label class="form-label text-white p-2 mt-2 bg-primary d-flex justify-content-between align-items-center">Conclusiones <i class="bi bi-plus-lg fw-bold text-white" data-tipo="con" onclick="abrirModalAgregar('conclusion','con')"></i></label>
+            <div class="mt-1 border border-secondary border-opacity-50">
                 <?php foreach ($conclusiones as $conclusion) : ?>
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex">
-                    <span class="vineta"></span>
-                    <p class="mb-0 fw-light text-uppercase" data-tipo="<?php echo $conclusion['tipo']; ?>" id="conclusionId>" style="text-align: justify;"><?php echo $conclusion['actividad']; ?></p>
+                    <i class="bi bi-stop" style="margin-right:10px"></i>
+                    <p class="mb-0 text-uppercase text-secondary fw-bold" data-tipo="<?php echo $conclusion['tipo']; ?>" id="conclusionId>" style="text-align: justify;"><?php echo $conclusion['actividad']; ?></p>
                   </div>
                   <div class="input-grop-icons">
                     <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $conclusion['tipo']; ?>" onclick="abrirModalEditar(<?php echo $conclusion['id']; ?>, 'conclusion')"></i></span>
@@ -200,14 +184,14 @@
             </div>
         </div>
         <!-- ITEM RECOMENDACIÓN -->
-        <div class="col-12 mt-2" style="border: 0.5px solid #0000005e; padding: 1px 8px 9px 8px; border-radius: 4px;">
-            <label class="form-label">Recomendaciones <i class="bi bi-plus-lg" data-tipo="rec" onclick="abrirModalAgregar('recomendacion','rec')"></i></label>
-            <div class="mt-1">
+        <div class="row">
+            <label class="form-label text-white p-2 mt-2 bg-primary d-flex justify-content-between align-items-center">Recomendaciones <i class="bi bi-plus-lg fw-bold text-white" data-tipo="rec" onclick="abrirModalAgregar('recomendacion','rec')"></i></label>           
+            <div class="mt-1 border border-secondary border-opacity-50">
                 <?php foreach ($recomendaciones as $recomendacion) : ?>
                 <div class="d-flex justify-content-between align-items-center">
                   <div class="d-flex">
-                    <span class="vineta"></span>
-                    <p class="mb-0 fw-light text-uppercase" data-tipo="<?php echo $recomendacion['tipo']; ?>" id="recomendacionId" style="text-align: justify;"><?php echo $recomendacion['actividad']; ?></p>
+                    <i class="bi bi-stop" style="margin-right:10px"></i>
+                    <p class="mb-0 text-uppercase text-secondary fw-bold" data-tipo="<?php echo $recomendacion['tipo']; ?>" id="recomendacionId" style="text-align: justify;"><?php echo $recomendacion['actividad']; ?></p>
                   </div>
                   <div class="input-grop-icons">
                     <span class="input-group-text"><i class="bi bi-pencil-square" data-tipo="<?php echo $recomendacion['tipo']; ?>" onclick="abrirModalEditar(<?php echo $recomendacion['id']; ?>, 'recomendacion')"></i></span>
@@ -286,7 +270,6 @@
                 </div>
             </div>
         </div>
-      </div>
     </div>
     <script src="js/resumen.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>

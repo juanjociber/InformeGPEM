@@ -55,7 +55,7 @@ input[type="text"], textarea {
 .custom-select-input {
     display: block;
     width: 100%;
-    padding: 8px;
+    padding:5px 6px;
     font-size: 16px;
     line-height: 1.5;
     color: #495057;

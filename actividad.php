@@ -48,26 +48,26 @@
 						<div class="row">
 							<div class="col-6">
                 <label class="form-label mb-0">Diagnóstico</label>
-                <p class="mb-1" style="font-size=15px" id="diagnostico-'.$nodo['id'].'">'.$nodo['diagnostico'].'</p>
+                <p class="mb-1 text-secondary text-uppercase fw-bold" style="font-size=15px" id="diagnostico-'.$nodo['id'].'">'.$nodo['diagnostico'].'</p>
               </div>
 							<div class="col-6">
                 <label class="form-label mb-0">Trabajos</label>
-                <p class="mb-1" style="font-size=15px" id="trabajo-'.$nodo['id'].'">'.$nodo['trabajos'].'</p>
+                <p class="mb-1 text-secondary text-uppercase fw-bold" style="font-size=15px" id="trabajo-'.$nodo['id'].'">'.$nodo['trabajos'].'</p>
               </div>
 							<div class="col-12">
                 <label class="form-label mb-0">Observaciones</label>
-                <p class="mb-1" style="font-size=15px" id="observacion-'.$nodo['id'].'">'.$nodo['observaciones'].'</p>
+                <p class="mb-1 text-secondary text-uppercase fw-bold" style="font-size=15px" id="observacion-'.$nodo['id'].'">'.$nodo['observaciones'].'</p>
               </div>
 						</div>
-						<div class="caja-imagen" id="'.$nodo['id'].'">';
+						<div class="row m-0 mt-2 mb-2 p-0 d-flex justify-content-evenly" id="'.$nodo['id'].'">';
 							if(isset($imagenes[$nodo['id']])){
 								foreach($imagenes[$nodo['id']] as $elemento){
 									$html.='
-                    <div class="contenedor-imagen" id="archivo-'.$elemento['id'].'">
-                      <p class="text-center mt-4 mb-1">'.$elemento['titulo'].'</p>
+                    <div class="col-5 col-lg-4 col-xl-3 border border-secondary border-opacity-50 position-relative" id="archivo-'.$elemento['id'].'">
+                      <p class="text-center mt-4 mb-1 text-secondary text-uppercase fw-bold">'.$elemento['titulo'].'</p>
                         <i class="bi bi-x-lg" style="position: absolute; font-size: 23px;color: tomato;top: 40px;left: 5px; top:5px" onclick="fnEliminarImagen('.$elemento['id'].')"></i>
                         <img src="/mycloud/gesman/files/'.$elemento['nombre'].'" class="img-fluid" alt="">
-                      <p class="text-center">'.$elemento['descripcion'].'</p>
+                      <p class="text-center text-secondary text-uppercase fw-bold">'.$elemento['descripcion'].'</p>
                     </div>';
 								}
 							}
@@ -219,23 +219,6 @@
         font-size:20px;
         margin-right: 1rem;
         cursor: pointer;
-      }
-      .contenedor-imagen{
-        position: relative;
-        border: 1px solid #67646442;
-        border-radius: 4px;
-        padding: 5px; 
-      }
-      .caja-imagen{
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5px;
-        margin-bottom: 5px;
-      }
-      @media(min-width:992px){
-        .caja-imagen{
-          grid-template-columns: 1fr 1fr 1fr 1fr;
-        }
       }
       #canvas{
         width: 100%;

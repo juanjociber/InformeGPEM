@@ -32,49 +32,40 @@
 		foreach ($arbol as $key=>$nodo) {
       //ASIGNANDO VALOR A NODOGLOBAL
 			$indiceActual = $nivel==0?$contador++:$indice.'.'.($key+1);
-			//$html.='<div id="'.$nodo['id'].'">';
 			$html.='
-          <div class="cabecera col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">
-						'.$numero.'.'.$indiceActual.' - '.$nodo['actividad'].'
-            </p>
-          </div>
-
-				<div>
-					<div>
-						<div class="row">
-							<div class="col-6">
+            <div class="col-12 mb-0 border-bottom bg-secondary">
+              <p class="mt-2 mb-2 fw-bold text-white">'.$numero.'.'.$indiceActual.' - '.$nodo['actividad'].'</p>
+            </div>
+						<div class="row p-1 m-0 border border-secondary border-opacity-50">
+							<div class="col-12 mb-1">
                 <label class="form-label mb-0">Diagnóstico</label>
-                <p class="mb-1 textura-contenido" style="font-size=15px" id="diagnostico-'.$nodo['id'].'">'.$nodo['diagnostico'].'</p>
+                <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size=15px" id="diagnostico-'.$nodo['id'].'">'.$nodo['diagnostico'].'</p>
               </div>
-							<div class="col-6">
+							<div class="col-12 mb-1">
                 <label class="form-label mb-0">Trabajos</label>
-                <p class="mb-1 textura-contenido" style="font-size=15px" id="trabajo-'.$nodo['id'].'">'.$nodo['trabajos'].'</p>
+                <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size=15px" id="trabajo-'.$nodo['id'].'">'.$nodo['trabajos'].'</p>
               </div>
-							<div class="col-12">
+							<div class="col-12 mb-1">
                 <label class="form-label mb-0">Observaciones</label>
-                <p class="mb-1 textura-contenido" style="font-size=15px" id="observacion-'.$nodo['id'].'">'.$nodo['observaciones'].'</p>
+                <p class="mb-0 text-secondary text-uppercase fw-bold" style="font-size=15px" id="observacion-'.$nodo['id'].'">'.$nodo['observaciones'].'</p>
               </div>
-						</div>
-						<div class="row contenedor-row" id="'.$nodo['id'].'">';
-							if(isset($imagenes[$nodo['id']])){
-								foreach($imagenes[$nodo['id']] as $elemento){
-									$html.='
-                    <div class="col-6 border mr-2" id="archivo-'.$elemento['id'].'">
-                      <p class="text-center mt-4 mb-1 textura-contenido">'.$elemento['titulo'].'</p>
+						  <div class="row m-0 mt-2 mb-2 p-0 d-flex justify-content-evenly" id="'.$nodo['id'].'">';
+							  if(isset($imagenes[$nodo['id']])){
+								  foreach($imagenes[$nodo['id']] as $elemento){
+									  $html.='
+                    <div class="col-5 col-lg-4 col-xl-3 border border-secondary border-opacity-50" id="archivo-'.$elemento['id'].'">
+                      <p class="text-center text-uppercase mt-4 mb-1">'.$elemento['titulo'].'</p>
                         <img src="/mycloud/gesman/files/'.$elemento['nombre'].'" class="img-fluid" alt="">
-                      <p class="text-center textura-contenido">'.$elemento['descripcion'].'</p>
+                      <p class="text-center text-uppercase">'.$elemento['descripcion'].'</p>
                     </div>';
-								}
-							}
-						$html.='</div>';
+								  }
+							  }
+			$html.='</div>';
 			if (!empty($nodo['hijos'])) {
-				$html.='<div  id="accordion-container-'.$nodo['id'].'">';
+				$html.='<div class="p-0 hijos">';
 				$html.=FnGenerarInformeHtmlAcordeon($nodo['hijos'], $imagenes,$numero, $nivel+1, $indiceActual, $clsHide);
 				$html.='</div>';
 			}
-			$html.='</div>';
-			$html.='</div>';
 			$html.='</div>';
 		}
 		return $html;
@@ -164,9 +155,6 @@
 			}	
 		}
 		$arbol = construirArbol($actividades);
-    // echo '<pre>';
-    // print_r($arbol);
-    // echo '</pre>';
 		$ids = array_map(function($elemento) {
 			return $elemento['id'];
 		}, $actividades);
@@ -184,10 +172,6 @@
         'titulo'=>$row3['titulo'],
 			);
 		}
-		// $tablaHTML.='<div class="accordion" id="accordion-container-'.$nodo['id'].'">';
-		// 	$tabla=FnGenerarInformeHtmlAcordeon($arbol, $imagenes, $clsHide);
-		// 	$tablaHTML .=$tabla;
-		// $tablaHTML.='</div>';
   } catch (PDOException $e) {
       throw new Exception($e->getMessage());
   } catch (Exception $e) {
@@ -233,11 +217,6 @@
         font-size: 15px;
       }
     }
-    @media(min-width:768px){
-      .mt--mod{
-        margin-top: 17px !important;
-      }
-    }
     @media(min-width:92px){
       .form-label{
         font-size: 15px;
@@ -246,77 +225,15 @@
     .form-control{
       border-radius:.25rem;
     }
-    .btn-control{
-      padding:.375rem .75rem;
-    }
     @media(max-width:576px){
       .text-button{
         display:none;
       }
     }
-    .color-contenido{
-      color: #212529;
+    .hijos p:first-child{
+      padding-top: 10px;
+      padding-left: 10px;
     }
-    .color-titulo{
-      color: #747272;
-    }
-    .textura-contenido{
-      font-weight: 500;
-      font-size: 16px;
-      color: #676767;
-    }
-    .textura-contenido-mod{
-      width: 15%;
-      text-align: center;
-      color: #FFFFFF;
-      border-radius: 4px;
-      padding: 4px 8px !important
-    }
-    .vineta::before {
-      content: '\2713'; 
-      font-size: 13px;
-      color: green; 
-      margin-right: 8px;
-    }
-    .contenedor-imagen{
-      position: relative;
-      border: 1px solid #67646442;
-      border-radius: 4px;
-      padding: 5px; 
-    }
-    .caja-imagen{
-
-      margin-bottom: 5px;
-    }
-    @media(min-width:992px){
-      .caja-imagen{
-        grid-template-columns: 1fr 1fr 1fr 1fr;
-      }
-    }
-    .contenedor-datos{
-      border: 1px solid #aea7a782;
-      border-radius: 4px;
-      padding-top: 10px !important;
-      margin-left: 0.5px;
-      margin-right: 0.5px;
-    }
-    .contenedor-imagen-equipo{
-      border: 1px solid #aea7a782;
-      border-radius:4px;
-    }
-    .archivos{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 10px;
-      margin-top:10px;
-    }
-    @media(min-width:992px){
-      .contenedor-row{
-        padding: 0px 250px;
-      }
-    }
-
     </style>
   <body>
       <!-- INICIO CONTAINER -->
@@ -338,8 +255,8 @@
 
         <!-- BOTON DESCARGAR INFORME -->
         <div class="row">
-          <div id="generarInforme" class="col-6 col-lg-2 mt-4 mb-4">
-            <button id="guardarActividad" class="btn btn-primary text-uppercase pt-2 pb-2 col-12" onclick=fnGenerarInforme()><i class="bi bi-cloud-download"></i> Descargar </button>
+          <div id="generarInforme" class="col-6 col-lg-3 mt-4 mb-4">
+            <button id="guardarActividad" class="btn bg-secondary bg-gradient text-uppercase pt-2 pb-2 col-12 text-white fw-bold" onclick=fnGenerarInforme()><i class="bi bi-cloud-download"></i> Descargar </button>
           </div>
         </div>
 
@@ -354,191 +271,192 @@
 
         <!-- DATOS GENERALES -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- DATOS GENERALES</p>
+          <div class="col-12 m-0 border-bottom bg-primary" >
+            <p class="mt-2 mb-2 fw-bold text-white"><?php echo $NUMERO; ?>- DATOS GENERALES</p>
           </div>
-        </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nro. Informe</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->numero); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nombre Informe</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->nombre); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Fecha</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->fecha); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">OT N°</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->ordnombre); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nombre de cliente:</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->clinombre); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Contacto</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->clicontacto); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Lugar</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->ubicacion); ?></p>
-          </div>
-          <div class="col-6 col-sm-8 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Supervisor</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->supervisor); ?></p>
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nro. Informe</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->numero); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nombre Informe</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->nombre); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Fecha</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->fecha); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">OT N°</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->ordnombre); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nombre de cliente:</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->clinombre); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Contacto</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->clicontacto); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Lugar</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->ubicacion); ?></p>
+            </div>
+            <div class="col-6 col-sm-8 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Supervisor</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->supervisor); ?></p>
+            </div>
           </div>
         </div>
         <?php $NUMERO+=1; ?>
         
         <!-- DATOS DEL EQUIPO -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- DATOS DEL EQUIPO</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold text-white"><?php echo $NUMERO; ?>- DATOS DEL EQUIPO</p>
           </div>
-        </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nombre Equipo</p>
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equnombre); ?></p>              
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Modelo Equipo</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equmodelo); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Serie Equipo</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equserie); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Marca Equipo</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equmarca); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Kilometraje</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equkm); ?></p>
-          </div>
-          <div class="col-6 col-sm-4 col-lg-4 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Horas Motor</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equhm); ?></p>
-          </div>
-          <div class="col-12 col-lg-6 mb-1">
-            <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Carateristicas</p> 
-            <p class="m-0 p-0 textura-contenido"><?php echo htmlspecialchars($informe->equdatos); ?></p>
-          </div>
-          <div class="row contenedor-row">
-            <?php foreach($archivos as $archivo): ?>
-              <div class="col-6 border">
-                <p class="text-center mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
-                <img src="/mycloud/gesman/files/<?php echo htmlspecialchars($archivo['nombre']); ?>" class="img-fluid" alt="">
-                <p class="text-center"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
-              </div>
-            <?php endforeach; ?>
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Nombre Equipo</p>
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equnombre); ?></p>              
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Modelo Equipo</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equmodelo); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Serie Equipo</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equserie); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Marca Equipo</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equmarca); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Kilometraje</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equkm); ?></p>
+            </div>
+            <div class="col-6 col-sm-4 col-lg-4 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Horas Motor</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equhm); ?></p>
+            </div>
+            <div class="col-12 col-lg-6 mb-1">
+              <p class="m-0 text-secondary fw-light" style="font-size: 15px;">Carateristicas</p> 
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold"><?php echo htmlspecialchars($informe->equdatos); ?></p>
+            </div>
+            <div class="row m-0 mt-2 mb-2 p-0 d-flex justify-content-evenly">
+              <?php foreach($archivos as $archivo): ?>
+                <div class="col-5 col-lg-4 col-xl-3 border border-secondary border-opacity-50">
+                  <p class="text-center text-uppercase mt-4 mb-1"><?php echo htmlspecialchars($archivo['titulo']); ?></p>
+                  <img src="/mycloud/gesman/files/<?php echo htmlspecialchars($archivo['nombre']); ?>" class="img-fluid" alt="">
+                  <p class="text-center text-uppercase"><?php echo htmlspecialchars($archivo['descripcion']); ?></p>
+                </div>
+              <?php endforeach; ?>
+            </div>
           </div>
         </div>
         <?php $NUMERO+=1; ?>
+
         <!-- SOLICITUD DEL CLIENTE-->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- SOLICITUD DEL CLIENTE</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold text-white"><?php echo $NUMERO; ?>- SOLICITUD DEL CLIENTE</p>
           </div>
-        </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <div class="col-12 mb-2 mt-2">
-            <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>          
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <div class="col-12 mb-2 mt-2">
+              <p class="m-0 p-0 text-secondary text-uppercase fw-bold" style="text-align: justify;"><?php echo htmlspecialchars($informe->actividad); ?></p>          
+            </div>
           </div>
         </div>
         <?php $NUMERO+=1; ?>
 
         <!-- ANTECEDENTES-->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- ANTECEDENTES</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold  text-white"><?php echo $NUMERO; ?>- ANTECEDENTES</p>
           </div>
-        </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <?php foreach($antecedentes as $antecedente) :?>
-              <div class="d-flex">
-                <span class="vineta"></span> 
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo $antecedente['actividad'];?></p>
-              </div>
-          <?php endforeach ;?>
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <?php foreach($antecedentes as $antecedente) :?>
+                <div class="d-flex">
+                  <i class="bi bi-stop" style="margin-right:10px"></i>
+                  <p class="m-0 p-0 text-secondary text-uppercase fw-bold" style="text-align: justify;"><?php echo $antecedente['actividad'];?></p>
+                </div>
+            <?php endforeach ;?>
+          </div>
         </div>
         <?php $NUMERO+=1; ?>
   
         <!-- ACTIVIDADES -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo"><?php echo $NUMERO; ?>- ACTIVIDADES</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold text-white"><?php echo $NUMERO; ?>- ACTIVIDADES</p>
           </div>
+            <?php
+              $html = FnGenerarInformeHtmlAcordeon($arbol, $imagenes,$NUMERO, $clsHide);
+              echo $html;
+            ?>
         </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <?php
-            $html = FnGenerarInformeHtmlAcordeon($arbol, $imagenes,$NUMERO, $clsHide);
-            echo $html;
-          ?>
-        </div>
+        <?php $NUMERO+=1; ?>
 
         <!-- CONCLUSIONES -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">6. CONCLUSIONES</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold  text-white"><?php echo $NUMERO; ?>- CONCLUSIONES</p>
+          </div>
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <?php foreach($conclusiones as $conclusion) :?>
+                <div class="d-flex">
+                  <i class="bi bi-stop" style="margin-right:10px"></i>
+                  <p class="m-0 p-0 text-secondary text-uppercase fw-bold" style="text-align: justify;"><?php echo $conclusion['actividad'];?></p>
+                </div>
+            <?php endforeach ;?>
           </div>
         </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <?php foreach($conclusiones as $conclusion) :?>
-              <div class="d-flex">
-                <span class="vineta"></span> 
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo $conclusion['actividad'];?></p>
-              </div>
-          <?php endforeach ;?>
-        </div>
+        <?php $NUMERO+=1; ?>
 
         <!-- RECOMENDACIONES -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">7. RECOMENDACIONES</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold  text-white"><?php echo $NUMERO; ?>- RECOMENDACIONES</p>
+          </div>
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <?php foreach($recomendaciones as $recomendacion) :?>
+              <div class="d-flex">
+              <i class="bi bi-stop" style="margin-right:10px"></i> 
+                <p class="m-0 p-0 text-secondary text-uppercase fw-bold" style="text-align: justify;"><?php echo $recomendacion['actividad'];?></p>
+              </div>
+            <?php endforeach ;?>
           </div>
         </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          <?php foreach($recomendaciones as $recomendacion) :?>
-              <div class="d-flex">
-                <span class="vineta"></span> 
-                <p class="m-0 p-0 textura-contenido" style="text-align: justify;"><?php echo $recomendacion['actividad'];?></p>
-              </div>
-          <?php endforeach ;?>
-        </div>
+        <?php $NUMERO+=1; ?>
 
         <!-- ANEXOS -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">8. ANEXOS</p>
+          <div class="col-12 mb-0 border-bottom bg-primary">
+            <p class="mt-2 mb-2 fw-bold  text-white"><?php echo $NUMERO; ?>- ANEXOS</p>
           </div>
-        </div>
-        <div class="row p-1 mb-2 contenedor-datos">
-          
+          <div class="row p-1 m-0 border border-secondary border-opacity-50">
+            <!-- ACÁ VAN LOS ANEXOS -->
+          </div>
         </div>
         
         <!-- ESTADO -->
         <div class="row p-1 mb-2 mt-2">
-          <div class="col-12 mb-0 border-bottom bg-light">
-            <p class="mt-2 mb-2 fw-bold color-titulo">ESTADO</p>
+          <div class="col-12 mb-0">
+            <p class="mt-2 mb-2 text-secondary fw-bold">ESTADO</p>
+          </div>
+          <div class="p-1 mb-2">
+            <?php
+              $Estado = 1; 
+              $EstadoClass = ($Estado == 1) ? 'bg-primary' : ($Estado == 2 ? 'bg-success' : 'bg-danger');
+              $EstadoText = ($Estado == 1) ? 'Abierto' : ($Estado == 2 ? 'Cerrado' : 'Anulado');
+            ?>
+            <div class="col-2">
+              <p class="text-white text-center rounded rounded-1 pt-1 pb-1 <?php echo $EstadoClass; ?>"><?php echo htmlspecialchars($EstadoText); ?></p>
+            </div>            
           </div>
         </div>
-        <div class="row p-1 mb-2">
-          <?php
-            $Estado = 1; 
-            $EstadoClass = ($Estado == 1) ? 'bg-primary' : ($Estado == 2 ? 'bg-success' : 'bg-danger');
-            $EstadoText = ($Estado == 1) ? 'Abierto' : ($Estado == 2 ? 'Cerrado' : 'Anulado');
-          ?>
-          <div class="col-12 col-lg-6 mb-2 mt-2">
-            <p class="m-0 p-0 textura-contenido textura-contenido-mod <?php echo $EstadoClass; ?>"><?php echo htmlspecialchars($EstadoText); ?></p>
-          </div>            
-        </div>
-
       </div><!-- CIERRE CONTAINER -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <script src="js/vistaPreliminar.js"></script>
